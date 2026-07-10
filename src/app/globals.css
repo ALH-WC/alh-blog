@@ -17,12 +17,14 @@
   /* Type */
   --display: var(--font-spectral), Georgia, 'Times New Roman', serif;
   --sans: var(--font-archivo), system-ui, -apple-system, sans-serif;
+  --ui-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --logo-font: var(--font-mixta), Georgia, 'Times New Roman', serif;
 
   /* Layout */
   --content-width: 1180px;
   --gutter: 44px;
   --gutter-mobile: 20px;
-  --nav-height: 68px;
+  --nav-height: 64px;
 
   /* Radius */
   --radius: 2px;
