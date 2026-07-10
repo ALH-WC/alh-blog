@@ -51,7 +51,10 @@ body {
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* clip (not hidden) prevents the full-bleed band sections from causing a
+     horizontal scrollbar WITHOUT turning <body> into a scroll container, so
+     window scroll (scroll-spy, sticky CTA, smooth scroll) keeps working. */
+  overflow-x: clip;
 }
 
 img {

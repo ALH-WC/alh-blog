@@ -387,8 +387,9 @@
   margin: 0 auto;
   padding: 0 var(--gutter);
   display: flex;
-  gap: 0;
-  flex-wrap: wrap;
+  gap: 16px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 .step {
   background: none;
@@ -398,13 +399,10 @@
   display: flex;
   align-items: baseline;
   gap: 9px;
-  padding: 16px 26px 16px 0;
-  margin-right: 26px;
+  padding: 16px 0;
   white-space: nowrap;
   position: relative;
-}
-.step:last-child {
-  margin-right: 0;
+  flex: 0 0 auto;
 }
 .stepNum {
   font-family: var(--display);
@@ -429,7 +427,7 @@
 .stepBar {
   position: absolute;
   left: 0;
-  right: 26px;
+  right: 0;
   bottom: 0;
   height: 2px;
   background: var(--accent);
