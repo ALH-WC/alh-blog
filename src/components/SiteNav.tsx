@@ -1,61 +1,136 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import styles from '../app/blog/blog.module.css';
+import styles from './SiteNav.module.css';
 
-const CAL_URL = 'https://cal.com/amsterdam-life-homes/intake';
+// "Contact us" points at the main site's contact section; the dedicated intake
+// CTA books a Cal.com video call.
+const CONTACT_URL = 'https://amsterdamlifehomes.com/#contact';
+const INTAKE_URL = 'https://cal.com/amsterdam-life-homes/intake';
 
+// Reconstructed from the ALH Framer "Navigation" component.
 const LINKS = [
   { href: '/renting', label: 'Renting' },
   { href: '/buying', label: 'Buying' },
   { href: '/letting', label: 'Letting' },
   { href: '/b2b', label: 'Corporate' },
   { href: '/#about-us', label: 'About us' },
+  { href: '/blog', label: 'Our Amsterdam guide', current: true },
 ];
 
-export function SiteNav() {
-  const [menuOpen, setMenuOpen] = useState(false);
+// Blog routes are served by this app; the others are served by the main Framer
+// site, so they use a full navigation rather than client-side routing.
+function NavLink({
+  href,
+  label,
+  current,
+  className,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  current?: boolean;
+  className?: string;
+  onClick?: () => void;
+}) {
+  const currentAttr = current ? { 'aria-current': 'page' as const } : {};
+  if (href.startsWith('/blog')) {
+    return (
+      <Link href={href} className={className} onClick={onClick} {...currentAttr}>
+        {label}
+      </Link>
+    );
+  }
   return (
-    <>
-      <nav className={styles.nav} aria-label="Primary">
-        <Link href="/blog" className={styles.brand}>
-          <span className={styles.brandMark} aria-hidden />
-          <span className={styles.brandName}>Amsterdam Life Homes</span>
+    <a href={href} className={className} onClick={onClick} {...currentAttr}>
+      {label}
+    </a>
+  );
+}
+
+export function SiteNav() {
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+
+  // Lock background scroll while the drawer is open; close it if the viewport
+  // grows to the desktop breakpoint.
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onResize = () => {
+      if (window.innerWidth >= 1200) setOpen(false);
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('resize', onResize);
+    };
+  }, [open]);
+
+  return (
+    <nav className={styles.nav} aria-label="Primary">
+      <div className={styles.inner}>
+        <Link href="/blog" className={styles.logoWrap} aria-label="Amsterdam Life Homes home">
+          <span className={styles.logo}>Amsterdam Life Homes</span>
         </Link>
-        <ul className={styles.navLinks}>
+
+        <div className={styles.links}>
           {LINKS.map((l) => (
-            <li key={l.href}><a href={l.href} className={styles.navLink}>{l.label}</a></li>
+            <NavLink
+              key={l.href}
+              href={l.href}
+              label={l.label}
+              current={l.current}
+              className={`${styles.link}${l.current ? ` ${styles.linkCurrent}` : ''}`}
+            />
           ))}
-          <li><Link href="/blog" aria-current="page" className={styles.navCurrent}>The Guide</Link></li>
-        </ul>
-        <a href={CAL_URL} className={styles.contactBtn}>Contact us</a>
+        </div>
+
+        <div className={styles.buttons}>
+          <a href={CONTACT_URL} className={styles.cta}>Contact us</a>
+        </div>
+
         <button
           type="button"
-          className={styles.menuBtn}
-          aria-label="Open menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((v) => !v)}
+          className={`${styles.toggle}${open ? ` ${styles.toggleOpen}` : ''}`}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-            {menuOpen ? <path d="M6 6l12 12M6 18L18 6" /> : <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
-          </svg>
+          <span className={styles.toggleLine} />
+          <span className={styles.toggleLine} />
         </button>
-      </nav>
-      {menuOpen ? (
-        <ul
-          className={styles.navLinks}
-          style={{
-            display: 'flex', flexDirection: 'column', position: 'fixed', top: 'var(--nav-height)',
-            left: 0, right: 0, zIndex: 99, background: 'rgba(20,18,15,.97)', padding: '18px 20px', gap: 4,
-          }}
-        >
-          {LINKS.map((l) => (
-            <li key={l.href}><a href={l.href} className={styles.navLink}>{l.label}</a></li>
-          ))}
-          <li><Link href="/blog" className={styles.navCurrent}>The Guide</Link></li>
-        </ul>
+      </div>
+
+      <span className={styles.hairline} aria-hidden="true" />
+
+      {open ? (
+        <div className={styles.drawer}>
+          <ul className={styles.drawerLinks}>
+            {LINKS.map((l) => (
+              <li key={l.href}>
+                <NavLink href={l.href} label={l.label} current={l.current} onClick={close} />
+              </li>
+            ))}
+          </ul>
+          <div className={styles.drawerButtons}>
+            <a className={`${styles.btn} ${styles.btnBlack}`} href={CONTACT_URL} onClick={close}>
+              Contact us
+            </a>
+            <a
+              className={`${styles.btn} ${styles.btnAlt}`}
+              href={INTAKE_URL}
+              target="_blank"
+              rel="noreferrer"
+              onClick={close}
+            >
+              Schedule a Free Video Intake Call &rarr;
+            </a>
+          </div>
+        </div>
       ) : null}
-    </>
+    </nav>
   );
 }

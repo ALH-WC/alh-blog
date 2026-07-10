@@ -1,0 +1,221 @@
+/* Top menu bar, reconstructed from the ALH Framer "Navigation" component.
+   Desktop bar >= 1200px; phone-style drawer below 1200px (tablet + mobile).
+   Framer tokens mapped to the blog palette:
+     nav background -> var(--paper)
+     dark text/logo -> var(--ink)
+     black CTA      -> var(--ink)
+*/
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--nav-height);
+  background: var(--paper);
+  box-sizing: border-box;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 1200px;
+  max-width: 100%;
+  height: var(--nav-height);
+  margin: 0 auto;
+  padding: 12px 32px;
+  box-sizing: border-box;
+}
+
+/* Logo */
+.logoWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.logo {
+  font-family: var(--logo-font);
+  font-weight: 400;
+  font-size: 27px;
+  letter-spacing: -1px;
+  line-height: 1.2;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Center links (desktop) */
+.links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 20px;
+}
+.link {
+  font-family: var(--ui-sans);
+  font-size: 16px;
+  line-height: 1;
+  color: var(--ink);
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.link:hover {
+  opacity: 0.7;
+}
+.linkCurrent {
+  font-weight: 500;
+}
+
+/* CTA button (desktop) */
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-family: var(--ui-sans);
+  font-size: 16px;
+  line-height: 1;
+  text-decoration: none;
+  background: var(--ink);
+  color: var(--paper);
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.cta:hover {
+  opacity: 0.88;
+}
+
+/* Hairline under the bar */
+.hairline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgba(20, 18, 15, 0.08);
+}
+
+/* Hamburger (two lines that morph into an X) */
+.toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  place-content: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggleLine {
+  width: 20px;
+  height: 2px;
+  border-radius: 10px;
+  background: var(--ink);
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+.toggleOpen .toggleLine:nth-child(1) {
+  transform: translateY(4px) rotate(45deg);
+}
+.toggleOpen .toggleLine:nth-child(2) {
+  transform: translateY(-4px) rotate(-45deg);
+}
+
+/* Full-screen drawer (phone / tablet) */
+.drawer {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.drawerLinks {
+  list-style: none;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.drawerLinks a {
+  display: block;
+  font-family: var(--ui-sans);
+  font-size: 24px;
+  line-height: 1.5;
+  color: var(--ink);
+  text-decoration: none;
+}
+.drawerButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  padding-bottom: 40px;
+  max-width: 400px;
+  margin-top: auto;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-family: var(--ui-sans);
+  font-size: 16px;
+  text-decoration: none;
+}
+.btnBlack {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btnAlt {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+
+/* Below 1200px: hide desktop links + CTA, show hamburger */
+@media (max-width: 1199px) {
+  .links {
+    display: none;
+  }
+  .buttons {
+    display: none;
+  }
+  .toggle {
+    display: grid;
+  }
+  .inner {
+    padding: 10px 16px;
+  }
+}
+
+/* At/above 1200px: desktop bar only, never the drawer */
+@media (min-width: 1200px) {
+  .toggle {
+    display: none;
+  }
+  .drawer {
+    display: none;
+  }
+}

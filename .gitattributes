@@ -1,2 +1,8 @@
 # Normalize line endings. Store text as LF (Vercel builds on Linux).
 * text=auto eol=lf
+
+# Fonts and other binaries must never be line-ending normalized.
+*.otf binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
