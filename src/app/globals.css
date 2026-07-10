@@ -1,0 +1,99 @@
+:root {
+  /* Palette (single source of truth). Accent is one theme variable used everywhere. */
+  --paper: #f5f0e6;
+  --band: #ece3d1;
+  --band-2: #ddd2ba;
+  --ink: #1a1712;
+  --ink-2: #14110d;
+  --body-text: #37332b;
+  --muted-text: #5f5748;
+  --faint-text: #7d745f;
+  --faint-text-2: #948b78;
+  --hairline: #dcd2be;
+  --hairline-2: #d6cbb2;
+  --accent: #b5603f;
+  --on-dark: #f5f0e6;
+
+  /* Type */
+  --display: var(--font-spectral), Georgia, 'Times New Roman', serif;
+  --sans: var(--font-archivo), system-ui, -apple-system, sans-serif;
+
+  /* Layout */
+  --content-width: 1180px;
+  --gutter: 44px;
+  --gutter-mobile: 20px;
+  --nav-height: 68px;
+
+  /* Radius */
+  --radius: 2px;
+  --radius-block: 5px;
+  --radius-pill: 999px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--body-text);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+::selection {
+  background: #e6d3b0;
+  color: var(--ink);
+}
+
+input,
+button {
+  font-family: var(--sans);
+}
+
+/* Visually hidden but available to screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

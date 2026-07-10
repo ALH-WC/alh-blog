@@ -1,0 +1,101 @@
+.p {
+  font: 400 17px/1.78 var(--sans);
+  color: var(--body-text);
+  margin-top: 20px;
+}
+
+/* Drop cap on the very first paragraph of the article body. */
+.p:first-child::first-letter {
+  font-family: var(--display);
+  font-weight: 500;
+  float: left;
+  font-size: 64px;
+  line-height: 0.72;
+  padding: 6px 12px 0 0;
+  color: var(--accent);
+}
+
+.h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 27px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 40px 0 14px;
+}
+
+.h3 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 21px;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 30px 0 10px;
+}
+
+.strong {
+  font-weight: 600;
+}
+
+.em {
+  font-style: italic;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link:hover {
+  color: var(--ink);
+}
+
+/* Steps callout */
+.steps {
+  list-style: none;
+  counter-reset: s;
+  margin: 24px 0;
+  padding: 26px 30px;
+  background: var(--band);
+  border-left: 3px solid var(--accent);
+}
+.step {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--band-2);
+}
+.step:last-child {
+  border-bottom: none;
+}
+.stepNum {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--accent);
+}
+.stepBody {
+  font: 400 15.5px/1.55 var(--sans);
+  color: #2c281f;
+}
+.stepLead {
+  font-weight: 600;
+}
+
+/* Pull quote */
+.quoteFigure {
+  margin: 38px 0;
+  text-align: center;
+}
+.quote {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.42;
+  color: #2c281f;
+  max-width: 30ch;
+  margin: 0 auto;
+}
