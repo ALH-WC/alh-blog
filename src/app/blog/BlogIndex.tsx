@@ -125,24 +125,38 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
   }, []);
 
   // ---- Scroll spy for the stepper ----
+  // Active stage = the last lane whose top has scrolled above the sticky header.
+  // Uses getBoundingClientRect (viewport-relative, so it works no matter which
+  // element is the scroll container) and triggers on both an IntersectionObserver
+  // and scroll events (window + document capture) for robustness.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const lanes = Array.from(root.querySelectorAll<HTMLElement>('[data-lane]'));
     if (lanes.length === 0) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            const n = Number((e.target as HTMLElement).dataset.stage);
-            if (n) setActiveStage(n);
-          }
-        });
-      },
-      { rootMargin: '-30% 0px -60% 0px' },
-    );
+    const OFFSET = 150; // clears the fixed nav (64) + sticky stepper (~57)
+    const update = () => {
+      let current = Number(lanes[0].dataset.stage) || 1;
+      for (const lane of lanes) {
+        if (lane.getBoundingClientRect().top - OFFSET <= 0) {
+          current = Number(lane.dataset.stage) || current;
+        }
+      }
+      setActiveStage(current);
+    };
+    const io = new IntersectionObserver(update, {
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+      rootMargin: `-${OFFSET}px 0px 0px 0px`,
+    });
     lanes.forEach((l) => io.observe(l));
-    return () => io.disconnect();
+    window.addEventListener('scroll', update, { passive: true });
+    document.addEventListener('scroll', update, { passive: true, capture: true });
+    update();
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', update);
+      document.removeEventListener('scroll', update, { capture: true } as EventListenerOptions);
+    };
   }, [laneItems]);
 
   // ---- Sticky CTA fade-in ----
@@ -286,40 +300,6 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
       {/* ---------- Masthead ---------- */}
       <header className={styles.header} data-reveal="">
         <div className={styles.container}>
-          <div className={styles.ruleInk} />
-          <div className={styles.metaRow}>
-            <span>OUR AMSTERDAM GUIDE</span>
-            <span className={styles.metaRight}>
-              <span className={styles.metaAccent}>By expats, for expats</span>
-              <span className={styles.metaDivider} />
-              <span>No. 116</span>
-            </span>
-          </div>
-          <div className={styles.hairline} />
-
-          <div className={styles.toggleWrap}>
-            <div role="tablist" aria-label="Choose a guide" className={styles.toggle}>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={audience === 'singles_couples'}
-                className={`${styles.toggleBtn}${audience === 'singles_couples' ? ` ${styles.toggleActive}` : ''}`}
-                onClick={() => setAudience('singles_couples')}
-              >
-                Single / Couple
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={audience === 'family'}
-                className={`${styles.toggleBtn}${audience === 'family' ? ` ${styles.toggleActive}` : ''}`}
-                onClick={() => setAudience('family')}
-              >
-                Family
-              </button>
-            </div>
-          </div>
-
           <div className={styles.masthead}>
             <div>
               <h1 className={styles.mastTitle}>
