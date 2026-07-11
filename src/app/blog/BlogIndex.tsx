@@ -125,38 +125,41 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
   }, []);
 
   // ---- Scroll spy for the stepper ----
-  // Active stage = the last lane whose top has scrolled above the sticky header.
-  // Uses getBoundingClientRect (viewport-relative, so it works no matter which
-  // element is the scroll container) and triggers on both an IntersectionObserver
-  // and scroll events (window + document capture) for robustness.
+  // Highlights the stage whose lane currently occupies the most of the viewport.
+  // Pure IntersectionObserver: it fires on its own as sections cross the
+  // viewport, so it needs no scroll events or window.scrollY (which the
+  // full-bleed layout and body scroll container can otherwise complicate).
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const lanes = Array.from(root.querySelectorAll<HTMLElement>('[data-lane]'));
     if (lanes.length === 0) return;
-    const OFFSET = 150; // clears the fixed nav (64) + sticky stepper (~57)
-    const update = () => {
-      let current = Number(lanes[0].dataset.stage) || 1;
-      for (const lane of lanes) {
-        if (lane.getBoundingClientRect().top - OFFSET <= 0) {
-          current = Number(lane.dataset.stage) || current;
+    const visibleHeight = new Map<Element, number>();
+    const thresholds = Array.from({ length: 21 }, (_, i) => i / 20);
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          visibleHeight.set(e.target, e.isIntersecting ? e.intersectionRect.height : 0);
+        });
+        let best: HTMLElement | null = null;
+        let bestHeight = 0;
+        for (const lane of lanes) {
+          const h = visibleHeight.get(lane) ?? 0;
+          if (h > bestHeight) {
+            bestHeight = h;
+            best = lane;
+          }
         }
-      }
-      setActiveStage(current);
-    };
-    const io = new IntersectionObserver(update, {
-      threshold: [0, 0.25, 0.5, 0.75, 1],
-      rootMargin: `-${OFFSET}px 0px 0px 0px`,
-    });
+        if (best) {
+          const n = Number(best.dataset.stage);
+          if (n) setActiveStage(n);
+        }
+      },
+      // Exclude the fixed nav (64px) so "in view" means below the chrome.
+      { threshold: thresholds, rootMargin: '-64px 0px 0px 0px' },
+    );
     lanes.forEach((l) => io.observe(l));
-    window.addEventListener('scroll', update, { passive: true });
-    document.addEventListener('scroll', update, { passive: true, capture: true });
-    update();
-    return () => {
-      io.disconnect();
-      window.removeEventListener('scroll', update);
-      document.removeEventListener('scroll', update, { capture: true } as EventListenerOptions);
-    };
+    return () => io.disconnect();
   }, [laneItems]);
 
   // ---- Sticky CTA fade-in ----
@@ -334,6 +337,24 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
         </div>
       </header>
 
+      {/* ---------- Stepper (directly under the masthead line) ---------- */}
+      <nav aria-label="Journey stages" className={styles.stepperWrap}>
+        <div className={styles.stepper}>
+          {STAGES.map((s) => (
+            <button
+              key={s.number}
+              type="button"
+              className={`${styles.step}${activeStage === s.number ? ` ${styles.stepActive}` : ''}`}
+              onClick={() => scrollToStage(s.number)}
+            >
+              <span className={styles.stepNum}>{String(s.number).padStart(2, '0')}</span>
+              <span className={styles.stepName}>{s.title}</span>
+              {activeStage === s.number ? <span className={styles.stepBar} aria-hidden /> : null}
+            </button>
+          ))}
+        </div>
+      </nav>
+
       {/* ---------- Lead magnet ---------- */}
       <section className={styles.leadMagnet} aria-label="Download the full guide" data-reveal="">
         <div className={styles.lmGrid}>
@@ -371,24 +392,6 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
           </div>
         </div>
       </section>
-
-      {/* ---------- Stepper ---------- */}
-      <nav aria-label="Journey stages" className={styles.stepperWrap}>
-        <div className={styles.stepper}>
-          {STAGES.map((s) => (
-            <button
-              key={s.number}
-              type="button"
-              className={`${styles.step}${activeStage === s.number ? ` ${styles.stepActive}` : ''}`}
-              onClick={() => scrollToStage(s.number)}
-            >
-              <span className={styles.stepNum}>{String(s.number).padStart(2, '0')}</span>
-              <span className={styles.stepName}>{s.title}</span>
-              {activeStage === s.number ? <span className={styles.stepBar} aria-hidden /> : null}
-            </button>
-          ))}
-        </div>
-      </nav>
 
       <main className={styles.main}>
         {/* ---------- Hero + latest ---------- */}
