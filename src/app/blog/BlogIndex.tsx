@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { Article, Audience } from '../../lib/types';
 import { STAGES, STAGE_ACCENT } from '../../lib/stages';
 import { SiteNav } from '../../components/SiteNav';
+import { SiteFooter } from '../../components/SiteFooter';
 import styles from './blog.module.css';
 
 const CAL_URL = 'https://cal.com/amsterdam-life-homes/intake';
@@ -125,41 +126,54 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
   }, []);
 
   // ---- Scroll spy for the stepper ----
-  // Highlights the stage whose lane currently occupies the most of the viewport.
-  // Pure IntersectionObserver: it fires on its own as sections cross the
-  // viewport, so it needs no scroll events or window.scrollY (which the
-  // full-bleed layout and body scroll container can otherwise complicate).
+  // Active stage = the last lane whose top has scrolled above the sticky header.
+  // getBoundingClientRect is viewport-relative so it works with any scroll
+  // container. Triggered by scroll (window + document capture) AND an
+  // IntersectionObserver, so at least one signal always fires. rAF-throttled;
+  // the first read is deferred to after layout so we don't measure every lane
+  // at the top on mount (which previously pinned the last or first stage).
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const lanes = Array.from(root.querySelectorAll<HTMLElement>('[data-lane]'));
     if (lanes.length === 0) return;
-    const visibleHeight = new Map<Element, number>();
-    const thresholds = Array.from({ length: 21 }, (_, i) => i / 20);
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          visibleHeight.set(e.target, e.isIntersecting ? e.intersectionRect.height : 0);
-        });
-        let best: HTMLElement | null = null;
-        let bestHeight = 0;
-        for (const lane of lanes) {
-          const h = visibleHeight.get(lane) ?? 0;
-          if (h > bestHeight) {
-            bestHeight = h;
-            best = lane;
-          }
+    const OFFSET = 160; // fixed nav (64) + sticky stepper (~57) + a little slack
+    // Compute the active stage from live positions (cheap: a few rect reads).
+    // The height guard skips lanes not yet laid out, avoiding the mount-time
+    // trap where every lane measures at the top. Only writes state on change.
+    let last = -1;
+    const compute = () => {
+      let current = 1;
+      for (const lane of lanes) {
+        const rect = lane.getBoundingClientRect();
+        if (rect.height > 0 && rect.top - OFFSET <= 0) {
+          current = Number(lane.dataset.stage) || current;
         }
-        if (best) {
-          const n = Number(best.dataset.stage);
-          if (n) setActiveStage(n);
-        }
-      },
-      // Exclude the fixed nav (64px) so "in view" means below the chrome.
-      { threshold: thresholds, rootMargin: '-64px 0px 0px 0px' },
-    );
+      }
+      if (current !== last) {
+        last = current;
+        setActiveStage(current);
+      }
+    };
+    // Instant triggers for responsiveness...
+    window.addEventListener('scroll', compute, { passive: true });
+    document.addEventListener('scroll', compute, { passive: true, capture: true });
+    const io = new IntersectionObserver(compute, {
+      threshold: [0, 0.5, 1],
+      rootMargin: `-${OFFSET}px 0px 0px 0px`,
+    });
     lanes.forEach((l) => io.observe(l));
-    return () => io.disconnect();
+    // ...plus a light interval as a guaranteed fallback, so the highlight
+    // tracks even if a given browser/layout does not surface scroll or
+    // intersection events for this scroll container.
+    const poll = window.setInterval(compute, 200);
+    compute();
+    return () => {
+      window.removeEventListener('scroll', compute);
+      document.removeEventListener('scroll', compute, { capture: true } as EventListenerOptions);
+      io.disconnect();
+      window.clearInterval(poll);
+    };
   }, [laneItems]);
 
   // ---- Sticky CTA fade-in ----
@@ -522,36 +536,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
       </section>
 
       {/* ---------- Footer ---------- */}
-      <footer className={styles.footer}>
-        <div className={styles.footGrid}>
-          <div>
-            <div className={styles.footBrandRow}>
-              <span className={styles.brandMark} aria-hidden />
-              <span className={styles.footBrandName}>Amsterdam Life Homes</span>
-            </div>
-            <p className={styles.footText}>We help fellow expats rent, let, and buy their home in Amsterdam.</p>
-            <p className={styles.footContact}>
-              hello@amsterdamlifehomes.com<br />+31 6 1374 9944
-            </p>
-          </div>
-          <div className={styles.footLinks}>
-            <a href="/renting" className={styles.footLink}>Renting</a>
-            <a href="/buying" className={styles.footLink}>Buying</a>
-            <a href="/letting" className={styles.footLink}>Letting</a>
-            <a href="/b2b" className={styles.footLink}>Corporate</a>
-            <Link href="/blog" className={styles.footLink}>The Amsterdam Guide</Link>
-          </div>
-          <div>
-            <p className={styles.footNlTitle}>Subscribe to our newsletter</p>
-            <p className={styles.footNlSub}>New guides, and Amsterdam places worth knowing.</p>
-            <form className={styles.footNlForm} onSubmit={handleForm('/api/subscribe')}>
-              <input type="email" placeholder="name@email.com" aria-label="Email" className={styles.footNlInput} />
-              <button type="submit" className={styles.footNlBtn}>Subscribe</button>
-            </form>
-          </div>
-        </div>
-        <div className={styles.footBottom}>&copy; 2026 Amsterdam Life Homes. All rights reserved.</div>
-      </footer>
+      <SiteFooter />
 
       <a
         href={CAL_URL}
