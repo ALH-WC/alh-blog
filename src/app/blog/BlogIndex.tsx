@@ -126,55 +126,31 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
   }, []);
 
   // ---- Scroll spy for the stepper ----
-  // Active stage = the last lane whose top has scrolled above the sticky header.
-  // getBoundingClientRect is viewport-relative so it works with any scroll
-  // container. Triggered by scroll (window + document capture) AND an
-  // IntersectionObserver, so at least one signal always fires. rAF-throttled;
-  // the first read is deferred to after layout so we don't measure every lane
-  // at the top on mount (which previously pinned the last or first stage).
+  // Deliberately mirrors the sticky-CTA effect below (which reliably tracks
+  // scroll): a plain window scroll listener, empty deps, and the lanes queried
+  // fresh inside the handler each time (so it always sees the current DOM and
+  // never bails out at setup). Active stage = the last lane whose top has
+  // scrolled above the sticky header. getBoundingClientRect is viewport-relative
+  // so it works regardless of the scroll container; the height guard skips lanes
+  // not yet laid out.
   useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const lanes = Array.from(root.querySelectorAll<HTMLElement>('[data-lane]'));
-    if (lanes.length === 0) return;
     const OFFSET = 160; // fixed nav (64) + sticky stepper (~57) + a little slack
-    // Compute the active stage from live positions (cheap: a few rect reads).
-    // The height guard skips lanes not yet laid out, avoiding the mount-time
-    // trap where every lane measures at the top. Only writes state on change.
-    let last = -1;
-    const compute = () => {
+    const onScroll = () => {
+      const root = rootRef.current;
+      if (!root) return;
       let current = 1;
-      for (const lane of lanes) {
+      root.querySelectorAll<HTMLElement>('[data-lane]').forEach((lane) => {
         const rect = lane.getBoundingClientRect();
         if (rect.height > 0 && rect.top - OFFSET <= 0) {
           current = Number(lane.dataset.stage) || current;
         }
-      }
-      if (current !== last) {
-        last = current;
-        setActiveStage(current);
-      }
+      });
+      setActiveStage(current);
     };
-    // Instant triggers for responsiveness...
-    window.addEventListener('scroll', compute, { passive: true });
-    document.addEventListener('scroll', compute, { passive: true, capture: true });
-    const io = new IntersectionObserver(compute, {
-      threshold: [0, 0.5, 1],
-      rootMargin: `-${OFFSET}px 0px 0px 0px`,
-    });
-    lanes.forEach((l) => io.observe(l));
-    // ...plus a light interval as a guaranteed fallback, so the highlight
-    // tracks even if a given browser/layout does not surface scroll or
-    // intersection events for this scroll container.
-    const poll = window.setInterval(compute, 200);
-    compute();
-    return () => {
-      window.removeEventListener('scroll', compute);
-      document.removeEventListener('scroll', compute, { capture: true } as EventListenerOptions);
-      io.disconnect();
-      window.clearInterval(poll);
-    };
-  }, [laneItems]);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // ---- Sticky CTA fade-in ----
   useEffect(() => {
