@@ -1,5 +1,6 @@
 .page {
   background: var(--paper);
+  padding-top: var(--nav-height);
 }
 .back {
   max-width: var(--read-width);

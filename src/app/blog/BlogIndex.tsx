@@ -284,7 +284,9 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                     <div className={styles.lmCopy}>
                       <span className={styles.eyebrow}>Free PDF &middot; The Amsterdam Guide</span>
                       <h2 className={styles.lmTitle}>
-                        Get our free <em>step-by-step</em> guide
+                        Get our free
+                        <br />
+                        <em>step-by-step</em> guide
                       </h2>
                       <p>
                         Tell us a little about your move and we will send the complete guide as a PDF, plus a short
@@ -326,12 +328,14 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
               <br />
               for the real thing...
             </p>
-            <a className={styles.tlink} href="https://amsterdamlifehomes.com/#contact">
+            <a className={styles.closingLink} href="https://amsterdamlifehomes.com/#contact">
               See how we help fellow expats
               <br />
-              rent, let, or buy their home
-              <br />
-              in Amsterdam
+              <span className={styles.accent}>
+                rent, let, or buy their home
+                <br />
+                in Amsterdam
+              </span>
               <span className={styles.ar}>↗</span>
             </a>
           </section>
@@ -341,11 +345,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
       <SiteFooter />
 
       {/* NEWSLETTER POP-UP */}
-      <aside
-        className={`${styles.nlpop}${popState === 'shown' ? ` ${styles.nlpopShow}` : ''}`}
-        hidden={popState !== 'shown'}
-        aria-label="Newsletter signup"
-      >
+      <aside className={styles.nlpop} hidden={popState !== 'shown'} aria-label="Newsletter signup">
         <div className={styles.nlpopOvl} onClick={() => setPopState('dismissed')} />
         <div className={styles.nlpopCard} role="dialog" aria-modal="true">
           <button type="button" className={styles.nlpopX} aria-label="Close" onClick={() => setPopState('dismissed')}>
@@ -374,68 +374,104 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
 
       {/* GUIDE MODAL */}
       {modalHouse ? (
-        <div className={styles.nlpop} style={{ opacity: 1 }} aria-label="Get the guide">
-          <div className={styles.nlpopOvl} onClick={closeGuide} />
-          <div className={styles.nlpopCard} role="dialog" aria-modal="true" style={{ textAlign: 'left', width: 640 }}>
-            <button type="button" className={styles.nlpopX} aria-label="Close" onClick={closeGuide}>
+        <div className={styles.gmodal} aria-label="Get the guide">
+          <div className={styles.gmodalOvl} onClick={closeGuide} />
+          <div className={styles.gmodalPanel} role="dialog" aria-modal="true">
+            <button type="button" className={styles.gmodalX} aria-label="Close" onClick={closeGuide}>
               &times;
             </button>
             {modalSent ? (
               <>
                 <span className={styles.eyebrow}>Your guide</span>
-                <h3 className={styles.nlpopTitle} style={{ textAlign: 'left' }}>
+                <h3 className={styles.gmTitle}>
                   Thank <em>you.</em>
                 </h3>
-                <p className={styles.nlpopLead} style={{ textAlign: 'left', margin: '12px 0 0' }}>
+                <p style={{ marginTop: 12, fontSize: '15.5px', color: 'var(--body-text)', lineHeight: 1.55 }}>
                   Your guide is on its way to your inbox. If we can help with your search, we will be in touch.
                 </p>
+                <div className={styles.modalFoot} style={{ justifyContent: 'flex-end' }}>
+                  <button type="button" className={styles.btnDark} onClick={closeGuide}>Close</button>
+                </div>
               </>
             ) : (
               <>
                 <span className={styles.eyebrow}>Your guide</span>
-                <h3 className={styles.nlpopTitle} style={{ textAlign: 'left' }}>
+                <h3 className={styles.gmTitle}>
                   Tell us about your <em>move.</em>
                 </h3>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    const email = e.currentTarget.querySelector<HTMLInputElement>('input[type="email"]')?.value ?? '';
-                    void postEmail('/api/lead', { email, household: modalHouse, intent: modalBuy ? 'buy' : 'rent' });
+                    const f = e.currentTarget;
+                    const email = f.querySelector<HTMLInputElement>('input[type="email"]')?.value ?? '';
+                    const budget = f.querySelector<HTMLInputElement>('#gm-budget')?.value ?? '';
+                    const moving = f.querySelector<HTMLInputElement>('#gm-move')?.value ?? '';
+                    const notes = f.querySelector<HTMLTextAreaElement>('#gm-notes')?.value ?? '';
+                    void postEmail('/api/lead', {
+                      email,
+                      household: modalHouse,
+                      intent: modalBuy ? 'buy' : 'rent',
+                      budget,
+                      moving,
+                      notes,
+                    });
                     setModalSent(true);
                   }}
-                  style={{ marginTop: 18 }}
                 >
-                  <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                    <button
-                      type="button"
-                      className={styles.optbox}
-                      style={modalBuy ? undefined : { borderColor: 'var(--ink)', background: 'var(--beige)' }}
-                      onClick={() => setModalBuy(false)}
-                    >
-                      Rent
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.optbox}
-                      style={modalBuy ? { borderColor: 'var(--ink)', background: 'var(--beige)' } : undefined}
-                      onClick={() => setModalBuy(true)}
-                    >
-                      Buy
-                    </button>
+                  <div className={styles.frow}>
+                    <span className={styles.flab}>Are you looking to</span>
+                    <div className={styles.seg}>
+                      <button
+                        type="button"
+                        className={`${styles.segopt}${modalBuy ? '' : ` ${styles.segoptSel}`}`}
+                        onClick={() => setModalBuy(false)}
+                      >
+                        Rent
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.segopt}${modalBuy ? ` ${styles.segoptSel}` : ''}`}
+                        onClick={() => setModalBuy(true)}
+                      >
+                        Buy
+                      </button>
+                    </div>
                   </div>
-                  <input
-                    type="email"
-                    required
-                    placeholder="name@email.com"
-                    aria-label="Email address"
-                    style={{ width: '100%', height: 50, padding: '0 14px', border: '1px solid #4a3f34', background: '#1b1610', color: 'var(--on-dark)', marginBottom: 14 }}
-                  />
-                  <button
-                    type="submit"
-                    style={{ height: 48, padding: '0 30px', border: 0, background: 'var(--accent)', color: '#fff', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: 13, cursor: 'pointer' }}
-                  >
-                    Send me the guide
-                  </button>
+                  <div className={`${styles.frow} ${styles.ftwo}`}>
+                    <div>
+                      <label className={styles.flab} htmlFor="gm-budget">Your budget</label>
+                      <div className={styles.euro}>
+                        <span>&euro;</span>
+                        <input
+                          className={styles.fin}
+                          id="gm-budget"
+                          inputMode="numeric"
+                          placeholder={modalBuy ? '450000 total' : '2000 per month'}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className={styles.flab} htmlFor="gm-move">When are you moving</label>
+                      <input className={styles.fin} id="gm-move" placeholder="e.g. September 2026" />
+                    </div>
+                  </div>
+                  <div className={styles.frow}>
+                    <label className={styles.flab} htmlFor="gm-email">Email address</label>
+                    <input className={styles.fin} id="gm-email" type="email" required placeholder="name@email.com" />
+                  </div>
+                  <div className={styles.frow}>
+                    <label className={styles.flab} htmlFor="gm-notes">Anything else we should know</label>
+                    <textarea
+                      className={styles.fin}
+                      id="gm-notes"
+                      rows={2}
+                      placeholder="Neighbourhoods you like, must haves, timing, work situation"
+                    />
+                  </div>
+                  <div className={styles.modalFoot}>
+                    <button type="button" className={styles.btnPlain} onClick={closeGuide}>Cancel</button>
+                    <button type="submit" className={styles.btnDark}>Send me the guide</button>
+                  </div>
                 </form>
               </>
             )}
