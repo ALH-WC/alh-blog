@@ -1,33 +1,24 @@
-import { Spectral, Archivo, Inter } from 'next/font/google';
+import { Spectral, Inter } from 'next/font/google';
 import localFont from 'next/font/local';
 
-// Display serif. Used for headings, masthead, pull quotes, italic emphasis.
+// Display serif: all headings, chapter titles, article titles, pull quotes.
 export const spectral = Spectral({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
   variable: '--font-spectral',
   display: 'swap',
 });
 
-// Body sans. Used for body copy, kickers, meta, UI, nav, buttons.
-export const archivo = Archivo({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-archivo',
-  display: 'swap',
-});
-
-// Site-chrome sans (top nav links + CTA), matching the main ALH Framer site.
+// Sans for everything else: body copy, eyebrows, meta, UI, buttons, and the top nav.
 export const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-inter',
   display: 'swap',
 });
 
-// Brand wordmark font, self-hosted from the ALH brand assets (Design/Font).
-// Used only for the logo in the top nav.
+// Brand wordmark font, self-hosted from the ALH brand assets. Top nav logo only.
 export const mixta = localFont({
   src: '../fonts/MixtaEssSharp-Regular.otf',
   weight: '400',

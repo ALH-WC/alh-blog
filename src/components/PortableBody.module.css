@@ -1,101 +1,194 @@
 .p {
-  font: 400 17px/1.78 var(--sans);
+  font-size: 19px;
+  line-height: 1.72;
   color: var(--body-text);
-  margin-top: 20px;
+  margin-bottom: 26px;
 }
-
-/* Drop cap on the very first paragraph of the article body. */
-.p:first-child::first-letter {
-  font-family: var(--display);
-  font-weight: 500;
-  float: left;
-  font-size: 64px;
-  line-height: 0.72;
-  padding: 6px 12px 0 0;
-  color: var(--accent);
-}
-
 .h2 {
   font-family: var(--display);
   font-weight: 500;
-  font-size: 27px;
+  font-size: 33px;
   line-height: 1.2;
-  letter-spacing: -0.01em;
   color: var(--ink);
-  margin: 40px 0 14px;
+  margin: 48px 0 18px;
+  letter-spacing: -0.01em;
 }
-
 .h3 {
   font-family: var(--display);
   font-weight: 500;
-  font-size: 21px;
-  line-height: 1.25;
+  font-size: 25px;
+  line-height: 1.24;
   color: var(--ink);
-  margin: 30px 0 10px;
+  margin: 36px 0 14px;
 }
-
 .strong {
-  font-weight: 600;
+  font-weight: 700;
 }
-
 .em {
   font-style: italic;
 }
-
 .link {
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 .link:hover {
-  color: var(--ink);
+  color: var(--accent-deep);
 }
 
-/* Steps callout */
-.steps {
+/* plain lists from the block editor */
+.ul,
+.olPlain {
+  margin: 0 0 30px;
+  padding: 0;
   list-style: none;
-  counter-reset: s;
-  margin: 24px 0;
-  padding: 26px 30px;
-  background: var(--band);
-  border-left: 3px solid var(--accent);
+}
+.ul .li {
+  position: relative;
+  padding-left: 26px;
+  margin-bottom: 14px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--body-text);
+}
+.ul .li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 12px;
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+}
+.olPlain {
+  counter-reset: p;
+}
+.olPlain .li {
+  position: relative;
+  padding-left: 34px;
+  margin-bottom: 14px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--body-text);
+}
+.olPlain .li::before {
+  counter-increment: p;
+  content: counter(p) '.';
+  position: absolute;
+  left: 0;
+  font-family: var(--display);
+  font-style: italic;
+  color: var(--accent);
+}
+
+/* numbered steps callout */
+.steps {
+  margin: 0 0 30px;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
 }
 .step {
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  gap: 14px;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--band-2);
-}
-.step:last-child {
-  border-bottom: none;
+  position: relative;
+  padding-left: 52px;
+  margin-bottom: 18px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--body-text);
 }
 .stepNum {
+  position: absolute;
+  left: 0;
+  top: 1px;
   font-family: var(--display);
   font-weight: 500;
   font-size: 20px;
+  font-style: italic;
   color: var(--accent);
 }
 .stepBody {
-  font: 400 15.5px/1.55 var(--sans);
-  color: #2c281f;
+  display: inline;
 }
 .stepLead {
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* Pull quote */
-.quoteFigure {
-  margin: 38px 0;
-  text-align: center;
-}
+/* pull quote */
 .quote {
+  margin: 44px 0;
+  padding: 0 0 0 4px;
+  border: 0;
+}
+.quote p {
   font-family: var(--display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 26px;
-  line-height: 1.42;
-  color: #2c281f;
-  max-width: 30ch;
-  margin: 0 auto;
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 1.35;
+  color: var(--ink);
+  max-width: 22ch;
+}
+.quote em {
+  color: var(--accent);
+}
+.quoteWho {
+  margin-top: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* callout box */
+.callout {
+  background: var(--sand);
+  border-left: 2px solid var(--accent);
+  padding: 28px 32px;
+  margin: 40px 0;
+}
+.calloutLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  margin-bottom: 12px;
+}
+.callout p {
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--body-text);
+  margin: 0;
+}
+
+/* inline image */
+.figure {
+  margin: 44px 0;
+}
+.figFrame {
+  width: 100%;
+  background: #d9cbb6;
+}
+.figFrame img {
+  width: 100%;
+  height: auto;
+}
+.figCap {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted-text);
+}
+
+@media (max-width: 640px) {
+  .p {
+    font-size: 17.5px;
+  }
+  .h2 {
+    font-size: 27px;
+  }
+  .quote p {
+    font-size: 25px;
+  }
 }

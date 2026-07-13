@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getAllSlugs, getArticleBySlug } from '../../../sanity/lib/queries';
+import { getAllArticles, getAllSlugs, getArticleBySlug } from '../../../sanity/lib/queries';
 import { PortableBody } from '../../../components/PortableBody';
 import { JsonLd } from '../../../components/JsonLd';
 import { SiteNav } from '../../../components/SiteNav';
 import { SiteFooter } from '../../../components/SiteFooter';
 import styles from './article.module.css';
 
-const CAL_URL = 'https://cal.com/amsterdam-life-homes/intake';
 const BASE = 'https://amsterdamlifehomes.com';
 
 export const revalidate = 60;
@@ -42,10 +41,12 @@ export default async function ArticlePage(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const [article, all] = await Promise.all([getArticleBySlug(slug), getAllArticles()]);
   if (!article) notFound();
 
-  // Article schema WITHOUT author or datePublished/dateModified, per client rule.
+  const related = all.filter((a) => a.slug !== article.slug).slice(0, 3);
+
+  // Article schema WITHOUT author or dates, per client rule.
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -63,41 +64,51 @@ export default async function ArticlePage(
       <JsonLd data={jsonLd} />
       <SiteNav />
       <div className={styles.page}>
-        <article className={styles.article}>
-          <div className={styles.hero}>
-            <img src={article.imageUrl} alt={article.imageAlt} />
-          </div>
-          <div className={styles.body}>
-            <header className={styles.head}>
-              <span className={styles.kicker}>{article.category} &middot; Start here</span>
-              <h1 className={styles.title}>{article.title}</h1>
-              {article.dek ? <p className={styles.dek}>{article.dek}</p> : null}
-            </header>
-
-            <div className={styles.meta}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3.5 2" />
-              </svg>
-              <span className={styles.metaText}>{article.readMinutes} min read</span>
-            </div>
-
-            <div className={styles.content}>
-              <PortableBody value={article.body} />
-            </div>
-
-            <div className={styles.endCta}>
-              <p className={styles.endCtaText}>
-                Want us to do the searching, and make sure every lease you sign is registrable?
-              </p>
-              <a href={CAL_URL} className={styles.endCtaBtn}>Talk to us first</a>
-            </div>
-          </div>
-        </article>
-
-        <div className={styles.backRow}>
-          <Link href="/blog" className={styles.backLink}>&larr; Back to the guide</Link>
+        <div className={styles.back}>
+          <Link href="/blog" className={styles.backLink}>
+            <span className={styles.ar}>&larr;</span> Back
+          </Link>
         </div>
+
+        <article>
+          <header className={styles.ahead}>
+            <span className={styles.eyebrow}>{article.category}</span>
+            <h1 className={styles.title}>{article.title}</h1>
+            <div className={styles.meta}>{article.readMinutes} min read</div>
+          </header>
+
+          {article.dek ? <p className={styles.lead}>{article.dek}</p> : null}
+
+          <div className={styles.hero}>
+            <div className={styles.heroFrame}>
+              <img src={article.imageUrl} alt={article.imageAlt} />
+            </div>
+          </div>
+
+          <div className={styles.body}>
+            <PortableBody value={article.body} />
+          </div>
+
+          {related.length ? (
+            <section className={styles.kr}>
+              <div className={styles.khead}>
+                <h2 className={styles.kheadTitle}>Keep reading</h2>
+                <Link href="/blog" className={styles.kheadLink}>
+                  All articles <span className={styles.ar}>&rarr;</span>
+                </Link>
+              </div>
+              <div className={styles.kgrid}>
+                {related.map((a) => (
+                  <Link key={a._id} href={`/blog/${a.slug}`} className={styles.kcard}>
+                    <span className={styles.eyebrow}>{a.category}</span>
+                    <h3 className={styles.kcardTitle}>{a.title}</h3>
+                    <span className={styles.kcardRt}>{a.readMinutes} min read</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
+        </article>
       </div>
       <SiteFooter />
     </>

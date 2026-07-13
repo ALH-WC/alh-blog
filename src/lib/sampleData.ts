@@ -1,274 +1,108 @@
 import type { PortableTextBlock } from '@portabletext/types';
-import type { Article } from './types';
-
-// Placeholder imagery from picsum (seeded), per the design handoff.
-const img = (seed: string) => `https://picsum.photos/seed/${seed}/1200/800`;
+import type { Article, Category } from './types';
 
 let k = 0;
-const key = () => `k${(k++).toString(36)}`;
+const key = () => `k${(k += 1)}`;
 
-function para(text: string): PortableTextBlock {
+function p(text: string): PortableTextBlock {
   return {
     _type: 'block',
     _key: key(),
     style: 'normal',
     markDefs: [],
     children: [{ _type: 'span', _key: key(), text, marks: [] }],
-  } as PortableTextBlock;
+  } as unknown as PortableTextBlock;
 }
-
-function heading(text: string): PortableTextBlock {
+function h2(text: string): PortableTextBlock {
   return {
     _type: 'block',
     _key: key(),
     style: 'h2',
     markDefs: [],
     children: [{ _type: 'span', _key: key(), text, marks: [] }],
-  } as PortableTextBlock;
+  } as unknown as PortableTextBlock;
 }
-
-// A short, deliberately generic placeholder body for list items. Contains no
-// figures or claims (client rule: no fabricated statistics). Replace via Sanity.
-function stubBody(dek: string): PortableTextBlock[] {
-  return [
-    para(dek),
-    para(
-      'This guide is part of The Amsterdam Guide. We are moving our full library into the new system, and the complete version of this piece will appear here once it is published from the CMS.',
-    ),
-  ];
+function quote(q: string): PortableTextBlock {
+  return { _type: 'pullQuote', _key: key(), quote: q } as unknown as PortableTextBlock;
 }
-
-// The hero / flagship article, mirroring the approved 1a article prototype copy.
-const rentingWithoutBsnBody: PortableTextBlock[] = [
-  para(
-    'Almost every expat hits the same wall in their first week. You cannot register for a BSN, the tax number you need for everything, without a Dutch address. And plenty of landlords say they will not rent to you until you have one. It feels like a locked door with the key inside.',
-  ),
-  para(
-    'The good news is that the loop is not real. You can rent first. What most people are missing is that registration happens at the municipality after you sign, not before, and that a cooperative landlord is worth more than a perfect paper trail.',
-  ),
-  heading('The order that actually works'),
-  para('Do these in sequence and the knot untangles itself. Skipping ahead is where people lose weeks.'),
-  {
+function callout(label: string, text: string): PortableTextBlock {
+  return { _type: 'callout', _key: key(), label, text } as unknown as PortableTextBlock;
+}
+function steps(items: [string, string][]): PortableTextBlock {
+  return {
     _type: 'stepsCallout',
     _key: key(),
-    steps: [
-      { _type: 'step', _key: key(), lead: 'Sign a registrable lease.', text: 'Confirm in writing that the landlord allows registration at the address.' },
-      { _type: 'step', _key: key(), lead: 'Book your municipality appointment.', text: 'Do this the day you sign. Slots fill fast in the city.' },
-      { _type: 'step', _key: key(), lead: 'Register, then collect your BSN.', text: 'It arrives by post within a few working days.' },
-    ],
-  } as unknown as PortableTextBlock,
-  {
-    _type: 'pullQuote',
-    _key: key(),
-    quote: 'A landlord who lets you register is worth more than one who is a hundred euros cheaper.',
-  } as unknown as PortableTextBlock,
-  para(
-    'If a listing refuses registration, walk away. It usually signals a bigger problem, and it will block your BSN, your bank, and your health insurance in one move.',
-  ),
+    steps: items.map(([lead, text]) => ({ _key: key(), lead, text })),
+  } as unknown as PortableTextBlock;
+}
+
+const bsnBody: PortableTextBlock[] = [
+  p('This is the single question we are asked most often, and it is almost always framed as a trap. So let us take the trap apart. Here is the order we walk our own clients through, and why the part that scares people turns out to be the easy part.'),
+  h2('What a BSN actually is'),
+  p('The BSN, or burgerservicenummer, is your Dutch citizen service number. You need it for a job, for taxes, for health insurance, and for almost every piece of official admin you will ever do here. You receive it when you register your address at the municipality, the gemeente. That last detail is where the confusion begins.'),
+  h2('The chicken and the egg'),
+  p('The myth goes like this: landlords want a BSN before they will rent to you, and the gemeente wants an address before it will hand over a BSN. If both were true, no newcomer would ever get a home. They are not both true.'),
+  p('Landlords and agents do not need your BSN. What they actually want is proof that you can pay: an employment contract or proof of income, sometimes a few months of savings, and a clean, complete application.'),
+  quote('The order is the opposite of what everyone fears. You find the home first, and the number follows.'),
+  h2('The order that actually works'),
+  steps([
+    ['Get your documents ready', 'Passport, employment contract or proof of income, and a short note introducing who you are.'],
+    ['View and apply fast', 'Good apartments here are gone in days, so a complete application on the same day beats a perfect one a week later.'],
+    ['Sign the lease', 'And get your move-in date in writing.'],
+    ['Book a gemeente appointment', 'To register at your new address. Bring your lease and passport.'],
+    ['Receive your BSN', 'Usually on the spot or within a few working days.'],
+  ]),
+  callout('Good to know', 'Arriving from abroad for a stay under four months? You may register as a non-resident (RNI) at a designated municipality instead. For a normal move, the five steps above are the ones you want.'),
+  h2('A realistic timeline'),
+  p('From first viewing to BSN in hand is often two to four weeks, and most of that is the search itself. Once the BSN lands, the rest of your admin tends to unlock quickly after it.'),
+  p('You do not need to solve the whole system at once. You need the next step, in the right order.'),
 ];
 
 interface Seed {
-  slug: string;
   title: string;
   dek: string;
-  category: Article['category'];
-  stage: Article['stage'];
+  slug: string;
+  category: Category;
   readMinutes: number;
-  audience: Article['audience'];
-  featured: boolean;
-  seed: string;
-  alt: string;
-  order: number; // higher = newer, drives "The Latest"
+  featured?: boolean;
   body?: PortableTextBlock[];
 }
 
 const seeds: Seed[] = [
-  {
-    slug: 'renting-without-bsn',
-    title: 'Renting in Amsterdam without a BSN: the chicken-and-egg problem, solved',
-    dek: 'Someone told you that you need a BSN to rent an apartment, and an apartment to get a BSN. One of those is true. Here is the actual sequence.',
-    category: 'Need to know', stage: 2, readMinutes: 8, audience: 'both', featured: true,
-    seed: 'canalgold', alt: 'Canal houses in Amsterdam at golden hour', order: 100, body: rentingWithoutBsnBody,
-  },
-
-  // Stage 1 - Preparing & arriving
-  {
-    slug: 'first-30-days',
-    title: 'Your first 30 days in Amsterdam: the checklist that actually works',
-    dek: 'BSN, bank account, health insurance, DigiD. The exact order to do things in, and what can wait.',
-    category: 'Immigration', stage: 1, readMinutes: 9, audience: 'both', featured: true,
-    seed: 'arrive', alt: 'Arrival at Amsterdam Centraal', order: 60,
-  },
-  {
-    slug: 'registering-your-address-bsn',
-    title: 'Registering at your address: how the BSN process really goes',
-    dek: 'What happens at the municipality, in what order, and how long each step really takes.',
-    category: 'Immigration', stage: 1, readMinutes: 6, audience: 'singles_couples', featured: false,
-    seed: 'register', alt: 'Amsterdam municipality building', order: 90,
-  },
-  {
-    slug: 'highly-skilled-migrant-thresholds',
-    title: 'Highly skilled migrant salary thresholds, explained simply',
-    dek: 'What the highly skilled migrant route asks for, in plain language.',
-    category: 'Work', stage: 1, readMinutes: 7, audience: 'singles_couples', featured: false,
-    seed: 'hsm', alt: 'Office desk in Amsterdam', order: 55,
-  },
-  {
-    slug: 'moving-with-kids',
-    title: 'Moving to Amsterdam with kids: schools, daycare, and waiting lists',
-    dek: 'How the school and daycare system works for new arrivals, and when to get on lists.',
-    category: 'Immigration', stage: 1, readMinutes: 11, audience: 'both', featured: false,
-    seed: 'kids', alt: 'Children cycling in Amsterdam', order: 50,
-  },
-  {
-    slug: 'going-freelance-zzp',
-    title: 'Going freelance in the Netherlands: ZZP basics for expats',
-    dek: 'The essentials of setting up as a ZZP freelancer when you have just arrived.',
-    category: 'Work', stage: 1, readMinutes: 8, audience: 'singles_couples', featured: false,
-    seed: 'zzp', alt: 'Freelancer working from an Amsterdam cafe', order: 40,
-  },
-
-  // Stage 2 - The home search
-  {
-    slug: 'apartments-disappear-48-hours',
-    title: 'Why good apartments disappear in 48 hours, and how prepared renters move faster',
-    dek: 'The speed of this market surprises everyone. How the winners see listings before they go public.',
-    category: 'Need to know', stage: 2, readMinutes: 7, audience: 'singles_couples', featured: true,
-    seed: 'aptspeed', alt: 'Amsterdam apartment viewing', order: 70,
-  },
-  {
-    slug: 'what-landlords-look-for',
-    title: 'What landlords actually look for in expat tenants',
-    dek: 'The signals that move you to the top of a landlord’s list.',
-    category: 'Need to know', stage: 2, readMinutes: 7, audience: 'singles_couples', featured: false,
-    seed: 'landlords', alt: 'Landlord meeting a prospective tenant', order: 85,
-  },
-  {
-    slug: 'rental-contracts-decoded',
-    title: 'Rental contracts in the Netherlands, decoded',
-    dek: 'The clauses that matter, and the ones you can safely ignore.',
-    category: 'Need to know', stage: 2, readMinutes: 10, audience: 'singles_couples', featured: false,
-    seed: 'contracts', alt: 'Signing a rental contract', order: 45,
-  },
-  {
-    slug: 'deposit-rules-2026',
-    title: 'Deposit rules in 2026 and how to actually get yours back',
-    dek: 'What the current rules say about deposits, and how to leave on good terms.',
-    category: 'Need to know', stage: 2, readMinutes: 6, audience: 'both', featured: false,
-    seed: 'deposit', alt: 'Keys being handed over', order: 42,
-  },
-  {
-    slug: 'fifteen-minute-viewing',
-    title: 'The 15-minute viewing: spotting red flags fast',
-    dek: 'How to read an apartment quickly when you only get a short slot.',
-    category: 'Need to know', stage: 2, readMinutes: 5, audience: 'singles_couples', featured: false,
-    seed: 'viewing', alt: 'Empty Amsterdam apartment during a viewing', order: 38,
-  },
-
-  // Stage 3 - Paperwork & money
-  {
-    slug: 'real-monthly-costs',
-    title: 'Utilities, internet, and city taxes: your real monthly costs beyond rent',
-    dek: 'The full picture of what an Amsterdam home costs per month beyond the rent itself.',
-    category: 'Finance', stage: 3, readMinutes: 7, audience: 'singles_couples', featured: true,
-    seed: 'costs', alt: 'Calculating monthly costs at home', order: 65,
-  },
-  {
-    slug: '30-percent-ruling-2026',
-    title: 'The 30% ruling in 2026 and what it means for your rent budget',
-    dek: 'How the ruling works today, and how to think about it when you set a rent budget.',
-    category: 'Finance', stage: 3, readMinutes: 8, audience: 'singles_couples', featured: false,
-    seed: 'ruling', alt: 'Reviewing finances at a desk', order: 95,
-  },
-  {
-    slug: 'dutch-bank-account-fast',
-    title: 'Opening a Dutch bank account fast, even before you land',
-    dek: 'The routes to a working Dutch account, including options you can start from abroad.',
-    category: 'Finance', stage: 3, readMinutes: 5, audience: 'singles_couples', featured: false,
-    seed: 'bank', alt: 'Banking on a phone', order: 48,
-  },
-  {
-    slug: 'income-requirements-renting',
-    title: 'Income requirements for renting: what agencies really check',
-    dek: 'How agencies assess whether you qualify, and how to present your case.',
-    category: 'Finance', stage: 3, readMinutes: 6, audience: 'both', featured: false,
-    seed: 'income', alt: 'Paperwork for a rental application', order: 44,
-  },
-  {
-    slug: 'dutch-health-insurance',
-    title: 'Dutch health insurance: how to pick in one evening',
-    dek: 'A simple way to choose a Dutch health insurance policy without losing a weekend to it.',
-    category: 'Finance', stage: 3, readMinutes: 7, audience: 'both', featured: false,
-    seed: 'health', alt: 'Comparing insurance options on a laptop', order: 41,
-  },
-
-  // Stage 4 - The neighborhoods
-  {
-    slug: 'oud-zuid-de-pijp-oost',
-    title: 'Oud-Zuid vs De Pijp vs Oost: where do you actually belong?',
-    dek: 'An honest comparison from the people who do viewings in all three every week.',
-    category: 'Neighborhoods', stage: 4, readMinutes: 12, audience: 'singles_couples', featured: true,
-    seed: 'depijp', alt: 'Street in De Pijp, Amsterdam', order: 80,
-  },
-  {
-    slug: 'quiet-neighbourhoods-families',
-    title: 'The quiet neighbourhoods families love (that tourists never see)',
-    dek: 'Where families settle for space, schools, and calm streets.',
-    category: 'Neighborhoods', stage: 4, readMinutes: 9, audience: 'both', featured: false,
-    seed: 'quiet', alt: 'Quiet residential street in Amsterdam', order: 52,
-  },
-  {
-    slug: 'living-in-noord',
-    title: 'Living in Noord: the ferry life, honestly',
-    dek: 'What it is really like to live across the IJ and commute by ferry.',
-    category: 'Neighborhoods', stage: 4, readMinutes: 8, audience: 'singles_couples', featured: false,
-    seed: 'noord', alt: 'The IJ ferry to Amsterdam Noord', order: 43,
-  },
-  {
-    slug: 'zuidas-beyond-office-towers',
-    title: 'Zuidas beyond the office towers',
-    dek: 'The residential side of the business district, and who it suits.',
-    category: 'Neighborhoods', stage: 4, readMinutes: 7, audience: 'singles_couples', featured: false,
-    seed: 'zuidas', alt: 'Zuidas district at dusk', order: 39,
-  },
-
-  // Stage 5 - Living your best life
-  {
-    slug: 'make-dutch-friends',
-    title: 'How to make Dutch friends (yes, really)',
-    dek: 'Borrels, sports clubs, and the small habits that turn a city into a home.',
-    category: 'Life & Culture', stage: 5, readMinutes: 6, audience: 'both', featured: true,
-    seed: 'friends', alt: 'Friends on an Amsterdam terrace', order: 36,
-  },
-  {
-    slug: 'brunch-beyond-tourist-spots',
-    title: 'Brunch beyond the tourist spots: where locals actually go',
-    dek: 'Neighbourhood cafes worth the cycle, away from the crowds.',
-    category: 'Eat & Drink', stage: 5, readMinutes: 5, audience: 'singles_couples', featured: false,
-    seed: 'brunch', alt: 'Neighbourhood brunch cafe', order: 34,
-  },
-  {
-    slug: 'year-of-amsterdam-seasons',
-    title: 'A year of Amsterdam seasons: what nobody tells you about winter',
-    dek: 'How the city changes through the year, and how to make the most of each season.',
-    category: 'See & Do', stage: 5, readMinutes: 6, audience: 'both', featured: false,
-    seed: 'seasons', alt: 'Winter canal in Amsterdam', order: 32,
-  },
+  { title: 'Renting in Amsterdam without a BSN: the chicken and egg problem, solved', dek: 'Someone told you that you need a BSN to rent, and an address to get a BSN. Only one of those is true. Here is the sequence that actually works.', slug: 'renting-without-bsn', category: 'Need to know', readMinutes: 8, featured: true, body: bsnBody },
+  { title: 'Your first 30 days in Amsterdam: the checklist that actually works', dek: 'BSN, bank account, health insurance, DigiD. The exact order to do things in, and what can wait.', slug: 'first-30-days', category: 'Immigration', readMinutes: 9 },
+  { title: 'Registering at your address: how the BSN process really goes', dek: 'What actually happens at the gemeente appointment, and what to bring.', slug: 'registering-your-address', category: 'Immigration', readMinutes: 6 },
+  { title: 'Moving to Amsterdam with kids: schools, daycare, and waiting lists', dek: 'Schools, daycare, and the waiting lists nobody warns you about.', slug: 'moving-with-kids', category: 'Immigration', readMinutes: 11 },
+  { title: 'Why good apartments disappear in 48 hours, and how prepared renters move faster', dek: 'The speed of this market surprises everyone. How the winners see listings before they go public.', slug: 'apartments-48-hours', category: 'Need to know', readMinutes: 7 },
+  { title: 'What landlords actually look for in expat tenants', dek: 'Income, documents, and the small things that decide who gets the keys.', slug: 'what-landlords-look-for', category: 'Need to know', readMinutes: 7 },
+  { title: 'Rental contracts in the Netherlands, decoded', dek: 'Fixed term, indefinite, diplomatic clause. What the contract types mean for you.', slug: 'rental-contracts-decoded', category: 'Need to know', readMinutes: 10 },
+  { title: 'Deposit rules in 2026 and how to actually get yours back', dek: 'What a landlord can and cannot hold back, and how to protect your deposit.', slug: 'deposit-rules-2026', category: 'Need to know', readMinutes: 6 },
+  { title: 'The 15-minute viewing: spotting red flags fast', dek: 'A quick checklist for the things that matter when you only have minutes.', slug: '15-minute-viewing', category: 'Need to know', readMinutes: 5 },
+  { title: 'Utilities, internet, and city taxes: your real monthly costs beyond rent', dek: 'The full picture of what an Amsterdam home costs per month beyond the rent itself.', slug: 'utilities-and-costs', category: 'Finance', readMinutes: 7 },
+  { title: 'The 30% ruling in 2026 and what it means for your rent budget', dek: 'How the ruling works now, and what it does to what you can afford.', slug: '30-percent-ruling', category: 'Finance', readMinutes: 8 },
+  { title: 'Income requirements for renting: what agencies really check', dek: 'The three-times-rent rule of thumb, and how strict it really is.', slug: 'income-requirements', category: 'Finance', readMinutes: 6 },
+  { title: 'Opening a Dutch bank account fast, even before you land', dek: 'The routes to a working Dutch account, including options you can start from abroad.', slug: 'dutch-bank-account', category: 'Finance', readMinutes: 5 },
+  { title: 'Dutch health insurance: how to pick in one evening', dek: 'A simple way to choose a policy without losing a weekend to it.', slug: 'dutch-health-insurance', category: 'Finance', readMinutes: 7 },
+  { title: 'Highly skilled migrant salary thresholds, explained simply', dek: 'The numbers that matter for the HSM permit, in plain language.', slug: 'hsm-thresholds', category: 'Work', readMinutes: 7 },
+  { title: 'Going freelance in the Netherlands: ZZP basics for expats', dek: 'What ZZP means, and the first steps to working for yourself here.', slug: 'freelance-zzp', category: 'Work', readMinutes: 8 },
+  { title: 'Oud-Zuid vs De Pijp vs Oost: where do you actually belong?', dek: 'An honest comparison from the people who do viewings in all three every week.', slug: 'oudzuid-depijp-oost', category: 'Neighborhoods', readMinutes: 12 },
+  { title: 'The quiet neighbourhoods families love, that tourists never see', dek: 'Where families settle, and why.', slug: 'quiet-family-neighbourhoods', category: 'Neighborhoods', readMinutes: 9 },
+  { title: 'Living in Noord: the ferry life, honestly', dek: 'The trade-offs of the north bank, from people who live there.', slug: 'living-in-noord', category: 'Neighborhoods', readMinutes: 8 },
+  { title: 'Zuidas beyond the office towers', dek: 'What it is actually like to live in the business district.', slug: 'zuidas-beyond-offices', category: 'Neighborhoods', readMinutes: 7 },
+  { title: 'How to make Dutch friends (yes, really)', dek: 'The unwritten rules of friendship here, and how to get past them.', slug: 'make-dutch-friends', category: 'Life & Culture', readMinutes: 6 },
+  { title: 'Brunch beyond the tourist spots: where locals actually go', dek: 'The neighbourhood cafes worth your Saturday.', slug: 'brunch-beyond-tourists', category: 'Eat & Drink', readMinutes: 5 },
+  { title: 'A year of Amsterdam seasons, and what nobody tells you about winter', dek: 'How the light, the weather, and the city change across the year.', slug: 'amsterdam-seasons', category: 'See & Do', readMinutes: 6 },
 ];
 
-export const sampleArticles: Article[] = seeds
-  .sort((a, b) => b.order - a.order)
-  .map((s) => ({
-    _id: `sample-${s.slug}`,
-    title: s.title,
-    dek: s.dek,
-    slug: s.slug,
-    category: s.category,
-    stage: s.stage,
-    readMinutes: s.readMinutes,
-    audience: s.audience,
-    featured: s.featured,
-    imageUrl: img(s.seed),
-    imageAlt: s.alt,
-    body: s.body ?? stubBody(s.dek),
-  }));
+export const sampleArticles: Article[] = seeds.map((s, i) => ({
+  _id: `sample-${i + 1}`,
+  title: s.title,
+  dek: s.dek,
+  slug: s.slug,
+  category: s.category,
+  readMinutes: s.readMinutes,
+  featured: Boolean(s.featured),
+  imageUrl: `https://picsum.photos/seed/${s.slug}/1200/800`,
+  imageAlt: s.title,
+  body: s.body ?? [],
+}));
