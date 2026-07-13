@@ -27,7 +27,6 @@ export function SiteFooter() {
             </p>
             <ul className={styles.contact}>
               <li><a href="mailto:home@amsterdamlifehomes.com">home@amsterdamlifehomes.com</a></li>
-              <li><a href="https://maps.app.goo.gl/TWnxv6xuUm15qNscA" target="_blank" rel="noreferrer">Amsterdam, The Netherlands</a></li>
               <li><a href="tel:+31613749944">+31 6 1374 9944</a></li>
             </ul>
             <p className={styles.hours}>Mon to Fri: 9 AM to 5 PM CEST</p>

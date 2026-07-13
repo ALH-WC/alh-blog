@@ -53,15 +53,6 @@ export const SECTIONS: Section[] = [
     categories: ['Need to know'],
   },
   {
-    key: 'money',
-    menu: 'Money & work',
-    before: '',
-    accent: 'Money',
-    after: ' and work',
-    dek: 'Real numbers, current rules, and how work fits in. No surprises.',
-    categories: ['Finance', 'Work'],
-  },
-  {
     key: 'neighborhoods',
     menu: 'Neighborhoods',
     before: 'The ',
@@ -69,6 +60,15 @@ export const SECTIONS: Section[] = [
     after: '',
     dek: 'Honest comparisons from weekly viewings across the city.',
     categories: ['Neighborhoods'],
+  },
+  {
+    key: 'money',
+    menu: 'Finances & work',
+    before: '',
+    accent: 'Finances',
+    after: ' and Work',
+    dek: 'Real numbers, current rules, and how work fits in. No surprises.',
+    categories: ['Finance', 'Work'],
   },
   {
     key: 'life',
