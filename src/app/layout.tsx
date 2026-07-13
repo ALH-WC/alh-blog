@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { spectral, archivo, inter, mixta } from '../lib/fonts';
+import { spectral, inter, mixta } from '../lib/fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${spectral.variable} ${archivo.variable} ${inter.variable} ${mixta.variable}`}>
+    <html lang="en" className={`${spectral.variable} ${inter.variable} ${mixta.variable}`}>
       <body>{children}</body>
     </html>
   );

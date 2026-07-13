@@ -1,6 +1,7 @@
 import type { StructureResolver } from 'sanity/structure';
+import { SECTIONS } from '../lib/sections';
 
-// Groups articles by journey stage in the Studio desk for easy editing.
+// Groups articles by chapter (and a Featured shortcut) in the Studio desk.
 export const structure: StructureResolver = (S) =>
   S.list()
     .title('The Amsterdam Guide')
@@ -8,15 +9,22 @@ export const structure: StructureResolver = (S) =>
       S.listItem()
         .title('All articles')
         .child(S.documentTypeList('article').title('All articles')),
+      S.listItem()
+        .title('★ Featured ("Start here")')
+        .child(
+          S.documentList()
+            .title('Featured')
+            .filter('_type == "article" && featured == true'),
+        ),
       S.divider(),
-      ...[1, 2, 3, 4, 5].map((stage) =>
+      ...SECTIONS.map((section) =>
         S.listItem()
-          .title(`0${stage} · Stage ${stage}`)
+          .title(section.menu)
           .child(
             S.documentList()
-              .title(`Stage ${stage}`)
-              .filter('_type == "article" && stage == $stage')
-              .params({ stage })
-          )
+              .title(section.menu)
+              .filter('_type == "article" && category in $categories')
+              .params({ categories: section.categories }),
+          ),
       ),
     ]);

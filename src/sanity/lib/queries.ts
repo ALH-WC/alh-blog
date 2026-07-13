@@ -1,7 +1,7 @@
 import type { PortableTextBlock } from '@portabletext/types';
 import { client } from './client';
 import { urlForImage } from './image';
-import type { Article, Audience, Category } from '../../lib/types';
+import type { Article, Category } from '../../lib/types';
 import { sampleArticles } from '../../lib/sampleData';
 
 const ARTICLE_PROJECTION = `{
@@ -10,9 +10,7 @@ const ARTICLE_PROJECTION = `{
   dek,
   "slug": slug.current,
   category,
-  stage,
   readMinutes,
-  audience,
   featured,
   heroImage,
   body
@@ -31,9 +29,7 @@ interface RawDoc {
   dek?: string;
   slug: string;
   category: Category;
-  stage: Article['stage'];
   readMinutes: number;
-  audience: Audience;
   featured?: boolean;
   heroImage?: { alt?: string } | null;
   body?: PortableTextBlock[];
@@ -50,9 +46,7 @@ function mapDoc(doc: RawDoc): Article {
     dek: doc.dek ?? '',
     slug: doc.slug,
     category: doc.category,
-    stage: doc.stage,
     readMinutes: doc.readMinutes,
-    audience: doc.audience ?? 'both',
     featured: Boolean(doc.featured),
     imageUrl,
     imageAlt: doc.heroImage?.alt ?? doc.title,
