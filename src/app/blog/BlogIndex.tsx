@@ -416,7 +416,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
 
       <SiteFooter />
 
-      <HelpCta />
+      <HelpCta mode="tab" />
 
       {/* NEWSLETTER POP-UP */}
       <aside className={styles.nlpop} hidden={popState !== 'shown'} aria-label="Newsletter signup">
