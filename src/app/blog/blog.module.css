@@ -929,41 +929,87 @@
 
 /* CLOSING */
 .closing {
-  padding: 84px 0;
+  padding: 92px 0;
   text-align: center;
   border-bottom: 1px solid var(--hairline);
 }
-.closing p {
+.closingLead {
   font-family: var(--display);
   font-weight: 500;
-  font-size: 30px;
+  font-size: 34px;
   color: var(--ink);
-  max-width: 26ch;
+  max-width: 24ch;
   margin: 0 auto;
-  line-height: 1.32;
+  line-height: 1.28;
 }
-.closingLink {
-  display: inline-block;
-  margin-top: 26px;
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 1.45;
-  color: var(--ink);
-  text-align: center;
+.closingSub {
+  margin: 22px auto 0;
+  max-width: 50ch;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--body-text);
 }
-.closingLink .accent {
-  color: var(--accent);
+.closingCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  padding: 17px 32px;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
-.closingLink .ar {
-  color: var(--accent);
-  font-size: 22px;
-  margin-left: 8px;
-  display: inline-block;
+.closingCta .ar {
+  color: #fff;
+  font-size: 18px;
   transition: transform 0.3s;
 }
-.closingLink:hover .ar {
+.closingCta:hover {
+  background: var(--accent-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(156, 79, 52, 0.28);
+}
+.closingCta:hover .ar {
   transform: translate(3px, -3px);
+}
+@media (max-width: 640px) {
+  .closingLead {
+    font-size: 26px;
+  }
+}
+
+/* SUBTLE MOTION — hover zoom on image cards + gentle reveal on scroll */
+.fimg {
+  overflow: hidden;
+}
+.fimg img,
+.phCell img {
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.featcard:hover .fimg img,
+.phCell:hover img {
+  transform: scale(1.045);
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.revealIn {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fimg img,
+  .phCell img,
+  .reveal {
+    transition: none;
+  }
 }
 
 @media (max-width: 1000px) {

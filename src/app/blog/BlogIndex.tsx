@@ -29,6 +29,9 @@ async function postEmail(endpoint: string, payload: Record<string, unknown>) {
   }
 }
 
+// Booking link for the closing sales CTA (Cal.com video intake call).
+const INTAKE_URL = 'https://cal.com/amsterdam-life-homes/intake';
+
 // Amsterdam neighborhoods shown as the "by area" index under the Neighborhoods
 // chapter. Clicking one filters the guide to articles that mention it.
 const NEIGHBORHOODS = [
@@ -101,6 +104,31 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Gentle reveal-on-scroll. Content ships visible; the effect only hides
+  // below-the-fold blocks (so nothing flashes) and fades them up on entry.
+  // Skipped entirely for reduced-motion or when IntersectionObserver is absent.
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add(styles.revealIn);
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -6% 0px' },
+    );
+    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.92) return;
+      el.classList.add(styles.reveal);
+      io.observe(el);
+    });
+    return () => io.disconnect();
   }, []);
 
   const scrollTo = (id: string) => {
@@ -239,7 +267,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
         <div className={styles.content}>
           {/* LATEST NEWS */}
           {hero ? (
-            <section id="latest" data-sec="latest" className={`${styles.cells} ${styles.c2}`} style={{ marginTop: 40 }}>
+            <section id="latest" data-sec="latest" className={`${styles.cells} ${styles.c2}`} style={{ marginTop: 40 }} data-reveal="">
               {FeatureCard(hero, true)}
               <div className={`${styles.cell} ${styles.latest}`}>
                 <span className={`${styles.eyebrow} ${styles.latestHead}`}>The latest</span>
@@ -278,7 +306,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                 </div>
 
                 {trio ? (
-                  <section className={`${styles.cells} ${styles.c3}`}>
+                  <section className={`${styles.cells} ${styles.c3}`} data-reveal="">
                     {items.slice(0, 3).map((a) => (
                       <Link key={a._id} href={`/blog/${a.slug}`} className={`${styles.cardLink} ${styles.cell} ${styles.phCell} ${styles.photo}`}>
                         <img src={a.imageUrl} alt="" loading="lazy" />
@@ -289,7 +317,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                     ))}
                   </section>
                 ) : (
-                  <section className={`${styles.cells} ${styles.c2}`}>
+                  <section className={`${styles.cells} ${styles.c2}`} data-reveal="">
                     {FeatureCard(feature)}
                     <div className={`${styles.cell} ${styles.srows}`}>{rest.map((a) => Card(a, '', 'h4'))}</div>
                   </section>
@@ -297,7 +325,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
 
                 {/* Lead magnet after the housing chapter */}
                 {s.key === 'housing' ? (
-                  <section id="leadmagnet" ref={leadRef} className={styles.lm}>
+                  <section id="leadmagnet" ref={leadRef} className={styles.lm} data-reveal="">
                     <div className={styles.lmCopy}>
                       <span className={styles.eyebrow}>Free PDF &middot; The Amsterdam Guide</span>
                       <h2 className={styles.lmTitle}>
@@ -324,7 +352,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
 
                 {/* Pull quote after the money chapter */}
                 {s.key === 'money' ? (
-                  <section className={styles.quoteWrap}>
+                  <section className={styles.quoteWrap} data-reveal="">
                     <q>
                       We write these the way we would <em>explain them to a friend.</em> No jargon, no scare tactics, just what
                       we learned housing 250+ expats.
@@ -348,7 +376,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                         </p>
                       </div>
                     </div>
-                    <section className={styles.nbGrid}>
+                    <section className={styles.nbGrid} data-reveal="">
                       {NEIGHBORHOODS.map((n) => (
                         <button key={n} type="button" className={styles.nbCell} onClick={() => setQuery(n)}>
                           <span className={styles.nbName}>{n}</span>
@@ -365,23 +393,21 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
           })}
 
           {/* CLOSING */}
-          <section className={styles.closing}>
-            <p>
+          <section className={styles.closing} data-reveal="">
+            <p className={styles.closingLead}>
               Reading is a great start.
               <br />
               When you are ready
               <br />
               for the real thing...
             </p>
-            <a className={styles.closingLink} href="https://amsterdamlifehomes.com/#contact">
-              See how we help fellow expats
-              <br />
-              <span className={styles.accent}>
-                rent, let, or buy their home
-                <br />
-                in Amsterdam
-              </span>
-              <span className={styles.ar}>↗</span>
+            <p className={styles.closingSub}>
+              We help fellow expats rent, let, and buy their home in Amsterdam every day. Hop on a free video call and we
+              will get to know your search, answer your questions, and show you exactly how we can help. No pressure, no
+              obligation, just a friendly first conversation.
+            </p>
+            <a className={styles.closingCta} href={INTAKE_URL} target="_blank" rel="noreferrer">
+              Book your free video call <span className={styles.ar}>↗</span>
             </a>
           </section>
         </div>
