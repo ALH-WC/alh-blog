@@ -127,7 +127,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
         <p className={styles.featDek}>{a.dek}</p>
         <span className={styles.foot}>
           <span>{a.readMinutes} min read</span>
-          <span className={styles.ar}>&nearr;</span>
+          <span className={styles.ar}>↗</span>
         </span>
       </span>
     </Link>
@@ -153,7 +153,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
               take out of you, so we gladly share everything we have learned.
             </p>
             <button type="button" className={styles.tlink} onClick={() => scrollTo('leadmagnet')}>
-              Get our free step-by-step guide <span className={styles.ar}>&rarr;</span>
+              Get our free step-by-step guide <span className={styles.ar}>→</span>
             </button>
           </div>
         </div>
@@ -256,7 +256,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                     <p className={styles.sheadDek}>{s.dek}</p>
                   </div>
                   <button type="button" className={styles.viewall} onClick={() => setQuery(s.categories[0])}>
-                    View all {s.menu} articles <span className={styles.ar}>&rarr;</span>
+                    View all {s.menu} articles <span className={styles.ar}>→</span>
                   </button>
                 </div>
 
@@ -294,10 +294,10 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                     <div className={styles.lmChoice}>
                       <span className={styles.clab}>I am moving as a</span>
                       <button type="button" className={styles.optbox} onClick={() => openGuide('single')}>
-                        Single or couple <span className={styles.oa}>&rarr;</span>
+                        Single or couple <span className={styles.oa}>→</span>
                       </button>
                       <button type="button" className={styles.optbox} onClick={() => openGuide('family')}>
-                        Family <span className={styles.oa}>&rarr;</span>
+                        Family <span className={styles.oa}>→</span>
                       </button>
                     </div>
                   </section>
@@ -307,8 +307,8 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                 {s.key === 'money' ? (
                   <section className={styles.quoteWrap}>
                     <q>
-                      We write these the way we would explain them to a friend. No jargon, no scare tactics, just what
-                      we learned housing <em>250+ expats.</em>
+                      We write these the way we would <em>explain them to a friend.</em> No jargon, no scare tactics, just what
+                      we learned housing 250+ expats.
                     </q>
                     <div className={styles.quoteWho}>The ALH team</div>
                   </section>
@@ -332,7 +332,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
               rent, let, or buy their home
               <br />
               in Amsterdam
-              <span className={styles.ar}>&nearr;</span>
+              <span className={styles.ar}>↗</span>
             </a>
           </section>
         </div>

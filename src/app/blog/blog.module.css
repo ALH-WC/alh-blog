@@ -1,5 +1,6 @@
 .page {
   background: var(--paper);
+  padding-top: var(--nav-height);
 }
 .content {
   max-width: var(--content-width);
@@ -50,7 +51,7 @@
   grid-template-columns: 1.5fr 1fr;
   gap: 56px;
   align-items: end;
-  padding: 72px 0 48px;
+  padding: 56px 0 48px;
 }
 .mastTitle {
   font-family: var(--display);
@@ -212,6 +213,7 @@
   font-size: 15px;
   color: var(--ink);
   cursor: pointer;
+  border: 0;
   border-bottom: 1px solid transparent;
   padding-bottom: 2px;
   background: none;
@@ -282,6 +284,7 @@
 .featDek {
   font-size: 16px;
   max-width: 44ch;
+  color: var(--body-text);
 }
 .foot {
   margin-top: auto;
@@ -291,6 +294,7 @@
   padding-top: 26px;
   font-size: 13.5px;
   letter-spacing: 0.04em;
+  color: var(--muted-text);
 }
 .foot .ar {
   color: var(--accent);
@@ -330,6 +334,7 @@
 .rmin {
   font-size: 13px;
   letter-spacing: 0.04em;
+  color: var(--muted-text);
 }
 
 /* SECONDARY LIST */
@@ -366,6 +371,7 @@
 .sm {
   font-size: 13px;
   letter-spacing: 0.04em;
+  color: var(--muted-text);
 }
 
 /* PHOTO CELL (life & culture trio) */
@@ -413,6 +419,14 @@
   inset: 0;
   background: linear-gradient(180deg, transparent 34%, rgba(20, 14, 8, 0.66));
   z-index: 1;
+}
+.phCell img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
 }
 
 /* LEAD MAGNET */
@@ -575,6 +589,9 @@
   padding: 24px;
   opacity: 0;
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nlpop[hidden] {
+  display: none;
 }
 .nlpopShow {
   opacity: 1;
