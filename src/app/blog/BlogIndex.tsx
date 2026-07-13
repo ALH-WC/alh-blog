@@ -179,7 +179,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
     </Link>
   );
 
-  const menuItems = [{ key: 'latest', label: 'Latest news' }, ...SECTIONS.map((s) => ({ key: s.key, label: s.menu }))];
+  const menuItems = [{ key: 'latest', label: 'The latest' }, ...SECTIONS.map((s) => ({ key: s.key, label: s.menu }))];
 
   return (
     <div className={styles.page}>
