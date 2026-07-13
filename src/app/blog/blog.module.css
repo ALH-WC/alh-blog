@@ -159,6 +159,10 @@
 .gsearch input::placeholder {
   color: var(--faint-text);
 }
+.gsearch input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
 .gclear {
   background: none;
   border: 0;
