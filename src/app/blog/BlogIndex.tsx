@@ -6,6 +6,7 @@ import type { Article } from '../../lib/types';
 import { SECTIONS, CATEGORY_TO_SECTION } from '../../lib/sections';
 import { SiteNav } from '../../components/SiteNav';
 import { SiteFooter } from '../../components/SiteFooter';
+import { HelpCta } from '../../components/HelpCta';
 import styles from './blog.module.css';
 
 function SearchIcon() {
@@ -414,6 +415,8 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
       )}
 
       <SiteFooter />
+
+      <HelpCta />
 
       {/* NEWSLETTER POP-UP */}
       <aside className={styles.nlpop} hidden={popState !== 'shown'} aria-label="Newsletter signup">

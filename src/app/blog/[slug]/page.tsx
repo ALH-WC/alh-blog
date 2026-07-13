@@ -6,6 +6,8 @@ import { PortableBody } from '../../../components/PortableBody';
 import { JsonLd } from '../../../components/JsonLd';
 import { SiteNav } from '../../../components/SiteNav';
 import { SiteFooter } from '../../../components/SiteFooter';
+import { HelpCta } from '../../../components/HelpCta';
+import { InlineSignup } from '../../../components/InlineSignup';
 import styles from './article.module.css';
 
 const BASE = 'https://amsterdamlifehomes.com';
@@ -45,6 +47,13 @@ export default async function ArticlePage(
   if (!article) notFound();
 
   const related = all.filter((a) => a.slug !== article.slug).slice(0, 3);
+
+  // Split the body so the newsletter signup lands roughly in the middle
+  // (or at the end of very short articles). Every article gets one.
+  const body = article.body ?? [];
+  const insertAt = body.length >= 4 ? Math.ceil(body.length / 2) : body.length;
+  const bodyStart = body.slice(0, insertAt);
+  const bodyEnd = body.slice(insertAt);
 
   // Article schema WITHOUT author or dates, per client rule.
   const jsonLd = {
@@ -86,7 +95,9 @@ export default async function ArticlePage(
           </div>
 
           <div className={styles.body}>
-            <PortableBody value={article.body} />
+            <PortableBody value={bodyStart} />
+            <InlineSignup />
+            {bodyEnd.length ? <PortableBody value={bodyEnd} /> : null}
           </div>
 
           {related.length ? (
@@ -111,6 +122,7 @@ export default async function ArticlePage(
         </article>
       </div>
       <SiteFooter />
+      <HelpCta />
     </>
   );
 }

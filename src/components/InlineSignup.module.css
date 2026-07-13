@@ -1,0 +1,99 @@
+/* Dark newsletter band embedded mid-article. Sits in the reading column. */
+.band {
+  margin: 56px 0;
+  padding: 44px 40px;
+  background: var(--dark);
+  color: var(--on-dark);
+  text-align: center;
+}
+.kicker {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.title {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.15;
+  color: var(--on-dark);
+  margin-bottom: 12px;
+}
+.title em {
+  color: var(--accent);
+  font-style: italic;
+}
+.lead {
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--on-dark-muted);
+  max-width: 44ch;
+  margin: 0 auto 22px;
+}
+.form {
+  display: flex;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.form input {
+  flex: 1;
+  height: 52px;
+  padding: 0 16px;
+  border: 1px solid #4a3f34;
+  border-right: 0;
+  background: #1b1610;
+  color: var(--on-dark);
+  font-family: var(--sans);
+  font-size: 15px;
+  outline: none;
+  min-width: 0;
+}
+.form input::placeholder {
+  color: #8a7f72;
+}
+.form button {
+  height: 52px;
+  padding: 0 22px;
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.form button:hover {
+  background: var(--accent-deep);
+}
+.fine {
+  margin-top: 18px;
+  font-size: 12.5px;
+  color: #8a7f72;
+}
+.thanks {
+  font-family: var(--display);
+  font-size: 22px;
+  color: var(--on-dark);
+}
+@media (max-width: 640px) {
+  .band {
+    padding: 36px 24px;
+  }
+  .title {
+    font-size: 25px;
+  }
+  .form {
+    flex-direction: column;
+  }
+  .form input {
+    border-right: 1px solid #4a3f34;
+  }
+}
