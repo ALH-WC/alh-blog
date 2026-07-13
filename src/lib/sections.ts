@@ -54,10 +54,10 @@ export const SECTIONS: Section[] = [
   },
   {
     key: 'money',
-    menu: 'Money & work',
+    menu: 'Finances & work',
     before: '',
-    accent: 'Money',
-    after: ' and work',
+    accent: 'Finances',
+    after: ' and Work',
     dek: 'Real numbers, current rules, and how work fits in. No surprises.',
     categories: ['Finance', 'Work'],
   },

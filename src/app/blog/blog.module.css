@@ -287,11 +287,10 @@
   color: var(--body-text);
 }
 .foot {
-  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 26px;
+  padding-top: 18px;
   font-size: 13.5px;
   letter-spacing: 0.04em;
   color: var(--muted-text);
