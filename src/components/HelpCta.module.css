@@ -4,15 +4,31 @@
   position: fixed;
   right: 0;
   top: 58%;
-  transform: translateY(-50%);
   z-index: 300;
+  transform: translateY(-50%) translateX(64px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.45s ease;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.55s ease;
 }
 .wrap.visible {
+  transform: translateY(-50%) translateX(0);
   opacity: 1;
   pointer-events: auto;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: 0;
+  color: var(--on-dark-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+}
+.close:hover {
+  color: var(--on-dark);
 }
 
 /* The always-visible handle */

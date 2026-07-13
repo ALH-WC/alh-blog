@@ -15,7 +15,7 @@ const OPTIONS = [
 
 export function HelpCta() {
   const [visible, setVisible] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   // Reveal once the reader is about a third of the way down the page.
   useEffect(() => {
@@ -31,11 +31,12 @@ export function HelpCta() {
   return (
     <aside
       className={`${styles.wrap}${visible ? ` ${styles.visible}` : ''}${open ? ` ${styles.open}` : ''}`}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
       aria-label="How we can help you"
     >
       <div className={styles.panel}>
+        <button type="button" className={styles.close} aria-label="Collapse" onClick={() => setOpen(false)}>
+          &times;
+        </button>
         <p className={styles.kicker}>New to Amsterdam?</p>
         <p className={styles.lead}>Tell us what you are looking for and we will show you exactly how we can help.</p>
         <div className={styles.options}>
