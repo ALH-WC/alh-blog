@@ -13,8 +13,12 @@ const OPTIONS = [
   { href: '/letting', label: 'Let my place', sub: 'We handle your tenants' },
 ];
 
-export function HelpCta() {
+// mode 'tab'   -> collapsed terracotta tab, hover/click to expand (index, so it
+//                 does not cover the grid).
+// mode 'panel' -> the dark panel opens on its own (article pages).
+export function HelpCta({ mode = 'panel' }: { mode?: 'tab' | 'panel' }) {
   const [visible, setVisible] = useState(false);
+  const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   // Reveal once the reader is about a third of the way down the page.
@@ -28,13 +32,8 @@ export function HelpCta() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const show = visible && !dismissed;
-
-  return (
-    <aside className={`${styles.panel}${show ? ` ${styles.visible}` : ''}`} aria-label="How we can help you">
-      <button type="button" className={styles.close} aria-label="Close" onClick={() => setDismissed(true)}>
-        &times;
-      </button>
+  const body = (
+    <>
       <p className={styles.kicker}>New to Amsterdam?</p>
       <p className={styles.lead}>Tell us what you are looking for and we will show you exactly how we can help.</p>
       <div className={styles.options}>
@@ -49,6 +48,42 @@ export function HelpCta() {
       <a href={INTAKE_URL} target="_blank" rel="noreferrer" className={styles.callLink}>
         Prefer to talk? Book a free video call <span className={styles.ar}>↗</span>
       </a>
+    </>
+  );
+
+  if (mode === 'tab') {
+    return (
+      <aside
+        className={`${styles.wrap}${visible ? ` ${styles.visible}` : ''}${open ? ` ${styles.open}` : ''}`}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        aria-label="How we can help you"
+      >
+        <div className={styles.tabPanel}>{body}</div>
+        <button
+          type="button"
+          className={styles.tab}
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-label="How we can help you"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <path d="M3 11.5 12 4l9 7.5" />
+            <path d="M5 10v10h14V10" />
+            <path d="M10 20v-6h4v6" />
+          </svg>
+          <span className={styles.tabText}>How we help</span>
+        </button>
+      </aside>
+    );
+  }
+
+  return (
+    <aside className={`${styles.floatPanel}${visible && !dismissed ? ` ${styles.visible}` : ''}`} aria-label="How we can help you">
+      <button type="button" className={styles.close} aria-label="Close" onClick={() => setDismissed(true)}>
+        &times;
+      </button>
+      {body}
     </aside>
   );
 }
