@@ -29,6 +29,23 @@ async function postEmail(endpoint: string, payload: Record<string, unknown>) {
   }
 }
 
+// Amsterdam neighborhoods shown as the "by area" index under the Neighborhoods
+// chapter. Clicking one filters the guide to articles that mention it.
+const NEIGHBORHOODS = [
+  'Oud-Zuid',
+  'De Pijp',
+  'Oost',
+  'Noord',
+  'Jordaan',
+  'Zuidas',
+  'Oud-West',
+  'De Baarsjes',
+  'Westerpark',
+  'Rivierenbuurt',
+  'IJburg',
+  'Watergraafsmeer',
+];
+
 export default function BlogIndex({ articles }: { articles: Article[] }) {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState('latest');
@@ -314,6 +331,34 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                     </q>
                     <div className={styles.quoteWho}>The ALH team</div>
                   </section>
+                ) : null}
+
+                {/* Neighborhood-by-area index after the neighborhoods chapter */}
+                {s.key === 'neighborhoods' ? (
+                  <>
+                    <div className={styles.shead} style={{ paddingTop: 56 }}>
+                      <div className={styles.sheadMain}>
+                        <span className={`${styles.eyebrow} ${styles.subEyebrow}`}>Every neighborhood, one by one</span>
+                        <h2 className={styles.sheadTitle}>
+                          A <em>guide</em> to each part of <em>the city</em>
+                        </h2>
+                        <p className={styles.sheadDek}>
+                          Tap a neighborhood to read its own guide: what it costs, who it suits, and what it is like to
+                          live there.
+                        </p>
+                      </div>
+                    </div>
+                    <section className={styles.nbGrid}>
+                      {NEIGHBORHOODS.map((n) => (
+                        <button key={n} type="button" className={styles.nbCell} onClick={() => setQuery(n)}>
+                          <span className={styles.nbName}>{n}</span>
+                          <span className={styles.nbLink}>
+                            Read the guide <span className={styles.ar}>→</span>
+                          </span>
+                        </button>
+                      ))}
+                    </section>
+                  </>
                 ) : null}
               </div>
             );

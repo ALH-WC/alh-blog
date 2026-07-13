@@ -529,6 +529,74 @@
   color: var(--accent);
 }
 
+/* NEIGHBORHOOD-BY-AREA INDEX */
+.subEyebrow {
+  display: block;
+  margin-bottom: 18px;
+}
+.nbGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+.nbCell {
+  padding: 24px 28px;
+  border: 0;
+  border-right: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  min-height: 112px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+.nbGrid .nbCell:nth-child(4n) {
+  border-right: none;
+}
+.nbName {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 23px;
+  color: var(--ink);
+  line-height: 1.15;
+}
+.nbLink {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.nbCell:hover .nbName {
+  opacity: 0.7;
+}
+@media (max-width: 1000px) {
+  .nbGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .nbGrid .nbCell:nth-child(4n) {
+    border-right: 1px solid var(--hairline);
+  }
+  .nbGrid .nbCell:nth-child(2n) {
+    border-right: none;
+  }
+}
+@media (max-width: 640px) {
+  .nbGrid {
+    grid-template-columns: 1fr;
+  }
+  .nbGrid .nbCell {
+    border-right: none !important;
+  }
+}
+
 /* SEARCH RESULTS */
 .resHead {
   padding: 34px 0 24px;
