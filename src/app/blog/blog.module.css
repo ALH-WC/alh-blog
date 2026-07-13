@@ -587,19 +587,33 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  opacity: 0;
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nlpop[hidden] {
   display: none;
 }
-.nlpopShow {
-  opacity: 1;
+@keyframes popFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes popRise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 .nlpopOvl {
   position: absolute;
   inset: 0;
   background: rgba(20, 14, 8, 0.55);
+  animation: popFade 0.4s ease both;
 }
 .nlpopCard {
   position: relative;
@@ -610,11 +624,7 @@
   padding: 46px 54px 40px;
   text-align: center;
   box-shadow: 0 30px 80px rgba(20, 14, 8, 0.5);
-  transform: translateY(16px);
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.nlpopShow .nlpopCard {
-  transform: translateY(0);
+  animation: popRise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .nlpopX {
   position: absolute;
@@ -691,6 +701,164 @@
   color: #8a7f72;
 }
 
+/* GUIDE MODAL (light paper panel) */
+.gmodal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.gmodalOvl {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 22, 14, 0.55);
+  animation: popFade 0.4s ease both;
+}
+.gmodalPanel {
+  position: relative;
+  background: var(--paper);
+  width: 600px;
+  max-width: 100%;
+  max-height: 92vh;
+  overflow: auto;
+  padding: 40px 48px;
+  border: 1px solid var(--hairline);
+  animation: popRise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.gmodalX {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: 0;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--body-text);
+  cursor: pointer;
+  padding: 4px;
+}
+.gmodalPanel .eyebrow {
+  display: block;
+  margin-bottom: 10px;
+}
+.gmTitle {
+  font-family: var(--display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 30px;
+  line-height: 1.14;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.gmTitle em {
+  color: var(--accent);
+}
+.frow {
+  margin-top: 15px;
+}
+.ftwo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.flab {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.seg {
+  display: flex;
+  gap: 12px;
+}
+.segopt {
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  padding: 12px 26px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+.segoptSel {
+  background: var(--beige);
+  border: 1.5px solid var(--ink);
+}
+.fin {
+  width: 100%;
+  border: 0;
+  border-bottom: 1.5px solid var(--ink);
+  background: transparent;
+  padding: 10px 2px;
+  font-family: var(--sans);
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+  resize: vertical;
+}
+.fin::placeholder {
+  color: var(--faint-text);
+}
+.euro {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1.5px solid var(--ink);
+}
+.euro span {
+  color: var(--body-text);
+  font-size: 16px;
+}
+.euro .fin {
+  border: 0;
+}
+.modalFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+}
+.btnPlain {
+  background: none;
+  border: 0;
+  color: var(--body-text);
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+.btnDark {
+  background: var(--ink);
+  color: #fff;
+  border: 0;
+  padding: 14px 32px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+.btnDark:hover {
+  background: #2a2018;
+}
+@media (max-width: 640px) {
+  .gmodalPanel {
+    padding: 32px 24px;
+  }
+  .ftwo {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* CLOSING */
 .closing {
   padding: 84px 0;
@@ -706,9 +874,28 @@
   margin: 0 auto;
   line-height: 1.32;
 }
-.closing .tlink {
-  margin-top: 24px;
-  font-size: 17px;
+.closingLink {
+  display: inline-block;
+  margin-top: 26px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.45;
+  color: var(--ink);
+  text-align: center;
+}
+.closingLink .accent {
+  color: var(--accent);
+}
+.closingLink .ar {
+  color: var(--accent);
+  font-size: 22px;
+  margin-left: 8px;
+  display: inline-block;
+  transition: transform 0.3s;
+}
+.closingLink:hover .ar {
+  transform: translate(3px, -3px);
 }
 
 @media (max-width: 1000px) {
