@@ -52,7 +52,7 @@
 .tab {
   width: 46px;
   min-height: 168px;
-  background: var(--accent);
+  background: var(--dark);
   color: #fff;
   border: 0;
   cursor: pointer;
@@ -66,7 +66,7 @@
   transition: background 0.2s ease;
 }
 .tab:hover {
-  background: var(--accent-deep);
+  background: #150f0a;
 }
 .tabText {
   writing-mode: vertical-rl;
@@ -114,7 +114,7 @@
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--on-dark);
 }
 .lead {
   margin-top: 10px;
@@ -153,7 +153,7 @@
   right: 4px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--accent);
+  color: var(--on-dark);
   transition: transform 0.3s ease;
 }
 .option:hover .optArrow {
@@ -169,7 +169,7 @@
   color: var(--on-dark-muted);
 }
 .callLink .ar {
-  color: var(--accent);
+  color: var(--on-dark);
 }
 .callLink:hover {
   color: var(--on-dark);
