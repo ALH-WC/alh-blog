@@ -711,6 +711,7 @@
 .nlpop .eyebrow {
   display: block;
   margin-bottom: 14px;
+  color: var(--on-dark);
 }
 .nlpopTitle {
   font-family: var(--display);
@@ -721,7 +722,7 @@
   margin-bottom: 12px;
 }
 .nlpopTitle em {
-  color: var(--accent);
+  color: var(--on-dark);
 }
 .nlpopLead {
   font-size: 15.5px;
@@ -754,8 +755,8 @@
   height: 52px;
   padding: 0 22px;
   border: 0;
-  background: var(--accent);
-  color: #fff;
+  background: var(--on-dark);
+  color: var(--dark);
   font-weight: 600;
   font-size: 13px;
   letter-spacing: 0.08em;
@@ -764,7 +765,7 @@
   white-space: nowrap;
 }
 .nlpopForm button:hover {
-  background: var(--accent-deep);
+  background: #ffffff;
 }
 .nlpopFine {
   margin-top: 18px;
