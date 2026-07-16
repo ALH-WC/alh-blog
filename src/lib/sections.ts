@@ -1,8 +1,8 @@
 // The blog's taxonomy for the redesigned (category) guide.
 //
-// `CATEGORIES` are the specific labels shown as the small terracotta eyebrow on
-// each card. `SECTIONS` are the five chapters shown in the sticky menu and as the
-// big Spectral chapter titles; each chapter gathers one or more categories.
+// `CATEGORIES` are the specific labels shown as the small eyebrow on each card.
+// `SECTIONS` are the five chapters shown in the sticky menu and as the big
+// Spectral chapter titles; each chapter gathers one or more categories.
 
 export const CATEGORIES = [
   'Immigration',
@@ -22,10 +22,8 @@ export interface Section {
   key: string;
   /** Short label shown in the sticky category menu. */
   menu: string;
-  /** Chapter title split around a single terracotta accent word. */
-  before: string;
-  accent: string;
-  after: string;
+  /** Big Spectral chapter title shown above the chapter's cards. */
+  title: string;
   /** Subtitle under the chapter title. */
   dek: string;
   /** Categories that appear inside this chapter. */
@@ -37,45 +35,35 @@ export const SECTIONS: Section[] = [
   {
     key: 'immigration',
     menu: 'Immigration',
-    before: '',
-    accent: 'Immigrate',
-    after: ' here',
+    title: 'Immigration',
     dek: 'Visas, timing, and the paperwork of arriving.',
     categories: ['Immigration'],
   },
   {
     key: 'housing',
     menu: 'Housing',
-    before: 'The ',
-    accent: 'home',
-    after: ' search',
+    title: 'Housing',
     dek: 'How this market really works, from people inside it daily.',
     categories: ['Need to know'],
   },
   {
     key: 'neighborhoods',
     menu: 'Neighborhoods',
-    before: 'The ',
-    accent: 'neighborhoods',
-    after: '',
+    title: 'The neighborhoods',
     dek: 'Honest comparisons from weekly viewings across the city.',
     categories: ['Neighborhoods'],
   },
   {
     key: 'money',
     menu: 'Finances & work',
-    before: '',
-    accent: 'Finances',
-    after: ' and Work',
+    title: 'Finances and work',
     dek: 'Real numbers, current rules, and how work fits in. No surprises.',
     categories: ['Finance', 'Work'],
   },
   {
     key: 'life',
     menu: 'Life & culture',
-    before: '',
-    accent: 'Life',
-    after: ' and culture',
+    title: 'Life and culture',
     dek: 'Eating, drinking, seeing, and the part that makes it home.',
     categories: ['Life & Culture', 'Eat & Drink', 'See & Do'],
   },

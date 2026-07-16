@@ -20,6 +20,11 @@ what a buyer actually needs from savings is the *kosten koper* (transfer tax,
 notary, valuation, mortgage advice). The whole "buying costs" section needs
 rewriting, not a wording tweak. Highest priority: closest to the commercial core.
 
+The site contradicts itself here, which is the clearest proof this is wrong rather
+than merely dated: `understanding-dutch-mortgages-a-complete-guide` states "You can
+typically borrow up to 100% of the property" in its own FAQ. Two published articles
+give buyers opposite answers to the same question.
+
 ### 2. `understanding-the-dutch-tax-service-for-expats`
 All three income boxes carry 2022 rates, stated as current with no year attached:
 Box 1 "37.07% to 49.50%", Box 2 "26.9%", Box 3 "31%". Box 2 has since split into
@@ -74,6 +79,19 @@ percent" rather than a specific year's cap, and stays true. Same for minimum wag
   dek and two body mentions of 2024 removed. Slug unchanged.
 - **Promotional year-stamps** removed from the deks of `is-it-worth-moving-to-amsterdam`
   and `the-best-family-friendly-neighborhoods-in-amsterdam`.
+
+## Duplicate FAQs (fixed)
+
+102 articles rendered their FAQ twice: once from the imported body, once from the
+structured `faqs` field that also emits FAQPage schema. The in-body copy was
+stripped via `scripts/strip-inbody-faqs.mjs`, keeping the structured one.
+
+Worth knowing if this is ever re-run: the imported bodies use two different shapes,
+question-heading plus answer-paragraph pairs, and a bulleted list of merged
+"Question?Answer" blocks (`understanding-dutch-mortgages`). Four articles also end
+with a closing paragraph *after* their FAQ, which a naive strip-to-end would have
+deleted. The three articles with no structured faqs were skipped so they keep the
+only FAQ they have; they will need this re-run once their metadata is generated.
 
 ## Editorial observations (no action taken)
 
