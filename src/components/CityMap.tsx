@@ -45,16 +45,30 @@ export function CityMap({ tips = {} }: Props) {
       >
         {CITY_AREAS.map((a) => {
           const linked = areaHasGuide(a.name);
-          const cls = `${styles.area}${linked ? ` ${styles.linked}` : ''}`;
           const on = { onMouseEnter: () => setHover(a.name), onFocus: () => setHover(a.name) };
 
           if (!linked) {
-            return <path key={a.slug} d={a.d} className={cls} style={{ fill: a.color }} fillRule="evenodd" {...on} />;
+            // Clickable like every other area: the click brings up the card
+            // (which says the guide is coming), and doubles as the tap
+            // behaviour on touch screens where hover does not exist.
+            return (
+              <path
+                key={a.slug}
+                d={a.d}
+                className={styles.area}
+                style={{ fill: a.color }}
+                fillRule="evenodd"
+                role="button"
+                aria-label={`${a.name}, guide coming soon`}
+                onClick={() => setHover(a.name)}
+                {...on}
+              />
+            );
           }
           return (
             <Link key={a.slug} href={`/blog/${AREA_GUIDES[a.name]}`} aria-label={`${a.name} guide`} {...on}>
               <title>{a.name}</title>
-              <path d={a.d} className={cls} style={{ fill: a.color }} fillRule="evenodd" />
+              <path d={a.d} className={styles.area} style={{ fill: a.color }} fillRule="evenodd" />
             </Link>
           );
         })}
@@ -62,7 +76,7 @@ export function CityMap({ tips = {} }: Props) {
         {area ? <path d={area.d} className={styles.veil} fillRule="evenodd" /> : null}
       </svg>
 
-      <img src={MAP_SEAMS_SRC} alt="" aria-hidden="true" className={styles.seams} />
+      <img src={MAP_SEAMS_SRC} alt="" aria-hidden="true" decoding="async" className={styles.seams} />
       <MapLabels />
 
       {area ? (
