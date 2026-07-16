@@ -52,19 +52,25 @@ const AREAS = [
   { name: 'Osdorp',                  gebied: ['Osdorp'] },
   { name: 'Slotervaart',             gebied: ['Slotervaart'] },
   { name: 'De Aker & Sloten',        gebied: ['De Aker, Sloten, Nieuw-Sloten'] },
-  { name: 'Bijlmer',                 gebied: ['Bijlmer-Centrum', 'Bijlmer-Oost', 'Bijlmer-West'] },
+  // Buurt-level so the AMC hospital and Hoge Dijk golf land, which dangled off
+  // the block's south-west, stay out.
+  { name: 'Bijlmer',                 buurtGebied: ['Bijlmer-Centrum', 'Bijlmer-Oost', 'Bijlmer-West'], excludeBuurt: ['AMC', 'Hoge Dijk'] },
   { name: 'Gaasperdam',              gebied: ['Gaasperdam'] },
-  { name: 'Amstelveen',              pdok: { type: 'gemeente', name: 'Amstelveen' } },
+  // Urban wijken only: the Buitengebied polders east and south were cut on
+  // client request. The Amsterdamse Bos wijk stays so the park stays in scope.
+  { name: 'Amstelveen',              pdok: { type: 'wijken', gemeente: 'Amstelveen', exclude: ['Buitengebied Noord', 'Buitengebied Zuid'] } },
   { name: 'Diemen',                  pdok: { type: 'gemeente', name: 'Diemen' } },
   { name: 'Duivendrecht',            pdok: { type: 'buurt', gemeente: 'Ouder-Amstel', buurten: ['Duivendrecht', 'Industriegebied Amstel'] } },
 ];
 
 // The mosaic hues, from the client's signature-palette round. Four, not five:
 // the near-black blocks were rejected on the live map ("makes it much more
-// unclear"), so black stays reserved for the label pills only. Assignment is
-// greedy over the adjacency graph so neighbours never share a hue. Amstelveen is
-// pinned to the maroon: the greedy pass gave it the grey, which read as disabled.
-const MOSAIC_HUES = ['#e2604a', '#1f7a6e', '#8e3e54', '#6f695f'];
+// unclear"), so black stays reserved for the label pills only. The teal was
+// then swapped for a steel blue on client request, so green belongs to parks
+// alone and no neighbourhood reads as one. Assignment is greedy over the
+// adjacency graph so neighbours never share a hue. Amstelveen is pinned to the
+// maroon: the greedy pass gave it the grey, which read as disabled.
+const MOSAIC_HUES = ['#e2604a', '#3a5170', '#8e3e54', '#6f695f'];
 const MOSAIC_SEED = { Amstelveen: '#8e3e54' };
 // Cross-source neighbours: the PDOK shapes share no vertices with the Amsterdam
 // layer, so vertex matching cannot see these borders.
@@ -105,18 +111,24 @@ const AMS = 'https://maps.amsterdam.nl/open_geodata/geojson_lnglat.php?THEMA=geb
 // with EPSG:4326 wants the bbox in lat,lon order.
 const PDOK = 'https://service.pdok.nl/cbs/wijkenbuurten/2024/wfs/v1_0?request=GetFeature&service=WFS&version=2.0.0&outputFormat=application/json&srsName=EPSG:4326';
 
-const [inclGeo, exclGeo, pdokGem, pdokBuurt, osmLines, osmParks, osmStreets] = await Promise.all([
+const [inclGeo, exclGeo, buurtExcl, pdokGem, pdokBuurt, pdokWijk, osmLines, osmGreens, osmStreets] = await Promise.all([
   cached('wijk', () => getJson(AMS + 'INDELING_WIJK')),
   cached('wijk-exwater', () => getJson(AMS + 'INDELING_WIJK_EXWATER')),
+  cached('buurt-exwater', () => getJson(AMS + 'INDELING_BUURT_EXWATER')),
   cached('pdok-gemeenten-bbox', () =>
     getJson(`${PDOK}&typeName=wijkenbuurten:gemeenten&BBOX=52.20,4.75,52.40,5.05,EPSG:4326`)),
   cached('pdok-buurten-bbox', () =>
     getJson(`${PDOK}&typeName=wijkenbuurten:buurten&BBOX=52.31,4.90,52.35,4.95,EPSG:4326`)),
+  cached('pdok-wijken-bbox', () =>
+    getJson(`${PDOK}&typeName=wijkenbuurten:wijken&BBOX=52.23,4.78,52.33,4.93,EPSG:4326`)),
   cached('osm-lines', () =>
     overpass(`[out:json][timeout:90];(way["highway"="motorway"]["ref"~"^A ?10$"](52.29,4.79,52.44,5.03);way["waterway"="river"]["name"="Amstel"](52.24,4.83,52.38,4.96););out geom;`)),
-  // Major parks by explicit name, so the green stays deliberate at this scale.
-  cached('osm-parks', () =>
-    overpass(`[out:json][timeout:90];(nwr["leisure"="park"]["name"~"^(Vondelpark|Westerpark|Rembrandtpark|Erasmuspark|Sarphatipark|Oosterpark|Flevopark|Park Frankendael|Beatrixpark|Amstelpark|Sloterpark|Gaasperpark|Nelson Mandelapark|Diemerpark|Noorderpark|W\\\\. ?H\\\\. Vliegenbos|Gijsbrecht van Aemstelpark|Martin Luther Kingpark)$"](52.25,4.75,52.45,5.05);nwr["name"="Amsterdamse Bos"](52.25,4.70,52.36,4.90););out geom;`)),
+  // Everything park-like, by category rather than a hand-picked name list, so
+  // the greenery is accurate everywhere: forests (Diemerbos), nature reserves
+  // (De Oeverlanden), sport parks, cemeteries, plus the named parks. Only
+  // green land is green; neighbourhoods never are.
+  cached('osm-greens', () =>
+    overpass(`[out:json][timeout:180];(nwr["leisure"~"^(park|nature_reserve|recreation_ground|sports_centre|golf_course)$"](52.25,4.74,52.44,5.04);nwr["landuse"~"^(forest|village_green|cemetery)$"](52.25,4.74,52.44,5.04);nwr["name"="Amsterdamse Bos"](52.25,4.70,52.36,4.90););out geom;`)),
   // The street and canal network that draws the mosaic's seams.
   cached('osm-streets', () =>
     overpass(`[out:json][timeout:240];(way["highway"~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|living_street)$"](52.25,4.74,52.44,5.04);way["waterway"~"^(canal|river)$"](52.25,4.74,52.44,5.04););out geom;`)),
@@ -190,6 +202,13 @@ function pdokRings(a) {
     if (!feats.length) throw new Error('PDOK gemeente not found: ' + a.pdok.name);
     return feats.flatMap((f) => ringsOf(f.geometry));
   }
+  if (a.pdok.type === 'wijken') {
+    const feats = pdokWijk.features.filter(
+      (f) => f.properties.gemeentenaam === a.pdok.gemeente && !a.pdok.exclude.includes(f.properties.wijknaam),
+    );
+    if (!feats.length) throw new Error('PDOK wijken not found for: ' + a.pdok.gemeente);
+    return unionRings(feats.flatMap((f) => ringsOf(f.geometry)));
+  }
   // Duivendrecht is CBS "Wijk 00", so resolve at buurt level. The business park
   // between it and Amsterdam is merged in so the map has no unexplained notch.
   const feats = pdokBuurt.features.filter(
@@ -203,6 +222,15 @@ function pdokRings(a) {
 for (const a of AREAS) {
   if (a.pdok) {
     a.ringsLand = pdokRings(a);
+    a.ringsIncl = a.ringsLand;
+  } else if (a.buurtGebied) {
+    // Buurt-level union from the city's buurt layer: single source, so the
+    // shared edges cancel cleanly.
+    const feats = buurtExcl.features.filter(
+      (f) => a.buurtGebied.includes(f.properties.Gebied) && !(a.excludeBuurt || []).includes(f.properties.Buurt),
+    );
+    if (!feats.length) throw new Error('no buurten matched for ' + a.name);
+    a.ringsLand = unionRings(feats.flatMap((f) => ringsOf(f.geometry)));
     a.ringsIncl = a.ringsLand;
   } else {
     a.resolvedCodes = codesFor(a);
@@ -354,7 +382,7 @@ const allAreaRings = AREAS.flatMap((a) => a.ringsIncl);
 const insideScope = (pt) => allAreaRings.some((r) => inRing(pt, r));
 const parkRings = [];
 const parkNames = new Set();
-for (const el of osmParks.elements) {
+for (const el of osmGreens.elements) {
   let rings = [];
   if (el.type === 'way' && el.geometry) {
     const ring = toLonLat(el.geometry);
@@ -572,7 +600,7 @@ fs.writeFileSync(OUT, ts);
 
 console.log(`areas: ${areas.length} | viewBox 0 0 ${W} ${H} | label overlaps: ${overlaps}`);
 areas.forEach((a) => console.log(`  ${a.name.padEnd(32)} ${a.color}`));
-console.log(`parks (${parkNames.size}): ${[...parkNames].sort().join(', ')}`);
+console.log(`green areas drawn: ${parkRings.length} polygons from ${parkNames.size} named places (parks, forests, reserves, sport parks, cemeteries)`);
 const kb = (x) => (x.length / 1024).toFixed(1) + 'kb';
 console.log(`seams image: minor ${kb(streetsMinor)} | mid ${kb(streetsMid)} | major ${kb(streetsMajor)} | canals ${kb(canalsPath)} | a10 ${kb(a10Path)} | parks ${kb(parksPath)}`);
 console.log(`wrote public/map-seams.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
