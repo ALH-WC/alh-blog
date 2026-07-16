@@ -2,18 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import {
-  CANALS_PATH,
-  CITY_AREAS,
-  CITY_LABELS,
-  LINE_A10,
-  MAP_VIEWBOX,
-  PARKS_PATH,
-  STREETS_MAJOR_PATH,
-  STREETS_MID_PATH,
-  STREETS_MINOR_PATH,
-} from '../lib/cityMap';
+import { CITY_AREAS, MAP_SEAMS_SRC, MAP_VIEWBOX } from '../lib/cityMap';
 import { AREA_GUIDES, areaHasGuide } from '../lib/neighborhoods';
+import { MapLabels } from './MapLabels';
 import styles from './CityMap.module.css';
 
 /** What the hover card shows. Keyed by area name. */
@@ -29,35 +20,13 @@ interface Props {
 
 const [VB_W, VB_H] = MAP_VIEWBOX.split(' ').slice(2).map(Number);
 
-// Every area's cut-out label: a pill in the page's paper colour, holding a
-// floating black pill with the name in paper. Baked at build time with
-// collision-resolved positions; pointer-events none so the mouse always talks
-// to the block beneath.
-function Labels() {
-  return (
-    <g className={styles.labels}>
-      {CITY_LABELS.map((L) =>
-        L.pills.map((p) => (
-          <g key={`${L.slug}-${p.t}`}>
-            <rect x={p.x} y={p.y} width={p.w} height={p.h} rx={p.h / 2} className={styles.pillCut} />
-            <rect x={p.x + 2.5} y={p.y + 2.5} width={p.w - 5} height={p.h - 5} rx={(p.h - 5) / 2} className={styles.pillInk} />
-            <text x={p.tx} y={p.ty} fontSize={L.size} letterSpacing={L.ls} className={styles.pillText}>
-              {p.t}
-            </text>
-          </g>
-        )),
-      )}
-    </g>
-  );
-}
-
-// The interactive mosaic map on the by-area index: saturated blocks separated by
-// paper-coloured streets and canals, parks in green, cut-out pill labels. Hover
-// an area to pop up its guide, click to open it; areas without a guide say so.
+// The interactive mosaic map on the by-area index.
 //
-// Everything is baked into src/lib/cityMap.ts at build time from open geodata:
-// plain inline SVG, no external requests, no map library. The static article
-// version lives in CityMapHero so article pages ship none of this JavaScript.
+// Three stacked layers, and the split is what keeps it fast: the interactive
+// blocks are a small inline SVG; the street network, canals and parks are a
+// static <img> the browser rasterizes once and composites as a cached bitmap;
+// the pill labels are a light SVG on top. Hovering repaints 26 simple polygons,
+// never the two hundred thousand street points.
 export function CityMap({ tips = {} }: Props) {
   const [hover, setHover] = useState<string | null>(null);
 
@@ -89,21 +58,12 @@ export function CityMap({ tips = {} }: Props) {
             </Link>
           );
         })}
-
-        {/* Parks over the blocks, then the seams that cut the mosaic. */}
-        <path d={PARKS_PATH} className={styles.parks} fillRule="evenodd" />
-        {/* Hover: one translucent veil over the active block. A CSS filter here
-            forces the browser to re-rasterize the whole street layer and made
-            the page lag; painting a single extra path does not. */}
+        {/* Hover: one translucent veil over the active block. */}
         {area ? <path d={area.d} className={styles.veil} fillRule="evenodd" /> : null}
-        <path d={STREETS_MINOR_PATH} className={styles.sMinor} />
-        <path d={STREETS_MID_PATH} className={styles.sMid} />
-        <path d={STREETS_MAJOR_PATH} className={styles.sMajor} />
-        <path d={CANALS_PATH} className={styles.canal} />
-        <path d={LINE_A10} className={styles.a10} />
-
-        <Labels />
       </svg>
+
+      <img src={MAP_SEAMS_SRC} alt="" aria-hidden="true" className={styles.seams} />
+      <MapLabels />
 
       {area ? (
         <div
