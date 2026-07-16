@@ -8,30 +8,21 @@ Metadata lives in Sanity, so fixes go live via ISR without a deploy.
 
 ## Blocked: needs current figures (currently `noIndex`)
 
-These three have `noIndex: true` set as a holding action. Their claims are wrong,
+These two have `noIndex: true` set as a holding action. Their claims are wrong,
 not merely stale, so they were kept out of search rather than left to be quoted by
 answer engines. **Remove `noIndex` once corrected**, then regenerate their metadata
 against the corrected body.
 
-### 1. `renting-vs-buying-in-amsterdam-a-comprehensive-guide`
-Body states "Down payment: Usually 10-20% of the property price." This is a US
-model and does not describe Dutch mortgages. Dutch lending runs up to 100% LTV;
-what a buyer actually needs from savings is the *kosten koper* (transfer tax,
-notary, valuation, mortgage advice). The whole "buying costs" section needs
-rewriting, not a wording tweak. Highest priority: closest to the commercial core.
+Both still need their SEO metadata generated once the bodies are fixed, since they
+were skipped by the metadata pass.
 
-The site contradicts itself here, which is the clearest proof this is wrong rather
-than merely dated: `understanding-dutch-mortgages-a-complete-guide` states "You can
-typically borrow up to 100% of the property" in its own FAQ. Two published articles
-give buyers opposite answers to the same question.
-
-### 2. `understanding-the-dutch-tax-service-for-expats`
+### 1. `understanding-the-dutch-tax-service-for-expats`
 All three income boxes carry 2022 rates, stated as current with no year attached:
 Box 1 "37.07% to 49.50%", Box 2 "26.9%", Box 3 "31%". Box 2 has since split into
 two brackets and Box 3 has changed rate and regime. Suggests the article was
 written in 2022 and never revisited. Verify every figure against Belastingdienst.
 
-### 3. `comprehensive-guide-to-all-holidays-in-the-netherlands-in-2025`
+### 2. `comprehensive-guide-to-all-holidays-in-the-netherlands-in-2025`
 Premise is a year that has passed. Note Liberation Day is a public holiday every
 five years (2025 was an observance year; 2026 is not), so rolling dates forward is
 not purely mechanical. **Editorial decision needed:** re-date annually, or restructure
@@ -61,6 +52,18 @@ set annually. The rent-increase metadata says "capped at CPI plus a maximum of 1
 percent" rather than a specific year's cap, and stays true. Same for minimum wage.
 
 ## Fixed in this pass
+
+- **`renting-vs-buying-in-amsterdam-a-comprehensive-guide`** - carried a US mortgage
+  model ("Down payment: Usually 10-20% of the property price"). The client confirmed
+  Dutch lending finances up to 100%, and `understanding-dutch-mortgages` already said
+  so, so the two articles were contradicting each other. The buying-costs section now
+  explains that a mortgage covers up to 100% of *appraised value*, that the buyer's
+  costs (transfer tax, notary, valuation, mortgage advice) come from savings and
+  cannot be added to the mortgage, and that any overbid above the appraisal is also
+  paid from savings. Stating "100% financing" on its own would have swapped one wrong
+  impression for another, namely that no savings are needed at all. The article now
+  contains no expiring figures, and the hold was lifted. It still has no structured
+  metadata; it needs a batch through `patch-ai-metadata.mjs`.
 
 - **Em dashes removed from 22 articles** (31 body spans plus deks/titles). Client
   hard rule. Came in with the Framer import. Numeric ranges became "to"; rhetorical
