@@ -1,8 +1,13 @@
 // The blog's taxonomy for the redesigned (category) guide.
 //
 // `CATEGORIES` are the specific labels shown as the small eyebrow on each card.
-// `SECTIONS` are the five chapters shown in the sticky menu and as the big
-// Spectral chapter titles; each chapter gathers one or more categories.
+// `SECTIONS` are the chapters shown in the sticky menu and as the big Spectral
+// chapter titles; each chapter gathers one or more categories.
+//
+// A chapter only renders five cards, and its "View all" filters by the whole
+// chapter, so a category folded into a crowded chapter can end up invisible. Eat
+// & Drink used to sit inside Life & culture and none of its articles reached the
+// top five, which is why it now has a chapter of its own.
 
 export const CATEGORIES = [
   'Immigration',
@@ -54,6 +59,13 @@ export const SECTIONS: Section[] = [
     categories: ['Neighborhoods'],
   },
   {
+    key: 'food',
+    menu: 'Eat & drink',
+    title: 'Eat and drink',
+    dek: 'Where to eat, what to order, and the places locals go back to.',
+    categories: ['Eat & Drink'],
+  },
+  {
     key: 'money',
     menu: 'Finances & work',
     title: 'Finances and work',
@@ -64,8 +76,8 @@ export const SECTIONS: Section[] = [
     key: 'life',
     menu: 'Life & culture',
     title: 'Life and culture',
-    dek: 'Eating, drinking, seeing, and the part that makes it home.',
-    categories: ['Life & Culture', 'Eat & Drink', 'See & Do'],
+    dek: 'Seeing, doing, and the part that makes it home.',
+    categories: ['Life & Culture', 'See & Do'],
   },
 ];
 

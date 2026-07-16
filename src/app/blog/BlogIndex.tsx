@@ -78,6 +78,11 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return null;
+    // "View all" passes a chapter's menu label. Match it to the chapter and show
+    // every category it holds; a plain substring match would only ever hit one of
+    // them and silently hide the rest.
+    const section = SECTIONS.find((s) => s.menu.toLowerCase() === q);
+    if (section) return articles.filter((a) => section.categories.includes(a.category));
     return articles.filter((a) => `${a.title} ${a.category} ${a.dek}`.toLowerCase().includes(q));
   }, [articles, query]);
 
@@ -297,7 +302,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                     <h2 className={styles.sheadTitle}>{s.title}</h2>
                     <p className={styles.sheadDek}>{s.dek}</p>
                   </div>
-                  <button type="button" className={styles.viewall} onClick={() => setQuery(s.categories[0])}>
+                  <button type="button" className={styles.viewall} onClick={() => setQuery(s.menu)}>
                     View all {s.menu} articles <span className={styles.ar}>→</span>
                   </button>
                 </div>
