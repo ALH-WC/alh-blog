@@ -372,7 +372,9 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                         </p>
                       </div>
                     </div>
-                    <section data-reveal="">
+                    {/* No reveal animation here: transforming the street-network
+                        SVG during scroll is expensive enough to stutter. */}
+                    <section>
                       <CityMap tips={areaTips} />
                     </section>
                   </>

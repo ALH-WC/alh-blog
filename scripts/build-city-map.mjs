@@ -59,10 +59,12 @@ const AREAS = [
   { name: 'Duivendrecht',            pdok: { type: 'buurt', gemeente: 'Ouder-Amstel', buurten: ['Duivendrecht', 'Industriegebied Amstel'] } },
 ];
 
-// The five mosaic hues, from the client's signature-palette round. Assignment is
+// The mosaic hues, from the client's signature-palette round. Four, not five:
+// the near-black blocks were rejected on the live map ("makes it much more
+// unclear"), so black stays reserved for the label pills only. Assignment is
 // greedy over the adjacency graph so neighbours never share a hue. Amstelveen is
 // pinned to the maroon: the greedy pass gave it the grey, which read as disabled.
-const MOSAIC_HUES = ['#e2604a', '#1f7a6e', '#8e3e54', '#6f695f', '#2b2724'];
+const MOSAIC_HUES = ['#e2604a', '#1f7a6e', '#8e3e54', '#6f695f'];
 const MOSAIC_SEED = { Amstelveen: '#8e3e54' };
 // Cross-source neighbours: the PDOK shapes share no vertices with the Amsterdam
 // layer, so vertex matching cannot see these borders.
@@ -389,8 +391,7 @@ const hueOf = new Map(Object.entries(MOSAIC_SEED));
 for (const a of AREAS.slice().sort((x, y) => adjacency.get(y.name).size - adjacency.get(x.name).size)) {
   if (hueOf.has(a.name)) continue;
   const taken = new Set([...adjacency.get(a.name)].map((n) => hueOf.get(n)).filter(Boolean));
-  // Least-used hue that no neighbour has: keeps all five hues in play (a plain
-  // first-fit solves the graph with four and loses the black blocks entirely).
+  // Least-used hue that no neighbour has, so all hues stay evenly in play.
   const counts = new Map(MOSAIC_HUES.map((h) => [h, 0]));
   for (const h of hueOf.values()) counts.set(h, (counts.get(h) ?? 0) + 1);
   const options = MOSAIC_HUES.filter((h) => !taken.has(h)).sort((x, y) => counts.get(x) - counts.get(y));
