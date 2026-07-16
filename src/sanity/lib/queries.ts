@@ -1,7 +1,7 @@
 import type { PortableTextBlock } from '@portabletext/types';
 import { client } from './client';
 import { urlForImage } from './image';
-import type { Article, Category } from '../../lib/types';
+import type { Article, ArticleListItem, Category } from '../../lib/types';
 import { sampleArticles } from '../../lib/sampleData';
 
 const ARTICLE_PROJECTION = `{
@@ -28,6 +28,24 @@ const ARTICLE_PROJECTION = `{
 
 const ALL_ARTICLES_QUERY = `*[_type == "article" && defined(slug.current)]
   | order(featured desc, _createdAt desc) ${ARTICLE_PROJECTION}`;
+
+// Card-level fields only. The index hands the whole list to a client component
+// and Next serializes those props into the HTML, so every field here is paid
+// for 116 times per page load.
+const LIST_PROJECTION = `{
+  _id,
+  title,
+  dek,
+  "slug": slug.current,
+  category,
+  categories,
+  readMinutes,
+  featured,
+  heroImage
+}`;
+
+const ARTICLE_LIST_QUERY = `*[_type == "article" && defined(slug.current)]
+  | order(featured desc, _createdAt desc) ${LIST_PROJECTION}`;
 
 const ARTICLE_BY_SLUG_QUERY = `*[_type == "article" && slug.current == $slug][0] ${ARTICLE_PROJECTION}`;
 
@@ -84,6 +102,46 @@ function mapDoc(doc: RawDoc): Article {
     publishedAt: doc.publishedAt,
   };
 }
+
+function toListItem(doc: RawDoc): ArticleListItem {
+  const built = urlForImage(doc.heroImage as never);
+  return {
+    _id: doc._id,
+    title: doc.title,
+    dek: doc.dek ?? '',
+    slug: doc.slug,
+    category: doc.category,
+    categories: doc.categories,
+    readMinutes: doc.readMinutes,
+    featured: Boolean(doc.featured),
+    imageUrl: built ? built.width(1200).height(800).url() : `https://picsum.photos/seed/${doc.slug}/1200/800`,
+    imageAlt: doc.heroImage?.alt ?? doc.title,
+  };
+}
+
+/** The slim article list for the index and related rails. Same fallback rules. */
+export async function getArticleList(): Promise<ArticleListItem[]> {
+  if (!client) return sampleArticles.map(toSampleListItem);
+  try {
+    const docs = await client.fetch<RawDoc[]>(ARTICLE_LIST_QUERY);
+    if (!docs || docs.length === 0) return sampleArticles.map(toSampleListItem);
+    return docs.map(toListItem);
+  } catch {
+    return sampleArticles.map(toSampleListItem);
+  }
+}
+const toSampleListItem = (a: Article): ArticleListItem => ({
+  _id: a._id,
+  title: a.title,
+  dek: a.dek,
+  slug: a.slug,
+  category: a.category,
+  categories: a.categories,
+  readMinutes: a.readMinutes,
+  featured: a.featured,
+  imageUrl: a.imageUrl,
+  imageAlt: a.imageAlt,
+});
 
 // All articles. Falls back to the built-in sample content when Sanity is not
 // configured or has no documents yet, so the designed page always renders.

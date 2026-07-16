@@ -3,6 +3,26 @@ import type { Category } from './sections';
 
 export type { Category } from './sections';
 
+/**
+ * The card-level slice of an article: everything the index, the map tips and
+ * the related-article rails need, and nothing more. The index passes the whole
+ * list into a client component, and Next serializes those props into the HTML;
+ * with full articles that made the page carry two megabytes of invisible
+ * bodies, FAQs and metadata.
+ */
+export interface ArticleListItem {
+  _id: string;
+  title: string;
+  dek: string;
+  slug: string;
+  category: Category;
+  categories?: Category[];
+  readMinutes: number;
+  featured: boolean;
+  imageUrl: string;
+  imageAlt: string;
+}
+
 export interface Faq {
   question: string;
   answer: string;

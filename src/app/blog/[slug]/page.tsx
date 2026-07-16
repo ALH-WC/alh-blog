@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { PortableTextBlock } from '@portabletext/types';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getAllArticles, getAllSlugs, getArticleBySlug } from '../../../sanity/lib/queries';
+import { getArticleList, getAllSlugs, getArticleBySlug } from '../../../sanity/lib/queries';
 import { PortableBody } from '../../../components/PortableBody';
 import { JsonLd } from '../../../components/JsonLd';
 import { SiteNav } from '../../../components/SiteNav';
@@ -82,7 +82,7 @@ export default async function ArticlePage(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  const [article, all] = await Promise.all([getArticleBySlug(slug), getAllArticles()]);
+  const [article, all] = await Promise.all([getArticleBySlug(slug), getArticleList()]);
   if (!article) notFound();
 
   const related = all.filter((a) => a.slug !== article.slug).slice(0, 3);
