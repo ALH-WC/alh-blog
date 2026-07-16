@@ -25,16 +25,27 @@ export async function generateMetadata(
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
   if (!article) return { title: 'Guide not found' };
+  const title = article.metaTitle || article.title;
+  const description = article.metaDescription || article.dek;
+  const ogImg = article.ogImageUrl || article.imageUrl;
   return {
-    title: article.title,
-    description: article.dek,
+    title,
+    description,
+    keywords: article.keywords,
     alternates: { canonical: `/blog/${slug}` },
+    robots: article.noIndex ? { index: false, follow: true } : undefined,
     openGraph: {
-      title: article.title,
-      description: article.dek,
+      title,
+      description,
       url: `/blog/${slug}`,
       type: 'article',
-      images: article.imageUrl ? [{ url: article.imageUrl }] : undefined,
+      images: ogImg ? [{ url: ogImg }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ogImg ? [ogImg] : undefined,
     },
   };
 }
@@ -55,18 +66,49 @@ export default async function ArticlePage(
   const bodyStart = body.slice(0, insertAt);
   const bodyEnd = body.slice(insertAt);
 
-  // Article schema WITHOUT author or dates, per client rule.
-  const jsonLd = {
+  const ogImg = article.ogImageUrl || article.imageUrl;
+
+  // Article schema. No author or visible dates on the page, but datePublished is
+  // included here as a freshness signal for search and AI answer engines.
+  const articleLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: article.title,
-    description: article.dek,
-    image: article.imageUrl ? [article.imageUrl] : undefined,
+    headline: article.metaTitle || article.title,
+    description: article.metaDescription || article.dek,
+    image: ogImg ? [ogImg] : undefined,
     articleSection: article.category,
+    keywords: article.keywords?.length ? article.keywords.join(', ') : undefined,
+    ...(article.publishedAt
+      ? { datePublished: article.publishedAt, dateModified: article.publishedAt }
+      : {}),
+    inLanguage: 'en',
+    about: { '@type': 'Place', name: 'Amsterdam, Netherlands' },
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE}/blog/${article.slug}` },
-    publisher: { '@type': 'Organization', name: 'Amsterdam Life Homes' },
+    publisher: { '@type': 'Organization', name: 'Amsterdam Life Homes', url: BASE },
     isPartOf: { '@type': 'Blog', name: 'The Amsterdam Guide', url: `${BASE}/blog` },
   };
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'The Amsterdam Guide', item: `${BASE}/blog` },
+      { '@type': 'ListItem', position: 2, name: article.category, item: `${BASE}/blog` },
+      { '@type': 'ListItem', position: 3, name: article.title, item: `${BASE}/blog/${article.slug}` },
+    ],
+  };
+  const faqLd =
+    article.faqs && article.faqs.length
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: article.faqs.map((f) => ({
+            '@type': 'Question',
+            name: f.question,
+            acceptedAnswer: { '@type': 'Answer', text: f.answer },
+          })),
+        }
+      : null;
+  const jsonLd = faqLd ? [articleLd, breadcrumbLd, faqLd] : [articleLd, breadcrumbLd];
 
   return (
     <>
@@ -94,11 +136,41 @@ export default async function ArticlePage(
             </div>
           </div>
 
+          {article.summary || (article.keyTakeaways && article.keyTakeaways.length) ? (
+            <aside className={styles.keypoints}>
+              {article.summary ? <p className={styles.keyIntro}>{article.summary}</p> : null}
+              {article.keyTakeaways && article.keyTakeaways.length ? (
+                <>
+                  <span className={styles.keyLabel}>Key takeaways</span>
+                  <ul className={styles.keyList}>
+                    {article.keyTakeaways.map((k, i) => (
+                      <li key={i}>{k}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
+            </aside>
+          ) : null}
+
           <div className={styles.body}>
             <PortableBody value={bodyStart} />
             <InlineSignup />
             {bodyEnd.length ? <PortableBody value={bodyEnd} /> : null}
           </div>
+
+          {article.faqs && article.faqs.length ? (
+            <section className={styles.faqs}>
+              <h2 className={styles.faqTitle}>Frequently asked questions</h2>
+              <div className={styles.faqList}>
+                {article.faqs.map((f, i) => (
+                  <div key={i} className={styles.faqItem}>
+                    <h3 className={styles.faqQ}>{f.question}</h3>
+                    <p className={styles.faqA}>{f.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {related.length ? (
             <section className={styles.kr}>
