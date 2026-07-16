@@ -7,7 +7,8 @@ import { SECTIONS, CATEGORY_TO_SECTION } from '../../lib/sections';
 import { SiteNav } from '../../components/SiteNav';
 import { SiteFooter } from '../../components/SiteFooter';
 import { HelpCta } from '../../components/HelpCta';
-import { CityMap } from '../../components/CityMap';
+import { CityMap, type AreaTip } from '../../components/CityMap';
+import { AREA_GUIDES } from '../../lib/neighborhoods';
 import styles from './blog.module.css';
 
 function SearchIcon() {
@@ -57,6 +58,18 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
       if (key) map[key].push(a);
     });
     return map;
+  }, [articles]);
+
+  // Guide details for the map's hover card, keyed by area name. Built from the
+  // explicit area/slug table, never by matching names against titles.
+  const areaTips = useMemo(() => {
+    const bySlug = new Map(articles.map((a) => [a.slug, a]));
+    const out: Record<string, AreaTip> = {};
+    Object.entries(AREA_GUIDES).forEach(([area, slug]) => {
+      const a = bySlug.get(slug);
+      if (a) out[area] = { title: a.title, readMinutes: a.readMinutes };
+    });
+    return out;
   }, [articles]);
 
   const results = useMemo(() => {
@@ -361,7 +374,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                       </div>
                     </div>
                     <section data-reveal="">
-                      <CityMap />
+                      <CityMap tips={areaTips} />
                     </section>
                   </>
                 ) : null}

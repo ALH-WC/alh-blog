@@ -9,7 +9,7 @@ import { SiteNav } from '../../../components/SiteNav';
 import { SiteFooter } from '../../../components/SiteFooter';
 import { HelpCta } from '../../../components/HelpCta';
 import { InlineSignup } from '../../../components/InlineSignup';
-import { CityMap } from '../../../components/CityMap';
+import { CityMapHero } from '../../../components/CityMapHero';
 import { GUIDE_AREAS } from '../../../lib/neighborhoods';
 import styles from './article.module.css';
 
@@ -165,7 +165,7 @@ export default async function ArticlePage(
               reader can place it immediately. Everything else keeps its photo. */}
           <div className={styles.hero}>
             {mapArea ? (
-              <CityMap active={mapArea} mode="hero" />
+              <CityMapHero active={mapArea} />
             ) : (
               <div className={styles.heroFrame}>
                 <img src={article.imageUrl} alt={article.imageAlt} />
