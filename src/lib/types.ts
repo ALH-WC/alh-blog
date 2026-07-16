@@ -3,6 +3,11 @@ import type { Category } from './sections';
 
 export type { Category } from './sections';
 
+export interface Faq {
+  question: string;
+  answer: string;
+}
+
 export interface Article {
   _id: string;
   title: string;
@@ -18,4 +23,21 @@ export interface Article {
   imageAlt: string;
   /** Portable Text body. May be empty for list-only sample items. */
   body: PortableTextBlock[];
+
+  // SEO
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string[];
+  ogImageUrl?: string;
+  noIndex?: boolean;
+
+  // AI / answer engines (GEO / AI-EO)
+  summary?: string;
+  keyTakeaways?: string[];
+  faqs?: Faq[];
+
+  // Placement / structured data
+  categories?: Category[];
+  /** Not displayed; used only in JSON-LD as a freshness signal. */
+  publishedAt?: string;
 }
