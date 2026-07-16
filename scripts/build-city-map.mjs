@@ -63,11 +63,12 @@ const AREAS = [
   { name: 'Duivendrecht',            pdok: { type: 'buurt', gemeente: 'Ouder-Amstel', buurten: ['Duivendrecht', 'Industriegebied Amstel'] } },
 ];
 
-// Van Gogh palette, one hue per neighbourhood (client request): starry-night
-// blue, sunflower ochre, sienna, iris violet, red oxide and pale cobalt.
-// Cypress green is reserved for parks, which render as flat solid shapes above
-// the streets, so the Amsterdamse Bos is simply green with nothing inside it.
-const VANGOGH_HUES = ['#2c5784', '#c9862b', '#a35d3a', '#5a5b8f', '#7e3b2f', '#4f7a8c'];
+// Van Gogh palette, one hue per neighbourhood; second iteration on client
+// request, warmer and softer than the first: wheat gold, burnt orange from the
+// Bedroom, cornflower blue from its walls, deep petrol night, iris violet and
+// oxide rose. Cypress green stays reserved for parks, which render as flat
+// solid shapes above the streets, so the Amsterdamse Bos is simply green.
+const VANGOGH_HUES = ['#c9973b', '#b0562f', '#526d9e', '#31556e', '#6f6396', '#95483f'];
 const PARK_GREEN = '#2f5240';
 // Cross-source neighbours: the PDOK shapes share no vertices with the Amsterdam
 // layer, so vertex matching cannot see these borders.
@@ -277,12 +278,39 @@ function encode(pts, close) {
   }
   return close ? d + 'Z' : d;
 }
+// Chaikin corner cutting: rounds every edge off (client request). Direction
+// symmetric, so the shared border of two neighbouring areas smooths to the
+// same curve on both sides.
+function chaikin(pts, iters = 2) {
+  let cur = pts;
+  for (let n = 0; n < iters; n++) {
+    const out = [];
+    for (let i = 0; i < cur.length; i++) {
+      const a = cur[i], b = cur[(i + 1) % cur.length];
+      out.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25]);
+      out.push([a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]);
+    }
+    cur = out;
+  }
+  return cur;
+}
+const ringPerimeter = (pts) => {
+  let p = 0;
+  for (let i = 0; i < pts.length; i++) {
+    const [x1, y1] = pts[i], [x2, y2] = pts[(i + 1) % pts.length];
+    p += Math.hypot(x2 - x1, y2 - y1);
+  }
+  return p;
+};
+
 // Project, drop points the rounding made redundant, and drop rings smaller than
-// minArea so carved canals do not become subpixel noise.
-function toPath(rings, minArea = 60) {
+// minArea so carved canals do not become subpixel noise. `soft` rounds the
+// shape off; `minIQ` drops long slivers (isoperimetric quotient: a circle is 1,
+// a hairline strip approaches 0), which is what keeps odd spots off the map.
+function toPath(rings, minArea = 60, { soft = false, minIQ = 0 } = {}) {
   const out = [];
   for (const ring of rings) {
-    const pts = [];
+    let pts = [];
     for (const p of ring) {
       const q = proj(p);
       const last = pts[pts.length - 1];
@@ -290,6 +318,17 @@ function toPath(rings, minArea = 60) {
     }
     while (pts.length > 1 && pts[0][0] === pts[pts.length - 1][0] && pts[0][1] === pts[pts.length - 1][1]) pts.pop();
     if (pts.length < 3 || ringArea(pts) < minArea) continue;
+    if (minIQ > 0) {
+      const iq = (4 * Math.PI * ringArea(pts)) / ringPerimeter(pts) ** 2;
+      if (iq < minIQ) continue;
+    }
+    if (soft) {
+      if (pts.length > 60) pts = pts.filter((_, i) => i % 2 === 0);
+      // Integers keep the relative encoding clean; at display scale one
+      // viewBox unit is sub-pixel, so the rounding is invisible.
+      const smooth = chaikin(pts, 2).map((p) => [Math.round(p[0]), Math.round(p[1])]);
+      pts = smooth.filter((p, i) => i === 0 || p[0] !== smooth[i - 1][0] || p[1] !== smooth[i - 1][1]);
+    }
     out.push(encode(pts, true));
   }
   return out.join('');
@@ -407,7 +446,7 @@ for (const el of osmGreens.elements) {
 }
 // Fewer, bigger greens (client request): a park earns its place from ~0.08 km2,
 // anonymous forest/reserve patches from ~0.16 km2. Small pocket greens drop out.
-const parksPath = toPath(parkRingsMain, 120) + toPath(parkRingsBig, 250);
+const parksPath = toPath(parkRingsMain, 120, { soft: true, minIQ: 0.08 }) + toPath(parkRingsBig, 250, { soft: true, minIQ: 0.08 });
 
 // ---------- one Van Gogh hue per neighbourhood ----------
 // Adjacency from shared source vertices (pre-projection), plus the known
@@ -445,7 +484,7 @@ const areas = AREAS.map((a) => {
   return {
     name: a.name,
     slug: slugify(a.name),
-    d: toPath(a.ringsLand),
+    d: toPath(a.ringsLand, 60, { soft: true }),
     cx: x,
     cy: y,
     labelArea: area,
@@ -470,33 +509,57 @@ const labels = areas.map((a) => {
   const h = lines.length * ph + (lines.length - 1) * 3;
   return { slug: a.slug, size, ls, lines, pw, ph, x: a.cx, y: a.cy, w, h };
 });
+// Relaxation with anchor gravity: overlapping labels push each other apart
+// while every label is pulled back toward its own area's centroid, so a pill
+// stays on the neighbourhood it names instead of drifting off (the Houthavens
+// pill once ended up in the IJ). Gravity is auto-tuned: start strong, and if
+// the layout cannot reach zero overlaps, retry weaker. Zero overlaps stays a
+// hard guarantee.
 const MARGIN = 5;
-for (let it = 0; it < 200; it++) {
-  let moved = false;
-  for (let i = 0; i < labels.length; i++) {
-    for (let j = i + 1; j < labels.length; j++) {
-      const A = labels[i], B = labels[j];
-      const ox = (A.w + B.w) / 2 + MARGIN - Math.abs(A.x - B.x);
-      const oy = (A.h + B.h) / 2 + MARGIN - Math.abs(A.y - B.y);
-      if (ox > 0 && oy > 0) {
-        moved = true;
-        if (oy <= ox) { const sg = A.y <= B.y ? -1 : 1; A.y += (sg * oy) / 2; B.y -= (sg * oy) / 2; }
-        else { const sg = A.x <= B.x ? -1 : 1; A.x += (sg * ox) / 2; B.x -= (sg * ox) / 2; }
+function layout(gravity) {
+  labels.forEach((L) => { L.x = L.ax; L.y = L.ay; });
+  for (let it = 0; it < 400; it++) {
+    let moved = false;
+    for (let i = 0; i < labels.length; i++) {
+      for (let j = i + 1; j < labels.length; j++) {
+        const A = labels[i], B = labels[j];
+        const ox = (A.w + B.w) / 2 + MARGIN - Math.abs(A.x - B.x);
+        const oy = (A.h + B.h) / 2 + MARGIN - Math.abs(A.y - B.y);
+        if (ox > 0 && oy > 0) {
+          moved = true;
+          if (oy <= ox) { const sg = A.y <= B.y ? -1 : 1; A.y += (sg * oy) / 2; B.y -= (sg * oy) / 2; }
+          else { const sg = A.x <= B.x ? -1 : 1; A.x += (sg * ox) / 2; B.x -= (sg * ox) / 2; }
+        }
       }
     }
+    // fade the pull over time so separation can win the endgame
+    const g = gravity * (1 - it / 400);
+    for (const L of labels) {
+      L.x += (L.ax - L.x) * g;
+      L.y += (L.ay - L.y) * g;
+    }
+    if (!moved && it > 40) break;
   }
-  if (!moved) break;
+  labels.forEach((L) => {
+    L.x = Math.round(Math.max(L.w / 2 + 6, Math.min(W - L.w / 2 - 6, L.x)));
+    L.y = Math.round(Math.max(L.h / 2 + 6, Math.min(H - L.h / 2 - 6, L.y)));
+  });
+  let bad = 0;
+  for (let i = 0; i < labels.length; i++) for (let j = i + 1; j < labels.length; j++) {
+    const A = labels[i], B = labels[j];
+    if ((A.w + B.w) / 2 - Math.abs(A.x - B.x) > 0 && (A.h + B.h) / 2 - Math.abs(A.y - B.y) > 0) bad++;
+  }
+  return bad;
 }
-labels.forEach((L) => {
-  L.x = Math.round(Math.max(L.w / 2 + 6, Math.min(W - L.w / 2 - 6, L.x)));
-  L.y = Math.round(Math.max(L.h / 2 + 6, Math.min(H - L.h / 2 - 6, L.y)));
-});
-let overlaps = 0;
-for (let i = 0; i < labels.length; i++) for (let j = i + 1; j < labels.length; j++) {
-  const A = labels[i], B = labels[j];
-  if ((A.w + B.w) / 2 - Math.abs(A.x - B.x) > 0 && (A.h + B.h) / 2 - Math.abs(A.y - B.y) > 0) overlaps++;
+labels.forEach((L) => { L.ax = L.x; L.ay = L.y; });
+let overlaps = -1, usedGravity = 0;
+for (const g of [0.1, 0.06, 0.03, 0.015, 0]) {
+  overlaps = layout(g);
+  usedGravity = g;
+  if (overlaps === 0) break;
 }
 if (overlaps) throw new Error(`labels overlap after relaxation: ${overlaps} pair(s)`);
+const maxDrift = Math.max(...labels.map((L) => Math.hypot(L.x - L.ax, L.y - L.ay)));
 
 // Bake per-pill geometry so the runtime does no layout work at all.
 const labelsOut = labels.map((L) => {
@@ -524,11 +587,12 @@ const SEAM = PAPER;
 const seamsSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 ${areas.map((a) => `<path d="${a.d}" fill="${a.color}" fill-rule="evenodd"/>`).join('\n')}
 <g fill="none" stroke="${SEAM}" stroke-linecap="round" stroke-linejoin="round">
-<path d="${streetsMid}" stroke-width="3.4"/>
-<path d="${streetsMajor}" stroke-width="5"/>
-<path d="${canalsPath}" stroke-width="3"/>
-<path d="${a10Path}" stroke-width="7"/>
+<path d="${streetsMid}" stroke-width="1.1"/>
+<path d="${streetsMajor}" stroke-width="1.8"/>
+<path d="${canalsPath}" stroke-width="1.2"/>
+<path d="${a10Path}" stroke-width="2.6"/>
 </g>
+${areas.map((a) => `<path d="${a.d}" fill="none" stroke="${SEAM}" stroke-width="5" stroke-linejoin="round"/>`).join('')}
 <path d="${parksPath}" fill="${PARK_GREEN}" fill-rule="evenodd"/>
 </svg>`;
 const PUB = path.join(process.cwd(), 'public');
@@ -539,7 +603,7 @@ const sharp = (await import('sharp')).default;
 const png = await sharp(Buffer.from(seamsSvg), { density: (72 * 1600) / W })
   .png({ palette: true, colors: 64 })
   .toBuffer();
-fs.writeFileSync(path.join(PUB, 'map-vangogh.png'), png);
+fs.writeFileSync(path.join(PUB, 'map-vangogh2.png'), png);
 
 const ts = `// GENERATED by scripts/build-city-map.mjs. Do not edit by hand.
 //
@@ -588,7 +652,7 @@ export interface CityLabel {
 export const MAP_VIEWBOX = '0 0 ${W} ${H}';
 
 /** The streets/canals/parks overlay, served as a cached raster. */
-export const MAP_SEAMS_SRC = '/map-vangogh.png';
+export const MAP_SEAMS_SRC = '/map-vangogh2.png';
 
 export const CITY_AREAS: CityArea[] = ${JSON.stringify(
   areas.map(({ name, slug, d, cx, cy, color }) => ({ name, slug, d, cx, cy, color })),
@@ -602,10 +666,10 @@ export const CITY_LABELS: CityLabel[] = ${JSON.stringify(labelsOut, null, 2)};
 
 fs.writeFileSync(OUT, ts);
 
-console.log(`areas: ${areas.length} | viewBox 0 0 ${W} ${H} | label overlaps: ${overlaps}`);
+console.log(`areas: ${areas.length} | viewBox 0 0 ${W} ${H} | label overlaps: ${overlaps} | gravity ${usedGravity} | max pill drift ${maxDrift.toFixed(0)} units`);
 areas.forEach((a) => console.log(`  ${a.name.padEnd(32)} ${a.color}`));
 console.log(`greens: ${parkRingsMain.length + parkRingsBig.length} candidate rings from ${parkNames.size} named places (parks, forests, reserves only)`);
 const kb = (x) => (x.length / 1024).toFixed(1) + 'kb';
 console.log(`image: mid ${kb(streetsMid)} | major ${kb(streetsMajor)} | canals ${kb(canalsPath)} | a10 ${kb(a10Path)} | parks ${kb(parksPath)}`);
-console.log(`wrote public/map-vangogh.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
+console.log(`wrote public/map-vangogh2.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
 console.log(`wrote ${OUT} (${(ts.length / 1024).toFixed(1)}kb, ships as JS)`);
