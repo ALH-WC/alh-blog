@@ -1,26 +1,24 @@
-// Build the Amsterdam neighbourhood map from open geodata.
+// Build the Amsterdam mosaic map from open geodata.
 //   node scripts/build-city-map.mjs [--refetch]
 //
-// Sources (all fetched once and cached in scripts/.cache-*.json):
-//  - maps.amsterdam.nl INDELING_WIJK          110 wijken incl. water  (water underlay)
-//  - maps.amsterdam.nl INDELING_WIJK_EXWATER  the same wijken with water carved out
-//                                             (land shapes: the IJ, Amstel and lakes
-//                                             appear as real gaps)
-//  - PDOK / CBS wijkenbuurten                 Amstelveen and Diemen municipalities and
-//                                             the Duivendrecht wijk, which are outside
-//                                             gemeente Amsterdam and so not in the
-//                                             city's own dataset
-//  - OpenStreetMap via Overpass               A10 ring road and Amstel river centerlines
+// The map is the client's chosen "mosaic" direction: saturated blocks separated
+// by paper-coloured streets and canals, parks in green, the A10 as a heavy paper
+// line, and every area named by a cut-out pill holding a floating black pill.
+// The page's paper shows through the streets, the water gaps and the pill
+// cut-outs, so the map reads as shapes cut from the page.
 //
-// Scope: the areas ALH serves (the client's red circle). Rural Noord (Waterland),
-// Weesp and Driemond are cut. The port (Westpoort/Sloterdijk) stays as unnamed
-// context so the city silhouette remains whole.
+// Sources (fetched once, cached in scripts/.cache-*.json):
+//  - maps.amsterdam.nl INDELING_WIJK            110 wijken incl. water (park test)
+//  - maps.amsterdam.nl INDELING_WIJK_EXWATER    the same with water carved out
+//  - PDOK / CBS wijkenbuurten                   Amstelveen, Diemen, Duivendrecht,
+//                                               which lie outside gemeente Amsterdam
+//  - OpenStreetMap via Overpass                 A10, streets, canals, major parks
 //
-// Colours come from the client's 30-swatch signature palette (the accent-colour
-// mockup round). Every area gets its own hue; tints are precomputed here so the
-// runtime needs no colour math.
+// Scope: the areas ALH serves. Rural Noord (Waterland), Weesp, Driemond and the
+// port are cut; the map ends where the neighbourhoods end.
 //
-// Output: src/lib/cityMap.ts. Static SVG paths, nothing fetched at runtime.
+// Output: src/lib/cityMap.ts. Static SVG paths and label geometry, nothing
+// fetched at runtime.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -28,41 +26,53 @@ const OUT = path.join(process.cwd(), 'src', 'lib', 'cityMap.ts');
 const CACHE_DIR = path.join(process.cwd(), 'scripts');
 const REFETCH = process.argv.includes('--refetch');
 
-const PAPER = '#f5f0e6';
-
 // ---------- curated areas ----------
 // One consistent level, nothing nested. Amsterdam areas resolve to official wijk
 // codes (or a whole gebied/stadsdeel); Amstelveen, Diemen and Duivendrecht come
-// from PDOK. Colours are assigned so neighbouring areas never share a hue.
+// from PDOK.
 const AREAS = [
-  { name: 'Centrum',                color: '#1f5a66' /* Ocean    */, codes: ['AA', 'AD', 'AE', 'AF', 'AH', 'AJ', 'AK'] },
-  { name: 'Grachtengordel',         color: '#aa7a2c' /* Amber    */, codes: ['AC', 'AG'] },
-  { name: 'Jordaan',                color: '#a85433' /* Rust     */, codes: ['AB'] },
-  { name: 'Westerpark',             color: '#2f6f5f' /* Teal     */, codes: ['EA', 'EB', 'EC', 'EG', 'EH', 'EJ'] },
-  { name: 'Bos en Lommer',          color: '#a5673a' /* Copper   */, codes: ['ED', 'EE', 'EF'] },
-  { name: 'Oud-West',               color: '#77405b' /* Plum     */, codes: ['EQ', 'ES', 'ET', 'EU', 'EV'] },
-  { name: 'De Baarsjes',            color: '#5f6e53' /* Sage     */, codes: ['EK', 'EL', 'EM', 'EN', 'EP', 'ER'] },
-  { name: 'Oud-Zuid',               color: '#3e5a80' /* Denim    */, codes: ['KA', 'KB', 'KC', 'KD', 'KH', 'KJ'] },
-  { name: 'De Pijp',                color: '#9e4a39' /* Brick    */, codes: ['KE', 'KF', 'KG'] },
-  { name: 'Rivierenbuurt',          color: '#567045' /* Fern     */, codes: ['KK', 'KL', 'KM'] },
-  { name: 'Zuidas',                 color: '#7d6636' /* Bronze   */, codes: ['KN', 'KP', 'KQ', 'KR'] },
-  { name: 'Noord',                  color: '#4d5d78' /* Slate    */, stadsdeel: 'Noord', excludeWijk: ['Waterland'] },
-  { name: 'Oud-Oost',               color: '#9d5a2f' /* Sienna   */, codes: ['MB', 'MC', 'MD', 'ME'] },
-  { name: 'Indische Buurt',         color: '#573a58' /* Damson   */, codes: ['MA', 'MF', 'MG'] },
-  { name: 'Watergraafsmeer',        color: '#55603a' /* Moss     */, codes: ['MM', 'MN', 'MP', 'MQ'] },
-  { name: 'IJburg',                 color: '#17635e' /* Petrol   */, codes: ['MH', 'MJ', 'MK', 'ML'] },
-  { name: 'Geuzenveld & Slotermeer', color: '#7c5568' /* Mauve   */, gebied: ['Geuzenveld, Slotermeer'] },
-  { name: 'Osdorp',                 color: '#3a5170' /* Steel    */, gebied: ['Osdorp'] },
-  { name: 'Slotervaart',            color: '#8f4636' /* Redwood  */, gebied: ['Slotervaart'] },
-  { name: 'De Aker & Sloten',       color: '#6d6a37' /* Olive    */, gebied: ['De Aker, Sloten, Nieuw-Sloten'] },
-  { name: 'Bijlmer',                color: '#6d3d57' /* Aubergine*/, gebied: ['Bijlmer-Centrum', 'Bijlmer-Oost', 'Bijlmer-West'] },
-  { name: 'Gaasperdam',             color: '#2f5d54' /* Spruce   */, gebied: ['Gaasperdam'] },
-  { name: 'Amstelveen',             color: '#86383e' /* Burgundy */, pdok: { type: 'gemeente', name: 'Amstelveen' } },
-  { name: 'Diemen',                 color: '#464778' /* Indigo   */, pdok: { type: 'gemeente', name: 'Diemen' } },
-  { name: 'Duivendrecht',           color: '#6f2f3a' /* Wine     */, pdok: { type: 'buurt', gemeente: 'Ouder-Amstel', buurten: ['Duivendrecht', 'Industriegebied Amstel'] } },
+  { name: 'Centrum',                 codes: ['AA', 'AD', 'AE', 'AF', 'AH', 'AJ', 'AK'] },
+  { name: 'Grachtengordel',          codes: ['AC', 'AG'] },
+  { name: 'Jordaan',                 codes: ['AB'] },
+  { name: 'Westerpark',              codes: ['EG', 'EH', 'EJ'] },
+  { name: 'Houthavens & Spaarndammerbuurt', codes: ['EB', 'EC'] },
+  { name: 'Bos en Lommer',           codes: ['ED', 'EE', 'EF'] },
+  { name: 'Oud-West',                codes: ['EQ', 'ES', 'ET', 'EU', 'EV'] },
+  { name: 'De Baarsjes',             codes: ['EK', 'EL', 'EM', 'EN', 'EP', 'ER'] },
+  { name: 'Oud-Zuid',                codes: ['KA', 'KB', 'KC', 'KD', 'KH', 'KJ'] },
+  { name: 'De Pijp',                 codes: ['KE', 'KF', 'KG'] },
+  { name: 'Rivierenbuurt',           codes: ['KK', 'KL', 'KM'] },
+  { name: 'Zuidas',                  codes: ['KN', 'KP', 'KQ', 'KR'] },
+  { name: 'Noord',                   stadsdeel: 'Noord', excludeWijk: ['Waterland'] },
+  { name: 'Oud-Oost',                codes: ['MB', 'MC', 'MD', 'ME'] },
+  { name: 'Indische Buurt',          codes: ['MA', 'MF', 'MG'] },
+  { name: 'Watergraafsmeer',         codes: ['MM', 'MN', 'MP', 'MQ'] },
+  { name: 'IJburg',                  codes: ['MH', 'MJ', 'MK', 'ML'] },
+  { name: 'Geuzenveld & Slotermeer', gebied: ['Geuzenveld, Slotermeer'] },
+  { name: 'Osdorp',                  gebied: ['Osdorp'] },
+  { name: 'Slotervaart',             gebied: ['Slotervaart'] },
+  { name: 'De Aker & Sloten',        gebied: ['De Aker, Sloten, Nieuw-Sloten'] },
+  { name: 'Bijlmer',                 gebied: ['Bijlmer-Centrum', 'Bijlmer-Oost', 'Bijlmer-West'] },
+  { name: 'Gaasperdam',              gebied: ['Gaasperdam'] },
+  { name: 'Amstelveen',              pdok: { type: 'gemeente', name: 'Amstelveen' } },
+  { name: 'Diemen',                  pdok: { type: 'gemeente', name: 'Diemen' } },
+  { name: 'Duivendrecht',            pdok: { type: 'buurt', gemeente: 'Ouder-Amstel', buurten: ['Duivendrecht', 'Industriegebied Amstel'] } },
 ];
 
-const WATER_COLOR_BASE = '#1f5a66';
+// The five mosaic hues, from the client's signature-palette round. Assignment is
+// greedy over the adjacency graph so neighbours never share a hue. Amstelveen is
+// pinned to the maroon: the greedy pass gave it the grey, which read as disabled.
+const MOSAIC_HUES = ['#e2604a', '#1f7a6e', '#8e3e54', '#6f695f', '#2b2724'];
+const MOSAIC_SEED = { Amstelveen: '#8e3e54' };
+// Cross-source neighbours: the PDOK shapes share no vertices with the Amsterdam
+// layer, so vertex matching cannot see these borders.
+const EXTRA_ADJACENT = [
+  ['Amstelveen', 'Zuidas'], ['Amstelveen', 'De Aker & Sloten'], ['Amstelveen', 'Slotervaart'],
+  ['Duivendrecht', 'Watergraafsmeer'], ['Duivendrecht', 'Rivierenbuurt'], ['Duivendrecht', 'Diemen'], ['Duivendrecht', 'Bijlmer'],
+  ['Diemen', 'Watergraafsmeer'], ['Diemen', 'IJburg'], ['Diemen', 'Bijlmer'], ['Diemen', 'Gaasperdam'],
+];
+
+const PARK_GREEN = '#24604b';
 const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 // ---------- fetch with cache ----------
@@ -78,29 +88,36 @@ async function getJson(url, opts) {
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
   return res.json();
 }
+async function overpass(q) {
+  // Overpass 406s on Node's default fetch headers; identify ourselves.
+  return getJson('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'alh-blog-map-build/1.0' },
+    body: 'data=' + encodeURIComponent(q),
+  });
+}
 
 const AMS = 'https://maps.amsterdam.nl/open_geodata/geojson_lnglat.php?THEMA=gebiedsindeling&KAARTLAAG=';
-// PDOK ignores CQL_FILTER on this service (it silently returns the whole
-// country, capped at 1000 features), so fetch by BBOX and filter client-side.
-// WFS 2.0 with EPSG:4326 wants the bbox in lat,lon order.
+// PDOK ignores CQL_FILTER on this service (it silently returns the whole country
+// capped at 1000 features), so fetch by BBOX and filter client-side. WFS 2.0
+// with EPSG:4326 wants the bbox in lat,lon order.
 const PDOK = 'https://service.pdok.nl/cbs/wijkenbuurten/2024/wfs/v1_0?request=GetFeature&service=WFS&version=2.0.0&outputFormat=application/json&srsName=EPSG:4326';
 
-const [inclGeo, exclGeo, pdokGem, pdokBuurt, osm] = await Promise.all([
+const [inclGeo, exclGeo, pdokGem, pdokBuurt, osmLines, osmParks, osmStreets] = await Promise.all([
   cached('wijk', () => getJson(AMS + 'INDELING_WIJK')),
   cached('wijk-exwater', () => getJson(AMS + 'INDELING_WIJK_EXWATER')),
   cached('pdok-gemeenten-bbox', () =>
     getJson(`${PDOK}&typeName=wijkenbuurten:gemeenten&BBOX=52.20,4.75,52.40,5.05,EPSG:4326`)),
   cached('pdok-buurten-bbox', () =>
     getJson(`${PDOK}&typeName=wijkenbuurten:buurten&BBOX=52.31,4.90,52.35,4.95,EPSG:4326`)),
-  cached('osm-lines', async () => {
-    const q = `[out:json][timeout:90];(way["highway"="motorway"]["ref"~"^A ?10$"](52.29,4.79,52.44,5.03);way["waterway"="river"]["name"="Amstel"](52.24,4.83,52.38,4.96););out geom;`;
-    // Overpass 406s on Node's default fetch headers; identify ourselves.
-    return getJson('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'alh-blog-map-build/1.0' },
-      body: 'data=' + encodeURIComponent(q),
-    });
-  }),
+  cached('osm-lines', () =>
+    overpass(`[out:json][timeout:90];(way["highway"="motorway"]["ref"~"^A ?10$"](52.29,4.79,52.44,5.03);way["waterway"="river"]["name"="Amstel"](52.24,4.83,52.38,4.96););out geom;`)),
+  // Major parks by explicit name, so the green stays deliberate at this scale.
+  cached('osm-parks', () =>
+    overpass(`[out:json][timeout:90];(nwr["leisure"="park"]["name"~"^(Vondelpark|Westerpark|Rembrandtpark|Erasmuspark|Sarphatipark|Oosterpark|Flevopark|Park Frankendael|Beatrixpark|Amstelpark|Sloterpark|Gaasperpark|Nelson Mandelapark|Diemerpark|Noorderpark|W\\\\. ?H\\\\. Vliegenbos|Gijsbrecht van Aemstelpark|Martin Luther Kingpark)$"](52.25,4.75,52.45,5.05);nwr["name"="Amsterdamse Bos"](52.25,4.70,52.36,4.90););out geom;`)),
+  // The street and canal network that draws the mosaic's seams.
+  cached('osm-streets', () =>
+    overpass(`[out:json][timeout:240];(way["highway"~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|living_street)$"](52.25,4.74,52.44,5.04);way["waterway"~"^(canal|river)$"](52.25,4.74,52.44,5.04););out geom;`)),
 ]);
 
 // ---------- ring helpers ----------
@@ -108,8 +125,7 @@ const k = (p) => `${p[0]},${p[1]}`;
 const ringsOf = (geom) => (geom.type === 'Polygon' ? geom.coordinates : geom.coordinates.flat());
 
 // Union by cancelling directed edges shared between neighbouring polygons. Works
-// because each single source is topologically clean; rings from other sources
-// simply pass through untouched.
+// because each single source is topologically clean.
 function unionRings(rings) {
   const edges = new Map();
   for (const ring of rings) {
@@ -149,7 +165,7 @@ function unionRings(rings) {
   return out;
 }
 
-// ---------- resolve areas to rings ----------
+// ---------- resolve areas ----------
 const inclByCode = new Map(inclGeo.features.map((f) => [f.properties.Wijkcode, f]));
 const exclByCode = new Map(exclGeo.features.map((f) => [f.properties.Wijkcode, f]));
 const missingExcl = [...inclByCode.keys()].filter((c) => !exclByCode.has(c));
@@ -166,7 +182,6 @@ function codesFor(a) {
   if (!feats.length) throw new Error('no wijken matched for ' + a.name);
   return feats.map((f) => f.properties.Wijkcode);
 }
-
 function pdokRings(a) {
   if (a.pdok.type === 'gemeente') {
     const feats = pdokGem.features.filter((f) => f.properties.gemeentenaam === a.pdok.name);
@@ -174,8 +189,7 @@ function pdokRings(a) {
     return feats.flatMap((f) => ringsOf(f.geometry));
   }
   // Duivendrecht is CBS "Wijk 00", so resolve at buurt level. The business park
-  // between it and Amsterdam belongs to the same village edge; merged in so the
-  // map has no unexplained notch along the A2.
+  // between it and Amsterdam is merged in so the map has no unexplained notch.
   const feats = pdokBuurt.features.filter(
     (f) => f.properties.gemeentenaam === a.pdok.gemeente && a.pdok.buurten.includes(f.properties.buurtnaam),
   );
@@ -184,10 +198,9 @@ function pdokRings(a) {
   }
   return unionRings(feats.flatMap((f) => ringsOf(f.geometry)));
 }
-
 for (const a of AREAS) {
   if (a.pdok) {
-    a.ringsLand = pdokRings(a); // CBS has no excl-water variant; same rings both layers
+    a.ringsLand = pdokRings(a);
     a.ringsIncl = a.ringsLand;
   } else {
     a.resolvedCodes = codesFor(a);
@@ -195,32 +208,13 @@ for (const a of AREAS) {
     a.ringsIncl = a.resolvedCodes.flatMap((c) => ringsOf(inclByCode.get(c).geometry));
   }
 }
-
-// validate no wijk claimed twice
 const claimed = AREAS.filter((a) => a.resolvedCodes).flatMap((a) => a.resolvedCodes);
 const dupes = claimed.filter((c, i) => claimed.indexOf(c) !== i);
 if (dupes.length) throw new Error('wijk claimed by two areas: ' + dupes.join(', '));
 
-// Rest: whatever is left after cutting rural Noord, Weesp and Driemond. In
-// practice the port (Westpoort + Sloterdijk), kept so the silhouette reads whole.
-const restCodes = inclGeo.features
-  .filter((f) => {
-    const p = f.properties;
-    return !claimed.includes(p.Wijkcode) && p.Stadsdeel !== 'Weesp' && p.Wijk !== 'Waterland' && p.Wijk !== 'Driemond';
-  })
-  .map((f) => f.properties.Wijkcode);
-const restLand = unionRings(restCodes.flatMap((c) => ringsOf(exclByCode.get(c).geometry)));
-const restIncl = restCodes.flatMap((c) => ringsOf(inclByCode.get(c).geometry));
-
-// Water underlay: every included wijk WITH its water, as one shape. It sits
-// under the carved land, so it only shows where water actually is: the IJ, the
-// Amstel, the Sloterplas, the Nieuwe Meer, the IJmeer around IJburg.
-const waterRings = unionRings([...AREAS.filter((a) => !a.pdok).flatMap((a) => a.ringsIncl), ...restIncl]);
-const pdokWaterRings = AREAS.filter((a) => a.pdok).flatMap((a) => a.ringsIncl);
-
-// ---------- projection (bounds from land only, height follows the data) ----------
+// ---------- projection (bounds from the areas, height follows the data) ----------
 const W = 1000, PAD = 10;
-const allLand = [...AREAS.flatMap((a) => a.ringsLand), ...restLand].flat();
+const allLand = AREAS.flatMap((a) => a.ringsLand).flat();
 let minLon = 1e9, maxLon = -1e9, minLat = 1e9, maxLat = -1e9;
 for (const p of allLand) {
   if (p[0] < minLon) minLon = p[0];
@@ -233,7 +227,6 @@ const s = (W - PAD * 2) / ((maxLon - minLon) * kx);
 const H = Math.ceil((maxLat - minLat) * s + PAD * 2);
 const proj = (p) => [Math.round(PAD + (p[0] - minLon) * kx * s), Math.round(PAD + (maxLat - p[1]) * s)];
 
-// ---------- paths ----------
 const ringArea = (pts) => {
   let a = 0;
   for (let i = 0; i < pts.length; i++) {
@@ -242,10 +235,20 @@ const ringArea = (pts) => {
   }
   return Math.abs(a / 2);
 };
-
+// Relative path encoding: "M x y l dx dy dx dy...". Deltas between neighbouring
+// points are one or two digits where absolutes are three or four, which roughly
+// halves the payload of the street network.
+function encode(pts, close) {
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  if (pts.length > 1) {
+    const deltas = [];
+    for (let i = 1; i < pts.length; i++) deltas.push(`${pts[i][0] - pts[i - 1][0]} ${pts[i][1] - pts[i - 1][1]}`);
+    d += 'l' + deltas.join(' ');
+  }
+  return close ? d + 'Z' : d;
+}
 // Project, drop points the rounding made redundant, and drop rings smaller than
-// minArea (in viewBox units^2). That filter is what keeps the canal network from
-// becoming subpixel noise: only water you can see at this scale stays carved.
+// minArea so carved canals do not become subpixel noise.
 function toPath(rings, minArea = 60) {
   const out = [];
   for (const ring of rings) {
@@ -257,69 +260,236 @@ function toPath(rings, minArea = 60) {
     }
     while (pts.length > 1 && pts[0][0] === pts[pts.length - 1][0] && pts[0][1] === pts[pts.length - 1][1]) pts.pop();
     if (pts.length < 3 || ringArea(pts) < minArea) continue;
-    out.push('M' + pts.map((p) => p.join(' ')).join('L') + 'Z');
+    out.push(encode(pts, true));
   }
   return out.join('');
 }
-
-function centroid(rings) {
-  const big = rings.slice().sort((a, b) => ringArea(a.map(proj)) - ringArea(b.map(proj))).pop();
-  let x = 0, y = 0;
-  big.forEach((p) => { const q = proj(p); x += q[0]; y += q[1]; });
-  return [Math.round(x / big.length), Math.round(y / big.length)];
-}
-
-// OSM ways -> one stroked path per feature. Ways stay separate M segments; the
-// two carriageways of the A10 overlap into a single line at this stroke width.
-function linePath(ways) {
+// OSM ways -> stroked path. `thin` skips points that advance less than that many
+// viewBox units, which is what keeps the residential grain affordable.
+function linePath(ways, thin = 0) {
   const segs = [];
   for (const w of ways) {
     const pts = [];
     for (const g of w.geometry || []) {
       const q = proj([g.lon, g.lat]);
       const last = pts[pts.length - 1];
-      if (!last || last[0] !== q[0] || last[1] !== q[1]) pts.push(q);
+      if (!last) { pts.push(q); continue; }
+      const d = Math.abs(q[0] - last[0]) + Math.abs(q[1] - last[1]);
+      if (d === 0 || d < thin) continue;
+      pts.push(q);
     }
-    if (pts.length > 1) segs.push('M' + pts.map((p) => p.join(' ')).join('L'));
+    if (pts.length > 1 && pts.some((p) => p[0] > -20 && p[0] < W + 20 && p[1] > -20 && p[1] < H + 20)) {
+      segs.push(encode(pts, false));
+    }
   }
   return segs.join('');
 }
-const osmWays = osm.elements.filter((e) => e.type === 'way');
-const a10Path = linePath(osmWays.filter((w) => w.tags?.highway === 'motorway'));
-const amstelPath = linePath(osmWays.filter((w) => w.tags?.waterway === 'river'));
 
-// ---------- colours ----------
-const hexToRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-const mix = (hex, t) => {
-  const c = hexToRgb(hex), p = hexToRgb(PAPER);
+// Shoelace centroid of the largest projected ring: a better label anchor than a
+// vertex average for concave shapes like Noord.
+function anchor(rings) {
+  const projected = rings.map((r) => r.map(proj));
+  const big = projected.sort((a, b) => ringArea(b) - ringArea(a))[0];
+  let A = 0, cx = 0, cy = 0;
+  for (let i = 0; i < big.length; i++) {
+    const [x1, y1] = big[i], [x2, y2] = big[(i + 1) % big.length];
+    const cr = x1 * y2 - x2 * y1;
+    A += cr;
+    cx += (x1 + x2) * cr;
+    cy += (y1 + y2) * cr;
+  }
+  A /= 2;
+  return { x: Math.round(cx / (6 * A)), y: Math.round(cy / (6 * A)), area: Math.abs(A) };
+}
+
+// ---------- streets & lines ----------
+const sw = osmStreets.elements.filter((e) => e.type === 'way');
+const streetsMinor = linePath(sw.filter((w) => /^(residential|unclassified|living_street)$/.test(w.tags.highway || '')), 4);
+const streetsMid = linePath(sw.filter((w) => /^(secondary|tertiary)$/.test(w.tags.highway || '')), 3);
+const streetsMajor = linePath(sw.filter((w) => /^(motorway|trunk|primary)$/.test(w.tags.highway || '')), 2);
+const canalsPath = linePath(sw.filter((w) => w.tags.waterway), 2);
+const a10Path = linePath(osmLines.elements.filter((e) => e.type === 'way' && e.tags?.highway === 'motorway'), 2);
+
+// ---------- parks ----------
+const toLonLat = (g) => g.map((p) => [p.lon, p.lat]);
+function relationOuterRings(rel) {
+  const parts = (rel.members || [])
+    .filter((m) => m.type === 'way' && (m.role === 'outer' || m.role === '') && m.geometry)
+    .map((m) => toLonLat(m.geometry));
+  const rings = [];
+  while (parts.length) {
+    const ring = parts.shift();
+    let extended = true;
+    while (extended && k(ring[0]) !== k(ring[ring.length - 1])) {
+      extended = false;
+      for (let i = 0; i < parts.length; i++) {
+        const p = parts[i];
+        if (k(p[0]) === k(ring[ring.length - 1])) ring.push(...p.slice(1));
+        else if (k(p[p.length - 1]) === k(ring[ring.length - 1])) ring.push(...p.slice(0, -1).reverse());
+        else if (k(p[p.length - 1]) === k(ring[0])) ring.unshift(...p.slice(0, -1));
+        else if (k(p[0]) === k(ring[0])) ring.unshift(...p.slice(1).reverse());
+        else continue;
+        parts.splice(i, 1);
+        extended = true;
+        break;
+      }
+    }
+    if (ring.length > 3 && k(ring[0]) === k(ring[ring.length - 1])) rings.push(ring);
+  }
+  return rings;
+}
+function inRing(pt, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+    if (yi > pt[1] !== yj > pt[1] && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+// Test against the water-inclusive rings: Sloterpark's centroid falls in the
+// Sloterplas, which the carved land rings exclude but the wijk itself contains.
+const allAreaRings = AREAS.flatMap((a) => a.ringsIncl);
+const insideScope = (pt) => allAreaRings.some((r) => inRing(pt, r));
+const parkRings = [];
+const parkNames = new Set();
+for (const el of osmParks.elements) {
+  let rings = [];
+  if (el.type === 'way' && el.geometry) {
+    const ring = toLonLat(el.geometry);
+    if (k(ring[0]) === k(ring[ring.length - 1])) rings = [ring];
+  } else if (el.type === 'relation') {
+    rings = relationOuterRings(el);
+  }
+  for (const ring of rings) {
+    const c = ring.reduce((sm, p) => [sm[0] + p[0] / ring.length, sm[1] + p[1] / ring.length], [0, 0]);
+    if (!insideScope(c)) continue;
+    parkRings.push(ring);
+    if (el.tags?.name) parkNames.add(el.tags.name);
+  }
+}
+const parksPath = toPath(parkRings, 45);
+
+// ---------- mosaic hue assignment ----------
+// Adjacency from shared source vertices (pre-projection), plus the known
+// cross-source borders. Greedy, highest degree first, seeded.
+const areaVerts = new Map(AREAS.map((a) => [a.name, new Set(a.ringsLand.flat().map(k))]));
+const adjacency = new Map(AREAS.map((a) => [a.name, new Set()]));
+for (let i = 0; i < AREAS.length; i++) {
+  for (let j = i + 1; j < AREAS.length; j++) {
+    let shared = 0;
+    for (const v of areaVerts.get(AREAS[i].name)) if (areaVerts.get(AREAS[j].name).has(v)) { if (++shared >= 3) break; }
+    if (shared >= 3) {
+      adjacency.get(AREAS[i].name).add(AREAS[j].name);
+      adjacency.get(AREAS[j].name).add(AREAS[i].name);
+    }
+  }
+}
+EXTRA_ADJACENT.forEach(([a, b]) => { adjacency.get(a).add(b); adjacency.get(b).add(a); });
+const hueOf = new Map(Object.entries(MOSAIC_SEED));
+for (const a of AREAS.slice().sort((x, y) => adjacency.get(y.name).size - adjacency.get(x.name).size)) {
+  if (hueOf.has(a.name)) continue;
+  const taken = new Set([...adjacency.get(a.name)].map((n) => hueOf.get(n)).filter(Boolean));
+  // Least-used hue that no neighbour has: keeps all five hues in play (a plain
+  // first-fit solves the graph with four and loses the black blocks entirely).
+  const counts = new Map(MOSAIC_HUES.map((h) => [h, 0]));
+  for (const h of hueOf.values()) counts.set(h, (counts.get(h) ?? 0) + 1);
+  const options = MOSAIC_HUES.filter((h) => !taken.has(h)).sort((x, y) => counts.get(x) - counts.get(y));
+  hueOf.set(a.name, options[0] ?? MOSAIC_HUES[0]);
+}
+for (const [a, neighbours] of adjacency) {
+  for (const n of neighbours) if (hueOf.get(a) === hueOf.get(n)) throw new Error(`same hue on neighbours: ${a} / ${n}`);
+}
+
+// ---------- areas out ----------
+const PAPER = '#f5f0e6';
+const mixPaper = (hex, t) => {
+  const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  const p = [1, 3, 5].map((i) => parseInt(PAPER.slice(i, i + 2), 16));
   return '#' + c.map((v, i) => Math.round(v * t + p[i] * (1 - t)).toString(16).padStart(2, '0')).join('');
 };
+const areas = AREAS.map((a) => {
+  const { x, y, area } = anchor(a.ringsLand);
+  return {
+    name: a.name,
+    slug: slugify(a.name),
+    d: toPath(a.ringsLand),
+    cx: x,
+    cy: y,
+    labelArea: area,
+    color: hueOf.get(a.name),
+    tintPale: mixPaper(hueOf.get(a.name), 0.22),
+  };
+});
 
-const areas = AREAS.map((a) => ({
-  name: a.name,
-  slug: slugify(a.name),
-  d: toPath(a.ringsLand),
-  cx: centroid(a.ringsLand)[0],
-  cy: centroid(a.ringsLand)[1],
-  color: a.color,
-  tintStrong: mix(a.color, 0.46),
-  tintPale: mix(a.color, 0.2),
-}));
+// ---------- labels: cut-out pills with a floating black pill ----------
+// Sized by area on a log scale, then a relaxation pass pushes overlapping labels
+// apart until none touch. The build fails if any overlap survives, so the
+// "pills never touch" guarantee is enforced here rather than eyeballed.
+const AMIN = Math.min(...areas.map((a) => a.labelArea));
+const AMAX = Math.max(...areas.map((a) => a.labelArea));
+const labelSize = (area) => +(9 + 2.5 * (Math.log(area) - Math.log(AMIN)) / (Math.log(AMAX) - Math.log(AMIN))).toFixed(1);
+const labels = areas.map((a) => {
+  const size = labelSize(a.labelArea);
+  const parts = a.name.toUpperCase().split(' & ');
+  const lines = parts.length === 1 ? [parts[0]] : [parts[0], '& ' + parts[1]];
+  const ls = +(size * 0.06).toFixed(1);
+  const pw = (t) => Math.round(t.length * (size * 0.70 + ls) + size * 1.3);
+  const ph = Math.round(size + 8);
+  const w = Math.max(...lines.map(pw));
+  const h = lines.length * ph + (lines.length - 1) * 3;
+  return { slug: a.slug, size, ls, lines, pw, ph, x: a.cx, y: a.cy, w, h };
+});
+const MARGIN = 5;
+for (let it = 0; it < 200; it++) {
+  let moved = false;
+  for (let i = 0; i < labels.length; i++) {
+    for (let j = i + 1; j < labels.length; j++) {
+      const A = labels[i], B = labels[j];
+      const ox = (A.w + B.w) / 2 + MARGIN - Math.abs(A.x - B.x);
+      const oy = (A.h + B.h) / 2 + MARGIN - Math.abs(A.y - B.y);
+      if (ox > 0 && oy > 0) {
+        moved = true;
+        if (oy <= ox) { const sg = A.y <= B.y ? -1 : 1; A.y += (sg * oy) / 2; B.y -= (sg * oy) / 2; }
+        else { const sg = A.x <= B.x ? -1 : 1; A.x += (sg * ox) / 2; B.x -= (sg * ox) / 2; }
+      }
+    }
+  }
+  if (!moved) break;
+}
+labels.forEach((L) => {
+  L.x = Math.round(Math.max(L.w / 2 + 6, Math.min(W - L.w / 2 - 6, L.x)));
+  L.y = Math.round(Math.max(L.h / 2 + 6, Math.min(H - L.h / 2 - 6, L.y)));
+});
+let overlaps = 0;
+for (let i = 0; i < labels.length; i++) for (let j = i + 1; j < labels.length; j++) {
+  const A = labels[i], B = labels[j];
+  if ((A.w + B.w) / 2 - Math.abs(A.x - B.x) > 0 && (A.h + B.h) / 2 - Math.abs(A.y - B.y) > 0) overlaps++;
+}
+if (overlaps) throw new Error(`labels overlap after relaxation: ${overlaps} pair(s)`);
 
-const waterPath = toPath(waterRings, 40) + toPath(pdokWaterRings, 40);
-const restPath = toPath(restLand);
+// Bake per-pill geometry so the runtime does no layout work at all.
+const labelsOut = labels.map((L) => {
+  let y0 = L.y - L.h / 2;
+  const pills = L.lines.map((t) => {
+    const w = L.pw(t), h = L.ph;
+    const pill = { t, x: L.x - w / 2, y: Math.round(y0), w, h, tx: L.x, ty: +(y0 + h / 2 + L.size * 0.35).toFixed(1) };
+    y0 += h + 3;
+    return pill;
+  });
+  return { slug: L.slug, size: L.size, ls: L.ls, pills };
+});
 
-// em dash guard: client hard rule applies to generated names too
-const blob = JSON.stringify(areas);
-if (/[—–]/.test(blob)) throw new Error('em/en dash found in generated map data');
+// em dash guard: the client hard rule applies to generated names too
+if (/[—–]/.test(JSON.stringify(areas) + JSON.stringify(labelsOut))) throw new Error('em/en dash in generated map data');
 
 const ts = `// GENERATED by scripts/build-city-map.mjs. Do not edit by hand.
 //
-// Amsterdam and neighbours from open geodata: maps.amsterdam.nl (wijken, incl.
-// and excl. water), PDOK/CBS (Amstelveen, Diemen, Duivendrecht) and OSM (A10 and
-// Amstel centerlines). Land shapes have the water carved out; WATER_PATH sits
-// underneath and shows through exactly where water is. Colours come from the
-// client's signature palette; tints are precomputed. Nothing fetched at runtime.
+// The mosaic map: saturated blocks (hues from the client's signature palette)
+// separated by paper-coloured streets and canals from OSM, parks in green, and
+// every area named by a cut-out pill holding a floating black pill. Label
+// positions are collision-resolved at build time. Boundaries: maps.amsterdam.nl
+// wijken (excl. water) plus PDOK/CBS for Amstelveen, Diemen and Duivendrecht.
+// Nothing is fetched at runtime.
 
 export interface CityArea {
   /** Display name, matches the by-area grid and AREA_GUIDES. */
@@ -327,47 +497,71 @@ export interface CityArea {
   slug: string;
   /** SVG path in MAP_VIEWBOX space. */
   d: string;
-  /** Label anchor. */
+  /** Shoelace centroid of the largest ring. */
   cx: number;
   cy: number;
-  /** Full palette colour, and its tints on the paper background. */
+  /** Mosaic hue, and its pale tint for the muted hero state. */
   color: string;
-  tintStrong: string;
   tintPale: string;
+}
+
+export interface CityLabelPill {
+  /** Uppercased text of this pill line. */
+  t: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** Text anchor point. */
+  tx: number;
+  ty: number;
+}
+
+export interface CityLabel {
+  slug: string;
+  size: number;
+  /** Letter spacing in viewBox units. */
+  ls: number;
+  pills: CityLabelPill[];
 }
 
 export const MAP_VIEWBOX = '0 0 ${W} ${H}';
 
-/** All water in scope: the IJ, Amstel, Sloterplas, Nieuwe Meer, IJmeer. */
-export const WATER_PATH =
-  '${waterPath}';
+/** Major parks, incl. the Amsterdamse Bos. Over the blocks, under the streets. */
+export const PARKS_PATH =
+  '${parksPath}';
 
-/** The port (Westpoort/Sloterdijk): unnamed context so the city reads whole. */
-export const CITY_REST_PATH =
-  '${restPath}';
+/** Street network, drawn in paper so it cuts the mosaic into blocks. */
+export const STREETS_MINOR_PATH =
+  '${streetsMinor}';
+export const STREETS_MID_PATH =
+  '${streetsMid}';
+export const STREETS_MAJOR_PATH =
+  '${streetsMajor}';
 
-/** A10 ring road centerline. */
+/** Canals and rivers, incl. the grachten and the Amstel. */
+export const CANALS_PATH =
+  '${canalsPath}';
+
+/** A10 ring road, the heaviest seam on the map. */
 export const LINE_A10 =
   '${a10Path}';
 
-/** Amstel river centerline, Muntplein down past Ouderkerk. */
-export const LINE_AMSTEL =
-  '${amstelPath}';
-
 export const CITY_AREAS: CityArea[] = ${JSON.stringify(
-  areas.map(({ name, slug, d, cx, cy, color, tintStrong, tintPale }) => ({ name, slug, d, cx, cy, color, tintStrong, tintPale })),
+  areas.map(({ name, slug, d, cx, cy, color, tintPale }) => ({ name, slug, d, cx, cy, color, tintPale })),
   null,
   2,
 )};
+
+/** Collision-resolved labels: no two ever touch. */
+export const CITY_LABELS: CityLabel[] = ${JSON.stringify(labelsOut, null, 2)};
 `;
 
 fs.writeFileSync(OUT, ts);
 
-console.log(`areas: ${areas.length} | viewBox 0 0 ${W} ${H}`);
-areas.forEach((a) => {
-  const src = AREAS.find((x) => x.name === a.name);
-  const rings = src.ringsLand.length;
-  console.log(`  ${a.name.padEnd(24)} ${a.color}  ${String(rings).padStart(2)} ring(s)  ${(a.d.length / 1024).toFixed(1)}kb`);
-});
-console.log(`water: ${(waterPath.length / 1024).toFixed(1)}kb | rest: ${(restPath.length / 1024).toFixed(1)}kb | A10: ${(a10Path.length / 1024).toFixed(1)}kb | Amstel: ${(amstelPath.length / 1024).toFixed(1)}kb`);
+console.log(`areas: ${areas.length} | viewBox 0 0 ${W} ${H} | label overlaps: ${overlaps}`);
+areas.forEach((a) => console.log(`  ${a.name.padEnd(32)} ${a.color}`));
+console.log(`parks (${parkNames.size}): ${[...parkNames].sort().join(', ')}`);
+const kb = (x) => (x.length / 1024).toFixed(1) + 'kb';
+console.log(`paths: minor ${kb(streetsMinor)} | mid ${kb(streetsMid)} | major ${kb(streetsMajor)} | canals ${kb(canalsPath)} | a10 ${kb(a10Path)} | parks ${kb(parksPath)}`);
 console.log(`wrote ${OUT} (${(ts.length / 1024).toFixed(1)}kb)`);
