@@ -34,4 +34,5 @@ yarn-error.log*
 /dist
 
 # cached open geodata for scripts/build-city-map.mjs (refetch with --refetch)
-scripts/.cache-wijk.json
+scripts/.cache-*.json
+map-preview.html
