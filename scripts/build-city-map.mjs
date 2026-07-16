@@ -63,24 +63,14 @@ const AREAS = [
   { name: 'Duivendrecht',            pdok: { type: 'buurt', gemeente: 'Ouder-Amstel', buurten: ['Duivendrecht', 'Industriegebied Amstel'] } },
 ];
 
-// The mosaic hues, from the client's signature-palette round. Four, not five:
-// the near-black blocks were rejected on the live map ("makes it much more
-// unclear"), so black stays reserved for the label pills only. The teal was
-// then swapped for a steel blue on client request, so green belongs to parks
-// alone and no neighbourhood reads as one. Assignment is greedy over the
-// adjacency graph so neighbours never share a hue. Amstelveen is pinned to the
-// maroon: the greedy pass gave it the grey, which read as disabled.
-const MOSAIC_HUES = ['#e2604a', '#3a5170', '#8e3e54', '#6f695f'];
-const MOSAIC_SEED = { Amstelveen: '#8e3e54' };
-// Cross-source neighbours: the PDOK shapes share no vertices with the Amsterdam
-// layer, so vertex matching cannot see these borders.
-const EXTRA_ADJACENT = [
-  ['Amstelveen', 'Zuidas'], ['Amstelveen', 'De Aker & Sloten'], ['Amstelveen', 'Slotervaart'],
-  ['Duivendrecht', 'Watergraafsmeer'], ['Duivendrecht', 'Rivierenbuurt'], ['Duivendrecht', 'Diemen'], ['Duivendrecht', 'Bijlmer'],
-  ['Diemen', 'Watergraafsmeer'], ['Diemen', 'IJburg'], ['Diemen', 'Bijlmer'], ['Diemen', 'Gaasperdam'],
-];
-
-const PARK_GREEN = '#24604b';
+// The quilt palette, matched to the client's reference poster (a Stockholm
+// block-mosaic print): rose, olive-gold and charcoal blocks on paper, with the
+// poster's teal reserved for parks so green always means green space. Colour
+// varies per BUURT, not per neighbourhood: that block-scale alternation is what
+// makes the reference read as a living quilt instead of flat colour fields.
+const QUILT_HUES = ['#ef7379', '#999023', '#35312c'];
+const PARK_GREEN = '#16826f';
+const CARD_DARK = '#35312c';
 const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 // ---------- fetch with cache ----------
@@ -111,7 +101,7 @@ const AMS = 'https://maps.amsterdam.nl/open_geodata/geojson_lnglat.php?THEMA=geb
 // with EPSG:4326 wants the bbox in lat,lon order.
 const PDOK = 'https://service.pdok.nl/cbs/wijkenbuurten/2024/wfs/v1_0?request=GetFeature&service=WFS&version=2.0.0&outputFormat=application/json&srsName=EPSG:4326';
 
-const [inclGeo, exclGeo, buurtExcl, pdokGem, pdokBuurt, pdokWijk, osmLines, osmGreens, osmStreets] = await Promise.all([
+const [inclGeo, exclGeo, buurtExcl, pdokGem, pdokBuurt, pdokWijk, pdokBuurtAV, pdokBuurtDM, osmLines, osmGreens, osmStreets] = await Promise.all([
   cached('wijk', () => getJson(AMS + 'INDELING_WIJK')),
   cached('wijk-exwater', () => getJson(AMS + 'INDELING_WIJK_EXWATER')),
   cached('buurt-exwater', () => getJson(AMS + 'INDELING_BUURT_EXWATER')),
@@ -121,6 +111,11 @@ const [inclGeo, exclGeo, buurtExcl, pdokGem, pdokBuurt, pdokWijk, osmLines, osmG
     getJson(`${PDOK}&typeName=wijkenbuurten:buurten&BBOX=52.31,4.90,52.35,4.95,EPSG:4326`)),
   cached('pdok-wijken-bbox', () =>
     getJson(`${PDOK}&typeName=wijkenbuurten:wijken&BBOX=52.23,4.78,52.33,4.93,EPSG:4326`)),
+  // Buurt-level detail for the quilt outside gemeente Amsterdam.
+  cached('pdok-buurten-av', () =>
+    getJson(`${PDOK}&typeName=wijkenbuurten:buurten&BBOX=52.25,4.79,52.33,4.90,EPSG:4326`)),
+  cached('pdok-buurten-dm', () =>
+    getJson(`${PDOK}&typeName=wijkenbuurten:buurten&BBOX=52.30,4.93,52.36,5.02,EPSG:4326`)),
   cached('osm-lines', () =>
     overpass(`[out:json][timeout:90];(way["highway"="motorway"]["ref"~"^A ?10$"](52.29,4.79,52.44,5.03);way["waterway"="river"]["name"="Amstel"](52.24,4.83,52.38,4.96););out geom;`)),
   // Everything park-like, by category rather than a hand-picked name list, so
@@ -334,7 +329,6 @@ function anchor(rings) {
 
 // ---------- streets & lines ----------
 const sw = osmStreets.elements.filter((e) => e.type === 'way');
-const streetsMinor = linePath(sw.filter((w) => /^(residential|unclassified|living_street)$/.test(w.tags.highway || '')), 4);
 const streetsMid = linePath(sw.filter((w) => /^(secondary|tertiary)$/.test(w.tags.highway || '')), 3);
 const streetsMajor = linePath(sw.filter((w) => /^(motorway|trunk|primary)$/.test(w.tags.highway || '')), 2);
 const canalsPath = linePath(sw.filter((w) => w.tags.waterway), 2);
@@ -380,9 +374,18 @@ function inRing(pt, ring) {
 // Sloterplas, which the carved land rings exclude but the wijk itself contains.
 const allAreaRings = AREAS.flatMap((a) => a.ringsIncl);
 const insideScope = (pt) => allAreaRings.some((r) => inRing(pt, r));
-const parkRings = [];
+// Main green only, per the client: proper parks, forests and nature reserves
+// above a visibility threshold. No sport fields, golf courses, cemeteries or
+// other "every piece of grass" categories.
+const parkRingsMain = [];
+const parkRingsBig = [];
 const parkNames = new Set();
 for (const el of osmGreens.elements) {
+  const t = el.tags || {};
+  const isBos = t.name === 'Amsterdamse Bos';
+  const isPark = t.leisure === 'park';
+  const isBigGreen = t.landuse === 'forest' || t.leisure === 'nature_reserve';
+  if (!isBos && !isPark && !isBigGreen) continue;
   let rings = [];
   if (el.type === 'way' && el.geometry) {
     const ring = toLonLat(el.geometry);
@@ -393,49 +396,64 @@ for (const el of osmGreens.elements) {
   for (const ring of rings) {
     const c = ring.reduce((sm, p) => [sm[0] + p[0] / ring.length, sm[1] + p[1] / ring.length], [0, 0]);
     if (!insideScope(c)) continue;
-    parkRings.push(ring);
-    if (el.tags?.name) parkNames.add(el.tags.name);
+    (isBos || isPark ? parkRingsMain : parkRingsBig).push(ring);
+    if (t.name) parkNames.add(t.name);
   }
 }
-const parksPath = toPath(parkRings, 45);
+// Parks show from ~0.045 km2; anonymous forest/reserve patches need ~0.1 km2.
+const parksPath = toPath(parkRingsMain, 70) + toPath(parkRingsBig, 150);
 
-// ---------- mosaic hue assignment ----------
-// Adjacency from shared source vertices (pre-projection), plus the known
-// cross-source borders. Greedy, highest degree first, seeded.
-const areaVerts = new Map(AREAS.map((a) => [a.name, new Set(a.ringsLand.flat().map(k))]));
-const adjacency = new Map(AREAS.map((a) => [a.name, new Set()]));
-for (let i = 0; i < AREAS.length; i++) {
-  for (let j = i + 1; j < AREAS.length; j++) {
-    let shared = 0;
-    for (const v of areaVerts.get(AREAS[i].name)) if (areaVerts.get(AREAS[j].name).has(v)) { if (++shared >= 3) break; }
-    if (shared >= 3) {
-      adjacency.get(AREAS[i].name).add(AREAS[j].name);
-      adjacency.get(AREAS[j].name).add(AREAS[i].name);
-    }
+// ---------- the quilt: one colour per buurt ----------
+// The reference poster alternates colour at city-block scale. Buurten are that
+// scale here: ~500 of them across the map. Pieces come from the city's buurt
+// layer (water carved out) plus CBS buurten for Amstelveen, Diemen and
+// Duivendrecht, and a piece is kept when its centre lies inside one of our
+// areas, which silently applies every cut (rural Noord, the port, AMC, the
+// Amstelveen polders) at quilt level too.
+const quiltPieces = [];
+for (const f of buurtExcl.features) {
+  const rings = ringsOf(f.geometry);
+  const c = rings[0].reduce((sm, p) => [sm[0] + p[0] / rings[0].length, sm[1] + p[1] / rings[0].length], [0, 0]);
+  if (insideScope(c)) quiltPieces.push({ id: 'ams-' + f.properties.Buurtcode, rings });
+}
+for (const src of [pdokBuurtAV, pdokBuurtDM, pdokBuurt]) {
+  for (const f of src.features) {
+    if (f.properties.water === 'JA') continue;
+    const rings = ringsOf(f.geometry);
+    const c = rings[0].reduce((sm, p) => [sm[0] + p[0] / rings[0].length, sm[1] + p[1] / rings[0].length], [0, 0]);
+    if (insideScope(c)) quiltPieces.push({ id: 'cbs-' + (f.properties.buurtcode || f.properties.buurtnaam), rings });
   }
 }
-EXTRA_ADJACENT.forEach(([a, b]) => { adjacency.get(a).add(b); adjacency.get(b).add(a); });
-const hueOf = new Map(Object.entries(MOSAIC_SEED));
-for (const a of AREAS.slice().sort((x, y) => adjacency.get(y.name).size - adjacency.get(x.name).size)) {
-  if (hueOf.has(a.name)) continue;
-  const taken = new Set([...adjacency.get(a.name)].map((n) => hueOf.get(n)).filter(Boolean));
-  // Least-used hue that no neighbour has, so all hues stay evenly in play.
-  const counts = new Map(MOSAIC_HUES.map((h) => [h, 0]));
-  for (const h of hueOf.values()) counts.set(h, (counts.get(h) ?? 0) + 1);
-  const options = MOSAIC_HUES.filter((h) => !taken.has(h)).sort((x, y) => counts.get(x) - counts.get(y));
-  hueOf.set(a.name, options[0] ?? MOSAIC_HUES[0]);
+const seenIds = new Set();
+const quilt = quiltPieces.filter((p) => (seenIds.has(p.id) ? false : seenIds.add(p.id)));
+
+// Greedy 3-hue colouring over shared-vertex adjacency, balanced, best effort:
+// with three hues some neighbours will occasionally match, exactly like the
+// reference, where same-coloured blocks sit side by side across a street.
+const pieceVerts = quilt.map((p) => new Set(p.rings.flat().map(k)));
+const pieceAdj = quilt.map(() => new Set());
+for (let i = 0; i < quilt.length; i++) {
+  for (let j = i + 1; j < quilt.length; j++) {
+    let shared = 0;
+    for (const v of pieceVerts[i]) if (pieceVerts[j].has(v)) { if (++shared >= 2) break; }
+    if (shared >= 2) { pieceAdj[i].add(j); pieceAdj[j].add(i); }
+  }
 }
-for (const [a, neighbours] of adjacency) {
-  for (const n of neighbours) if (hueOf.get(a) === hueOf.get(n)) throw new Error(`same hue on neighbours: ${a} / ${n}`);
+const pieceHue = new Array(quilt.length);
+const order = quilt.map((_, i) => i).sort((a, b) => pieceAdj[b].size - pieceAdj[a].size);
+for (const i of order) {
+  const taken = new Set([...pieceAdj[i]].map((j) => pieceHue[j]).filter(Boolean));
+  const counts = new Map(QUILT_HUES.map((h) => [h, 0]));
+  for (const h of pieceHue) if (h) counts.set(h, counts.get(h) + 1);
+  const options = QUILT_HUES.filter((h) => !taken.has(h)).sort((x, y) => counts.get(x) - counts.get(y));
+  pieceHue[i] = options[0] ?? QUILT_HUES[i % QUILT_HUES.length];
 }
+const quiltPathByHue = QUILT_HUES.map((hue) =>
+  toPath(quilt.flatMap((p, i) => (pieceHue[i] === hue ? p.rings : [])), 20),
+);
 
 // ---------- areas out ----------
 const PAPER = '#f5f0e6';
-const mixPaper = (hex, t) => {
-  const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-  const p = [1, 3, 5].map((i) => parseInt(PAPER.slice(i, i + 2), 16));
-  return '#' + c.map((v, i) => Math.round(v * t + p[i] * (1 - t)).toString(16).padStart(2, '0')).join('');
-};
 const areas = AREAS.map((a) => {
   const { x, y, area } = anchor(a.ringsLand);
   return {
@@ -445,8 +463,7 @@ const areas = AREAS.map((a) => {
     cx: x,
     cy: y,
     labelArea: area,
-    color: hueOf.get(a.name),
-    tintPale: mixPaper(hueOf.get(a.name), 0.22),
+    color: CARD_DARK,
   };
 });
 
@@ -519,31 +536,32 @@ if (/[—–]/.test(JSON.stringify(areas) + JSON.stringify(labelsOut))) throw ne
 // A PNG only ever gets decoded, off the main thread, once.
 const SEAM = PAPER;
 const seamsSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+${QUILT_HUES.map((hue, i) => `<path d="${quiltPathByHue[i]}" fill="${hue}" fill-rule="evenodd"/>`).join('\n')}
 <path d="${parksPath}" fill="${PARK_GREEN}" fill-rule="evenodd"/>
-<g fill="none" stroke="${SEAM}" stroke-linecap="round">
-<path d="${streetsMinor}" stroke-width="1.5"/>
-<path d="${streetsMid}" stroke-width="2.6"/>
-<path d="${streetsMajor}" stroke-width="4.2"/>
-<path d="${canalsPath}" stroke-width="2.2" stroke-linejoin="round"/>
-<path d="${a10Path}" stroke-width="5.5"/>
+<g fill="none" stroke="${SEAM}" stroke-linecap="round" stroke-linejoin="round">
+<path d="${streetsMid}" stroke-width="3.4"/>
+<path d="${streetsMajor}" stroke-width="5"/>
+<path d="${canalsPath}" stroke-width="3"/>
+<path d="${a10Path}" stroke-width="7"/>
 </g>
 </svg>`;
 const PUB = path.join(process.cwd(), 'public');
 fs.mkdirSync(PUB, { recursive: true });
-// Rendered at 1440px wide, comfortably above the ~760px the map displays at,
-// with a small palette: the layer is two colours plus antialiasing.
+// Rendered at 1600px wide, comfortably above the ~760px the map displays at,
+// with a small palette: five flat colours plus antialiasing.
 const sharp = (await import('sharp')).default;
-const png = await sharp(Buffer.from(seamsSvg), { density: (72 * 1440) / W })
+const png = await sharp(Buffer.from(seamsSvg), { density: (72 * 1600) / W })
   .png({ palette: true, colors: 64 })
   .toBuffer();
-fs.writeFileSync(path.join(PUB, 'map-seams.png'), png);
+fs.writeFileSync(path.join(PUB, 'map-quilt.png'), png);
 
 const ts = `// GENERATED by scripts/build-city-map.mjs. Do not edit by hand.
 //
-// The mosaic map: saturated blocks (hues from the client's signature palette),
-// named by cut-out pills, with collision-resolved label positions. The street
-// network, canals and parks live in /public/map-seams.svg, layered over the
-// blocks as a cached raster; only the interactive geometry ships as JS.
+// The quilt map, after the client's reference poster: one colour per buurt in
+// rose, olive-gold and charcoal, parks in teal, main streets and canals as
+// rounded paper lines, named by cut-out pills with collision-resolved
+// positions. All visuals live in /public/map-quilt.png as a cached raster;
+// only the interactive hit geometry ships as JS.
 // Boundaries: maps.amsterdam.nl wijken (excl. water) plus PDOK/CBS for
 // Amstelveen, Diemen and Duivendrecht. Nothing is fetched at runtime.
 
@@ -556,9 +574,8 @@ export interface CityArea {
   /** Shoelace centroid of the largest ring. */
   cx: number;
   cy: number;
-  /** Mosaic hue, and its pale tint for the muted hero state. */
+  /** Colour for the hover card chrome. The quilt itself lives in the bitmap. */
   color: string;
-  tintPale: string;
 }
 
 export interface CityLabelPill {
@@ -584,10 +601,10 @@ export interface CityLabel {
 export const MAP_VIEWBOX = '0 0 ${W} ${H}';
 
 /** The streets/canals/parks overlay, served as a cached raster. */
-export const MAP_SEAMS_SRC = '/map-seams.png';
+export const MAP_SEAMS_SRC = '/map-quilt.png';
 
 export const CITY_AREAS: CityArea[] = ${JSON.stringify(
-  areas.map(({ name, slug, d, cx, cy, color, tintPale }) => ({ name, slug, d, cx, cy, color, tintPale })),
+  areas.map(({ name, slug, d, cx, cy, color }) => ({ name, slug, d, cx, cy, color })),
   null,
   2,
 )};
@@ -598,10 +615,9 @@ export const CITY_LABELS: CityLabel[] = ${JSON.stringify(labelsOut, null, 2)};
 
 fs.writeFileSync(OUT, ts);
 
-console.log(`areas: ${areas.length} | viewBox 0 0 ${W} ${H} | label overlaps: ${overlaps}`);
-areas.forEach((a) => console.log(`  ${a.name.padEnd(32)} ${a.color}`));
-console.log(`green areas drawn: ${parkRings.length} polygons from ${parkNames.size} named places (parks, forests, reserves, sport parks, cemeteries)`);
+console.log(`areas: ${areas.length} | quilt pieces: ${quilt.length} | viewBox 0 0 ${W} ${H} | label overlaps: ${overlaps}`);
+console.log(`greens: ${parkRingsMain.length + parkRingsBig.length} candidate rings from ${parkNames.size} named places (parks, forests, reserves only)`);
 const kb = (x) => (x.length / 1024).toFixed(1) + 'kb';
-console.log(`seams image: minor ${kb(streetsMinor)} | mid ${kb(streetsMid)} | major ${kb(streetsMajor)} | canals ${kb(canalsPath)} | a10 ${kb(a10Path)} | parks ${kb(parksPath)}`);
-console.log(`wrote public/map-seams.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
+console.log(`quilt image: hues ${quiltPathByHue.map(kb).join('/')} | mid ${kb(streetsMid)} | major ${kb(streetsMajor)} | canals ${kb(canalsPath)} | a10 ${kb(a10Path)} | parks ${kb(parksPath)}`);
+console.log(`wrote public/map-quilt.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
 console.log(`wrote ${OUT} (${(ts.length / 1024).toFixed(1)}kb, ships as JS)`);

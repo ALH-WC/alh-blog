@@ -20,13 +20,12 @@ interface Props {
 
 const [VB_W, VB_H] = MAP_VIEWBOX.split(' ').slice(2).map(Number);
 
-// The interactive mosaic map on the by-area index.
+// The interactive quilt map on the by-area index.
 //
-// Three stacked layers, and the split is what keeps it fast: the interactive
-// blocks are a small inline SVG; the street network, canals and parks are a
-// static <img> the browser rasterizes once and composites as a cached bitmap;
-// the pill labels are a light SVG on top. Hovering repaints 26 simple polygons,
-// never the two hundred thousand street points.
+// All the visuals live in one cached bitmap (the buurt quilt, parks, streets,
+// canals). On top of it sit three light layers: an invisible SVG with the 26
+// neighbourhood hit shapes, a veil SVG that darkens the hovered area, and the
+// pill labels. Hovering repaints one polygon, never the quilt.
 export function CityMap({ tips = {} }: Props) {
   const [hover, setHover] = useState<string | null>(null);
 
@@ -36,9 +35,11 @@ export function CityMap({ tips = {} }: Props) {
 
   return (
     <div className={styles.wrap}>
+      <img src={MAP_SEAMS_SRC} alt="" aria-hidden="true" decoding="async" className={styles.quilt} />
+
       <svg
         viewBox={MAP_VIEWBOX}
-        className={styles.svg}
+        className={styles.hits}
         role="img"
         aria-label="Map of Amsterdam and its neighbouring areas"
         onMouseLeave={() => setHover(null)}
@@ -56,7 +57,6 @@ export function CityMap({ tips = {} }: Props) {
                 key={a.slug}
                 d={a.d}
                 className={styles.area}
-                style={{ fill: a.color }}
                 fillRule="evenodd"
                 role="button"
                 aria-label={`${a.name}, guide coming soon`}
@@ -68,15 +68,15 @@ export function CityMap({ tips = {} }: Props) {
           return (
             <Link key={a.slug} href={`/blog/${AREA_GUIDES[a.name]}`} aria-label={`${a.name} guide`} {...on}>
               <title>{a.name}</title>
-              <path d={a.d} className={styles.area} style={{ fill: a.color }} fillRule="evenodd" />
+              <path d={a.d} className={styles.area} fillRule="evenodd" />
             </Link>
           );
         })}
-        {/* Hover: one translucent veil over the active block. */}
+        {/* Hover: one translucent veil over the active area, above the bitmap
+            because the quilt is opaque. pointer-events stay with the shapes. */}
         {area ? <path d={area.d} className={styles.veil} fillRule="evenodd" /> : null}
       </svg>
 
-      <img src={MAP_SEAMS_SRC} alt="" aria-hidden="true" decoding="async" className={styles.seams} />
       <MapLabels />
 
       {area ? (
