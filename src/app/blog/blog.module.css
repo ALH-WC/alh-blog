@@ -201,7 +201,6 @@
 .sheadDek {
   margin-top: 20px;
   font-size: 18px;
-  max-width: 600px;
   color: var(--body-text);
 }
 .viewall {

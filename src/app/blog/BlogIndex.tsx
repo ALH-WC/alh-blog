@@ -175,13 +175,12 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
         <p className={styles.featDek}>{a.dek}</p>
         <span className={styles.foot}>
           <span>{a.readMinutes} min read</span>
-          <span className={styles.ar}>↗</span>
         </span>
       </span>
     </Link>
   );
 
-  const menuItems = [{ key: 'latest', label: 'The latest' }, ...SECTIONS.map((s) => ({ key: s.key, label: s.menu }))];
+  const menuItems = [{ key: 'latest', label: 'The Latest' }, ...SECTIONS.map((s) => ({ key: s.key, label: s.menu }))];
 
   return (
     <div className={styles.page}>
@@ -273,7 +272,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
             <section id="latest" data-sec="latest" className={`${styles.cells} ${styles.c2}`} style={{ marginTop: 40 }} data-reveal="">
               {FeatureCard(hero, true)}
               <div className={`${styles.cell} ${styles.latest}`}>
-                <span className={`${styles.eyebrow} ${styles.latestHead}`}>The latest</span>
+                <span className={`${styles.eyebrow} ${styles.latestHead}`}>The Latest</span>
                 {latest.map((a) => (
                   <Link key={a._id} href={`/blog/${a.slug}`} className={`${styles.cardLink} ${styles.lrow}`}>
                     <span className={styles.lcat}>{a.category}</span>
