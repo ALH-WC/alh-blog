@@ -21,7 +21,7 @@ export function CityMapHero({ active }: { active: string }) {
           />
         ))}
       </svg>
-      <img src={MAP_SEAMS_SRC} alt="" aria-hidden="true" className={styles.seams} />
+      <img src={MAP_SEAMS_SRC} alt="" aria-hidden="true" decoding="async" className={styles.seams} />
       {area ? <MapLabels only={area.slug} /> : null}
     </div>
   );

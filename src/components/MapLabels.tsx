@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { CITY_LABELS, MAP_VIEWBOX } from '../lib/cityMap';
 import styles from './CityMap.module.css';
 
@@ -6,8 +7,9 @@ import styles from './CityMap.module.css';
 // build time; the layer never intercepts the mouse.
 //
 // Deliberately not a client component: the article hero renders it on the
-// server, so guide pages ship no label JavaScript.
-export function MapLabels({ only }: { only?: string }) {
+// server, so guide pages ship no label JavaScript. Memoized so the index map's
+// hover re-renders skip reconciling ninety static elements.
+export const MapLabels = memo(function MapLabels({ only }: { only?: string }) {
   const labels = only ? CITY_LABELS.filter((l) => l.slug === only) : CITY_LABELS;
   return (
     <svg viewBox={MAP_VIEWBOX} className={styles.overlay} aria-hidden="true">
@@ -24,4 +26,4 @@ export function MapLabels({ only }: { only?: string }) {
       )}
     </svg>
   );
-}
+});

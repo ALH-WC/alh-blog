@@ -20,8 +20,8 @@
 .area {
   stroke: var(--paper);
   stroke-width: 1;
-}
-.linked {
+  /* Every neighbourhood is clickable (guides open, the rest bring up their
+     card), so every neighbourhood shows the hand. */
   cursor: pointer;
 }
 /* Hover veil: a single translucent path painted over the active block. Never a
@@ -145,9 +145,13 @@
   color: rgba(255, 255, 255, 0.78);
 }
 
-/* Article hero: shorter, muted context, only the active pill shows. */
+/* Article hero: shorter, muted context, only the active pill shows, and the
+   blocks are an illustration there, not controls. */
 .hero .svg {
   max-height: 400px;
+}
+.hero .area {
+  cursor: default;
 }
 @media (max-width: 900px) {
   .hero .svg {

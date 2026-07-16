@@ -44,7 +44,7 @@ export interface CityLabel {
 export const MAP_VIEWBOX = '0 0 1000 1083';
 
 /** The streets/canals/parks overlay, served as a cached raster. */
-export const MAP_SEAMS_SRC = '/map-seams.svg';
+export const MAP_SEAMS_SRC = '/map-seams.png';
 
 export const CITY_AREAS: CityArea[] = [
   {
@@ -303,128 +303,128 @@ export const CITY_LABELS: CityLabel[] = [
   },
   {
     "slug": "grachtengordel",
-    "size": 9.1,
-    "ls": 0.5,
+    "size": 10,
+    "ls": 0.6,
     "pills": [
       {
         "t": "GRACHTENGORDEL",
-        "x": 421,
+        "x": 415.5,
         "y": 351,
-        "w": 108,
-        "h": 17,
+        "w": 119,
+        "h": 18,
         "tx": 475,
-        "ty": 362.2
+        "ty": 363.5
       }
     ]
   },
   {
     "slug": "jordaan",
-    "size": 9,
-    "ls": 0.5,
+    "size": 10,
+    "ls": 0.6,
     "pills": [
       {
         "t": "JORDAAN",
-        "x": 413.5,
-        "y": 316,
-        "w": 59,
-        "h": 17,
+        "x": 410,
+        "y": 315,
+        "w": 66,
+        "h": 18,
         "tx": 443,
-        "ty": 327.1
+        "ty": 327.5
       }
     ]
   },
   {
     "slug": "westerpark",
-    "size": 9.3,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "WESTERPARK",
-        "x": 367.5,
-        "y": 279,
-        "w": 83,
-        "h": 17,
+        "x": 364.5,
+        "y": 278,
+        "w": 89,
+        "h": 18,
         "tx": 409,
-        "ty": 290.3
+        "ty": 290.5
       }
     ]
   },
   {
     "slug": "houthavens-spaarndammerbuurt",
-    "size": 9.4,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "HOUTHAVENS",
-        "x": 376,
-        "y": 218,
-        "w": 84,
-        "h": 17,
+        "x": 373.5,
+        "y": 217,
+        "w": 89,
+        "h": 18,
         "tx": 418,
-        "ty": 229.3
+        "ty": 229
       },
       {
         "t": "& SPAARNDAMMERBUURT",
-        "x": 343.5,
+        "x": 339.5,
         "y": 238,
-        "w": 149,
-        "h": 17,
+        "w": 157,
+        "h": 18,
         "tx": 418,
-        "ty": 249.3
+        "ty": 250
       }
     ]
   },
   {
     "slug": "bos-en-lommer",
-    "size": 9.6,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "BOS EN LOMMER",
-        "x": 282,
-        "y": 300,
-        "w": 108,
+        "x": 280,
+        "y": 301,
+        "w": 112,
         "h": 18,
         "tx": 336,
-        "ty": 312.4
+        "ty": 313.5
       }
     ]
   },
   {
     "slug": "oud-west",
-    "size": 9.3,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "OUD-WEST",
-        "x": 367.5,
-        "y": 378,
-        "w": 69,
-        "h": 17,
+        "x": 365,
+        "y": 377,
+        "w": 74,
+        "h": 18,
         "tx": 402,
-        "ty": 389.3
+        "ty": 389.5
       }
     ]
   },
   {
     "slug": "de-baarsjes",
-    "size": 9.4,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "DE BAARSJES",
-        "x": 315.5,
-        "y": 355,
-        "w": 91,
-        "h": 17,
+        "x": 312.5,
+        "y": 354,
+        "w": 97,
+        "h": 18,
         "tx": 361,
-        "ty": 366.3
+        "ty": 366.5
       }
     ]
   },
   {
     "slug": "oud-zuid",
-    "size": 10.1,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
@@ -440,126 +440,126 @@ export const CITY_LABELS: CityLabel[] = [
   },
   {
     "slug": "de-pijp",
-    "size": 9.3,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "DE PIJP",
-        "x": 466,
-        "y": 437,
-        "w": 62,
-        "h": 17,
+        "x": 464,
+        "y": 436,
+        "w": 66,
+        "h": 18,
         "tx": 497,
-        "ty": 448.3
+        "ty": 448.5
       }
     ]
   },
   {
     "slug": "rivierenbuurt",
-    "size": 9.6,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "RIVIERENBUURT",
-        "x": 457,
-        "y": 509,
-        "w": 108,
+        "x": 446,
+        "y": 499,
+        "w": 112,
         "h": 18,
-        "tx": 511,
-        "ty": 521.4
+        "tx": 502,
+        "ty": 511.5
       }
     ]
   },
   {
     "slug": "zuidas",
-    "size": 10.3,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "ZUIDAS",
-        "x": 389,
+        "x": 389.5,
         "y": 551,
-        "w": 60,
+        "w": 59,
         "h": 18,
         "tx": 419,
-        "ty": 563.6
+        "ty": 563.5
       }
     ]
   },
   {
     "slug": "noord",
-    "size": 11,
-    "ls": 0.7,
+    "size": 10,
+    "ls": 0.6,
     "pills": [
       {
         "t": "NOORD",
-        "x": 520,
+        "x": 522.5,
         "y": 151,
-        "w": 56,
-        "h": 19,
+        "w": 51,
+        "h": 18,
         "tx": 548,
-        "ty": 163.8
+        "ty": 163.5
       }
     ]
   },
   {
     "slug": "oud-oost",
-    "size": 9.5,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "OUD-OOST",
-        "x": 544,
+        "x": 542,
         "y": 410,
-        "w": 70,
+        "w": 74,
         "h": 18,
         "tx": 579,
-        "ty": 422.3
+        "ty": 422.5
       }
     ]
   },
   {
     "slug": "indische-buurt",
-    "size": 9.7,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "INDISCHE BUURT",
-        "x": 592,
+        "x": 590.5,
         "y": 360,
-        "w": 116,
+        "w": 119,
         "h": 18,
         "tx": 650,
-        "ty": 372.4
+        "ty": 372.5
       }
     ]
   },
   {
     "slug": "watergraafsmeer",
-    "size": 10.4,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "WATERGRAAFSMEER",
-        "x": 551,
-        "y": 486,
-        "w": 132,
+        "x": 562.5,
+        "y": 495,
+        "w": 127,
         "h": 18,
-        "tx": 617,
-        "ty": 498.6
+        "tx": 626,
+        "ty": 507.5
       }
     ]
   },
   {
     "slug": "ijburg",
-    "size": 9.9,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "IJBURG",
-        "x": 875,
+        "x": 874.5,
         "y": 419,
-        "w": 58,
+        "w": 59,
         "h": 18,
         "tx": 904,
         "ty": 431.5
@@ -568,48 +568,48 @@ export const CITY_LABELS: CityLabel[] = [
   },
   {
     "slug": "geuzenveld-slotermeer",
-    "size": 10.3,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "GEUZENVELD",
-        "x": 131.5,
+        "x": 132.5,
         "y": 288,
-        "w": 91,
+        "w": 89,
         "h": 18,
         "tx": 177,
-        "ty": 300.1
+        "ty": 300
       },
       {
         "t": "& SLOTERMEER",
-        "x": 123.5,
+        "x": 125,
         "y": 309,
-        "w": 107,
+        "w": 104,
         "h": 18,
         "tx": 177,
-        "ty": 321.1
+        "ty": 321
       }
     ]
   },
   {
     "slug": "osdorp",
-    "size": 10.5,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "OSDORP",
-        "x": 80.5,
+        "x": 81.5,
         "y": 382,
-        "w": 61,
-        "h": 19,
+        "w": 59,
+        "h": 18,
         "tx": 111,
-        "ty": 394.7
+        "ty": 394.5
       }
     ]
   },
   {
     "slug": "slotervaart",
-    "size": 10.1,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
@@ -625,106 +625,106 @@ export const CITY_LABELS: CityLabel[] = [
   },
   {
     "slug": "de-aker-sloten",
-    "size": 10.3,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "DE AKER",
-        "x": 156,
+        "x": 157,
         "y": 484,
-        "w": 68,
+        "w": 66,
         "h": 18,
         "tx": 190,
-        "ty": 496.1
+        "ty": 496
       },
       {
         "t": "& SLOTEN",
-        "x": 152,
+        "x": 153,
         "y": 505,
-        "w": 76,
+        "w": 74,
         "h": 18,
         "tx": 190,
-        "ty": 517.1
+        "ty": 517
       }
     ]
   },
   {
     "slug": "bijlmer",
-    "size": 10.7,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "BIJLMER",
-        "x": 679.5,
+        "x": 682,
         "y": 685,
-        "w": 71,
-        "h": 19,
+        "w": 66,
+        "h": 18,
         "tx": 715,
-        "ty": 697.7
+        "ty": 697.5
       }
     ]
   },
   {
     "slug": "gaasperdam",
-    "size": 10.3,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "GAASPERDAM",
-        "x": 753.5,
+        "x": 754.5,
         "y": 733,
-        "w": 91,
+        "w": 89,
         "h": 18,
         "tx": 799,
-        "ty": 745.6
+        "ty": 745.5
       }
     ]
   },
   {
     "slug": "amstelveen",
-    "size": 11.5,
-    "ls": 0.7,
+    "size": 10,
+    "ls": 0.6,
     "pills": [
       {
         "t": "AMSTELVEEN",
-        "x": 291,
-        "y": 795,
-        "w": 102,
-        "h": 20,
+        "x": 297.5,
+        "y": 796,
+        "w": 89,
+        "h": 18,
         "tx": 342,
-        "ty": 809
+        "ty": 808.5
       }
     ]
   },
   {
     "slug": "diemen",
-    "size": 10.7,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "DIEMEN",
-        "x": 776,
+        "x": 777.5,
         "y": 531,
-        "w": 62,
-        "h": 19,
+        "w": 59,
+        "h": 18,
         "tx": 807,
-        "ty": 543.7
+        "ty": 543.5
       }
     ]
   },
   {
     "slug": "duivendrecht",
-    "size": 9.6,
+    "size": 10,
     "ls": 0.6,
     "pills": [
       {
         "t": "DUIVENDRECHT",
-        "x": 567,
+        "x": 565,
         "y": 567,
-        "w": 100,
+        "w": 104,
         "h": 18,
         "tx": 617,
-        "ty": 579.4
+        "ty": 579.5
       }
     ]
   }
