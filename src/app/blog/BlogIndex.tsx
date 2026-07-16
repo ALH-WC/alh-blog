@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { ArticleListItem } from '../../lib/types';
 import { SECTIONS, CATEGORY_TO_SECTION } from '../../lib/sections';
@@ -180,7 +180,15 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
     </Link>
   );
 
-  const menuItems = [{ key: 'latest', label: 'The Latest' }, ...SECTIONS.map((s) => ({ key: s.key, label: s.menu }))];
+  // City Map slots in after Housing, both in the menu and on the page.
+  const menuItems = [
+    { key: 'latest', label: 'The Latest' },
+    ...SECTIONS.flatMap((s) =>
+      s.key === 'neighborhoods'
+        ? [{ key: 'citymap', label: 'City Map' }, { key: s.key, label: s.menu }]
+        : [{ key: s.key, label: s.menu }],
+    ),
+  ];
 
   return (
     <div className={styles.page}>
@@ -292,7 +300,29 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
             const rest = items.slice(1, 5);
             const trio = s.key === 'life';
             return (
-              <div key={s.key}>
+              <Fragment key={s.key}>
+                {/* The city map: its own section between Housing and Neighborhoods,
+                    with its own menu entry. The dek sits inside the map's empty
+                    top-left corner, level with the top of the map. No reveal
+                    animation: transforming the map during scroll stutters. */}
+                {s.key === 'neighborhoods' ? (
+                  <div id="sec-citymap" data-sec="citymap">
+                    <div className={styles.shead} style={{ paddingTop: 56 }}>
+                      <div className={styles.sheadMain}>
+                        <span className={`${styles.eyebrow} ${styles.subEyebrow}`}>Every neighborhood, one by one</span>
+                        <h2 className={styles.sheadTitle}>The city map</h2>
+                      </div>
+                    </div>
+                    <section className={styles.mapWrap}>
+                      <p className={styles.mapDek}>
+                        Find your part of Amsterdam on the map. Tap a neighborhood to read its guide: what it costs,
+                        who it suits, and what it is like to live there.
+                      </p>
+                      <CityMap tips={areaTips} />
+                    </section>
+                  </div>
+                ) : null}
+              <div>
                 <div id={`sec-${s.key}`} data-sec={s.key} className={styles.shead}>
                   <div className={styles.sheadMain}>
                     <h2 className={styles.sheadTitle}>{s.title}</h2>
@@ -359,27 +389,8 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
                   </section>
                 ) : null}
 
-                {/* Neighborhood-by-area index after the neighborhoods chapter */}
-                {s.key === 'neighborhoods' ? (
-                  <>
-                    <div className={styles.shead} style={{ paddingTop: 56 }}>
-                      <div className={styles.sheadMain}>
-                        <span className={`${styles.eyebrow} ${styles.subEyebrow}`}>Every neighborhood, one by one</span>
-                        <h2 className={styles.sheadTitle}>A guide to each part of the city</h2>
-                        <p className={styles.sheadDek}>
-                          Find your part of Amsterdam on the map. Tap a neighborhood to read its guide: what it costs,
-                          who it suits, and what it is like to live there.
-                        </p>
-                      </div>
-                    </div>
-                    {/* No reveal animation here: transforming the street-network
-                        SVG during scroll is expensive enough to stutter. */}
-                    <section>
-                      <CityMap tips={areaTips} />
-                    </section>
-                  </>
-                ) : null}
               </div>
+              </Fragment>
             );
           })}
 

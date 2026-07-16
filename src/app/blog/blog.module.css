@@ -1085,3 +1085,28 @@
     border-right: 1px solid #4a3f34;
   }
 }
+
+/* The city map section: the dek sits in the map's empty top-left corner, its
+   top level with the top of the map. On narrow screens that corner shrinks
+   away, so the dek returns to normal flow above the map. */
+.mapWrap {
+  position: relative;
+}
+.mapDek {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  max-width: 36ch;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--body-text);
+  pointer-events: none;
+}
+@media (max-width: 760px) {
+  .mapDek {
+    position: static;
+    max-width: none;
+    margin-bottom: 18px;
+  }
+}
