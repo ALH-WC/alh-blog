@@ -1,49 +1,50 @@
-/* The mosaic map. Saturated blocks separated by streets and canals drawn in the
-   page's paper colour, so the seams and the water read as cuts through the map
-   to the page. Parks sit in green over the blocks. Every area is named by a
-   cut-out pill (paper) holding a floating black pill with the name in paper.
+/* The quilt map, after the client's reference poster. One colour per buurt in
+   rose, olive-gold and charcoal; parks in teal; main streets and canals as
+   thick rounded lines in the page's paper colour, so the seams and the water
+   read as cuts through the map to the page. Every area is named by a cut-out
+   pill (paper) holding a floating black pill with the name in paper.
 
-   Block hues come per element from src/lib/cityMap.ts as inline fills; this
-   file only carries the shared treatments. */
+   All of that lives in one cached bitmap (map-quilt.png). This file styles the
+   three light layers above it: invisible hit shapes, the hover veil, and the
+   pill labels. */
 
 .wrap {
   position: relative;
   width: 100%;
   /* No background: the paper page shows through every gap and cut-out. */
 }
-.svg {
+
+/* The quilt bitmap: bottom layer, never interactive. */
+.quilt {
   display: block;
   width: 100%;
   height: auto;
+  pointer-events: none;
 }
 
+/* Hit layer: 26 invisible neighbourhood shapes over the bitmap. Transparent,
+   not `none`, so the shapes still catch the mouse. */
+.hits {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
 .area {
-  stroke: var(--paper);
-  stroke-width: 1;
+  fill: transparent;
   /* Every neighbourhood is clickable (guides open, the rest bring up their
      card), so every neighbourhood shows the hand. */
   cursor: pointer;
 }
-/* Hover veil: a single translucent path painted over the active block. Never a
-   CSS filter, which forces the browser to re-rasterize the whole street layer
+/* Hover veil: a single translucent path painted over the active area. Never a
+   CSS filter, which forces the browser to re-rasterize the whole bitmap layer
    and visibly lags the page. */
 .veil {
   fill: rgba(36, 29, 22, 0.2);
   pointer-events: none;
 }
 
-/* The seams overlay: streets, canals, A10 and parks, served as a static SVG
-   image so the browser rasterizes it once and composites the cached bitmap.
-   Never intercepts the mouse. */
-.seams {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-/* Cut-out pill labels: a light SVG layer above the seams. */
+/* Cut-out pill labels: a light SVG layer above everything. */
 .overlay {
   position: absolute;
   inset: 0;
@@ -65,8 +66,7 @@
 }
 
 /* Hover card. Anchored to the area's centroid rather than the cursor, so it
-   holds still while you move within a block. Its background takes the block's
-   own hue. */
+   holds still while you move within an area. */
 .card {
   position: absolute;
   z-index: 2;
@@ -79,7 +79,7 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  pointer-events: none; /* never eat the click meant for the block underneath */
+  pointer-events: none; /* never eat the click meant for the area underneath */
   animation: pop 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2);
   box-shadow: 0 10px 28px rgba(36, 29, 22, 0.25);
 }
@@ -145,16 +145,20 @@
   color: rgba(255, 255, 255, 0.78);
 }
 
-/* Article hero: shorter, muted context, only the active pill shows, and the
-   blocks are an illustration there, not controls. */
-.hero .svg {
-  max-height: 400px;
+/* Article hero: the quilt with every other area veiled to near-paper, so the
+   active neighbourhood keeps its colour. An illustration there, not controls.
+   The wrap is sized to the map's own aspect ratio (1000x928 viewBox): the
+   overlay layers are stretched to the wrap, so any letterboxing would push
+   them out of register with the bitmap. 431px == 400px tall at that ratio. */
+.heroVeil {
+  fill: rgba(245, 240, 230, 0.75);
 }
-.hero .area {
-  cursor: default;
+.hero {
+  width: min(100%, 431px);
+  margin-inline: auto;
 }
 @media (max-width: 900px) {
-  .hero .svg {
-    max-height: 300px;
+  .hero {
+    width: min(100%, 323px);
   }
 }
