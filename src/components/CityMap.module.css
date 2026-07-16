@@ -20,16 +20,16 @@
 .area {
   stroke: var(--paper);
   stroke-width: 1;
-  transition: filter 0.18s ease;
 }
 .linked {
   cursor: pointer;
 }
-/* Hover is driven from React rather than :hover, so the block and its card
-   always agree about which area is active. Fill is inline, so hover works as a
-   deepening filter instead of a fill swap. */
-.hovered {
-  filter: brightness(0.78) saturate(1.1);
+/* Hover veil: a single translucent path painted over the active block. Never a
+   CSS filter, which forces the browser to re-rasterize the whole street layer
+   and visibly lags the page. */
+.veil {
+  fill: rgba(36, 29, 22, 0.2);
+  pointer-events: none;
 }
 
 /* Major parks, incl. the Amsterdamse Bos. Above the blocks, below the seams. */

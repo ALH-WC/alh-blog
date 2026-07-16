@@ -76,7 +76,7 @@ export function CityMap({ tips = {} }: Props) {
       >
         {CITY_AREAS.map((a) => {
           const linked = areaHasGuide(a.name);
-          const cls = `${styles.area}${linked ? ` ${styles.linked}` : ''}${hover === a.name ? ` ${styles.hovered}` : ''}`;
+          const cls = `${styles.area}${linked ? ` ${styles.linked}` : ''}`;
           const on = { onMouseEnter: () => setHover(a.name), onFocus: () => setHover(a.name) };
 
           if (!linked) {
@@ -92,6 +92,10 @@ export function CityMap({ tips = {} }: Props) {
 
         {/* Parks over the blocks, then the seams that cut the mosaic. */}
         <path d={PARKS_PATH} className={styles.parks} fillRule="evenodd" />
+        {/* Hover: one translucent veil over the active block. A CSS filter here
+            forces the browser to re-rasterize the whole street layer and made
+            the page lag; painting a single extra path does not. */}
+        {area ? <path d={area.d} className={styles.veil} fillRule="evenodd" /> : null}
         <path d={STREETS_MINOR_PATH} className={styles.sMinor} />
         <path d={STREETS_MID_PATH} className={styles.sMid} />
         <path d={STREETS_MAJOR_PATH} className={styles.sMajor} />
