@@ -1,14 +1,16 @@
 /* Amsterdam map. Two uses: the by-area index and the hero of a neighbourhood
-   guide. The whole city sits muted and the area in question carries the ink, so
-   a reader can place their neighbourhood at a glance.
+   guide. Land shapes have the water carved out, so the map is literally the
+   shape of the city; the water layer underneath shows through the gaps (the IJ,
+   the Amstel, the Sloterplas), and the A10 and Amstel lines keep it readable.
 
-   The accent is black, so highlight/mute is carried by the paper-to-ink range
-   rather than by hue. */
+   Every area carries its own colour from the client's signature palette. The
+   hex values live in src/lib/cityMap.ts and arrive per element as CSS custom
+   properties: --c full colour, --ts strong tint, --tp pale tint. */
 
 .wrap {
   position: relative;
   width: 100%;
-  background: var(--beige);
+  /* No background: the page shows through, so the map is the city's shape. */
 }
 .svg {
   display: block;
@@ -16,35 +18,57 @@
   height: auto;
 }
 
-/* Amsterdam outside the curated areas: present, but barely. */
+/* Water underlay: the IJ, Amstel, lakes. Only visible through the land gaps. */
+.water {
+  fill: #9fb4b3;
+  opacity: 0.85;
+}
+
+/* The port (Westpoort/Sloterdijk): present, but clearly not on offer. */
 .rest {
   fill: var(--sand);
-  opacity: 0.45;
+  opacity: 0.5;
 }
 
 .area {
-  fill: var(--line-strong);
-  stroke: var(--beige);
+  fill: var(--tp);
+  stroke: var(--paper);
   stroke-width: 1.5;
   transition: fill 0.18s ease;
 }
 /* Has a guide: reads as available. */
 .linked {
-  fill: #b9b1a2;
+  fill: var(--ts);
   cursor: pointer;
 }
 /* Hover is driven from React rather than :hover, so the shape and its card
    always agree about which area is active. */
 .hovered {
-  fill: var(--ink);
-}
-.hovered.area:not(.linked) {
-  fill: #9a9184; /* no guide: acknowledges the hover without inviting a click */
+  fill: var(--c);
 }
 
-/* The neighbourhood being described. */
+/* The neighbourhood an article is about (hero); fill set inline. */
 .active {
-  fill: var(--ink);
+  stroke-width: 2;
+}
+
+/* Orientation lines. */
+.a10 {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.32;
+  pointer-events: none;
+}
+.amstel {
+  fill: none;
+  stroke: #1f5a66;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .label {
@@ -55,23 +79,24 @@
   text-anchor: middle;
   pointer-events: none;
   paint-order: stroke;
-  stroke: var(--beige);
+  stroke: var(--paper);
   stroke-width: 3px;
   stroke-linejoin: round;
 }
 /* No guide yet: named, but clearly not on offer. */
 .labelMuted {
-  fill: var(--faint-text);
+  fill: #6b6257;
   font-weight: 500;
 }
 .labelActive {
   fill: var(--on-dark);
   stroke: none;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 /* Hover card. Anchored to the area's centroid rather than the cursor, so it
-   holds still while you move within a shape. */
+   holds still while you move within a shape. Its background takes the area's
+   own colour; every palette colour is dark enough for cream text. */
 .card {
   position: absolute;
   z-index: 2;
@@ -79,16 +104,15 @@
   min-width: 190px;
   max-width: 260px;
   padding: 14px 16px;
-  background: var(--dark);
+  background: var(--cardc, var(--dark));
   color: var(--on-dark);
   display: flex;
   flex-direction: column;
   gap: 5px;
   pointer-events: none; /* never eat the click meant for the shape underneath */
   animation: pop 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2);
-  box-shadow: 0 10px 28px rgba(36, 29, 22, 0.22);
+  box-shadow: 0 10px 28px rgba(36, 29, 22, 0.25);
 }
-/* Little pointer down to the neighbourhood. */
 .card::after {
   content: '';
   position: absolute;
@@ -96,7 +120,7 @@
   top: 100%;
   transform: translateX(-50%);
   border: 7px solid transparent;
-  border-top-color: var(--dark);
+  border-top-color: var(--cardc, var(--dark));
 }
 @keyframes pop {
   from {
@@ -118,13 +142,13 @@
   font-style: italic;
   font-size: 19px;
   line-height: 1.1;
-  color: var(--on-dark);
+  color: #ffffff;
 }
 .cardTitle {
   font-family: var(--sans);
   font-size: 13px;
   line-height: 1.4;
-  color: var(--on-dark-muted);
+  color: rgba(255, 255, 255, 0.82);
 }
 .cardFoot {
   display: flex;
@@ -137,7 +161,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--on-dark);
+  color: #ffffff;
 }
 .cardArrow {
   font-size: 14px;
@@ -148,15 +172,12 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--on-dark-muted);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* Article hero: shorter, and only the active label shows. */
-.hero {
-  background: var(--beige);
-}
 .hero .svg {
-  max-height: 340px;
+  max-height: 400px;
 }
 .hero .area {
   stroke-width: 1;
@@ -167,11 +188,11 @@
     font-size: 15px;
   }
   .hero .svg {
-    max-height: 260px;
+    max-height: 300px;
   }
 }
 @media (max-width: 640px) {
   .label {
-    font-size: 17px;
+    font-size: 18px;
   }
 }

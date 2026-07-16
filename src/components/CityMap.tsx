@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import Link from 'next/link';
-import { CITY_AREAS, CITY_REST_PATH, MAP_VIEWBOX } from '../lib/cityMap';
+import { CITY_AREAS, CITY_REST_PATH, LINE_A10, LINE_AMSTEL, MAP_VIEWBOX, WATER_PATH, type CityArea } from '../lib/cityMap';
 import { AREA_GUIDES, areaHasGuide } from '../lib/neighborhoods';
 import styles from './CityMap.module.css';
 
@@ -19,13 +19,36 @@ interface Props {
 
 const [VB_W, VB_H] = MAP_VIEWBOX.split(' ').slice(2).map(Number);
 
+const areaVars = (a: CityArea) =>
+  ({ '--c': a.color, '--ts': a.tintStrong, '--tp': a.tintPale }) as CSSProperties;
+
+// Long names wrap onto two lines at the ampersand so they stay inside their shape.
+function AreaLabel({ a, muted }: { a: CityArea; muted: boolean }) {
+  const parts = a.name.split(' & ');
+  const cls = `${styles.label}${muted ? ` ${styles.labelMuted}` : ''}`;
+  if (parts.length === 1) {
+    return (
+      <text x={a.cx} y={a.cy} className={cls}>
+        {a.name}
+      </text>
+    );
+  }
+  return (
+    <text x={a.cx} y={a.cy - 7} className={cls}>
+      <tspan x={a.cx}>{parts[0]}</tspan>
+      <tspan x={a.cx} dy="15">{`& ${parts[1]}`}</tspan>
+    </text>
+  );
+}
+
 // The interactive map on the by-area index: hover an area to pop up its guide,
 // click to open it. Areas without a guide say so rather than going nowhere.
 //
-// Boundaries come from the city's open geodata, baked into src/lib/cityMap.ts at
-// build time, so this is plain inline SVG: no external requests, no map library.
-// The static article version lives in CityMapHero so the article pages ship none
-// of this JavaScript.
+// Everything is baked into src/lib/cityMap.ts at build time from open geodata:
+// water-carved land shapes, the water underlay that shows through the gaps (the
+// IJ, Amstel, Sloterplas), and the A10 and Amstel centerlines. Plain inline SVG,
+// no external requests, no map library. The static article version lives in
+// CityMapHero so the article pages ship none of this JavaScript.
 export function CityMap({ tips = {} }: Props) {
   const [hover, setHover] = useState<string | null>(null);
 
@@ -39,47 +62,49 @@ export function CityMap({ tips = {} }: Props) {
         viewBox={MAP_VIEWBOX}
         className={styles.svg}
         role="img"
-        aria-label="Map of Amsterdam by neighbourhood"
+        aria-label="Map of Amsterdam and its neighbouring areas"
         onMouseLeave={() => setHover(null)}
       >
-        {/* The rest of the city, so the shape reads as Amsterdam rather than a cluster of blobs. */}
-        <path d={CITY_REST_PATH} className={styles.rest} />
+        {/* Water first: it shows through wherever the land shapes leave a gap. */}
+        <path d={WATER_PATH} className={styles.water} fillRule="evenodd" />
+        {/* The port, unnamed, so the city silhouette reads whole. */}
+        <path d={CITY_REST_PATH} className={styles.rest} fillRule="evenodd" />
 
         {CITY_AREAS.map((a) => {
           const linked = areaHasGuide(a.name);
           const cls = `${styles.area}${linked ? ` ${styles.linked}` : ''}${
             hover === a.name ? ` ${styles.hovered}` : ''
           }`;
-          // Muted areas react to hover too, so the card can say the guide is
-          // coming rather than leaving a dead patch of map.
           const on = { onMouseEnter: () => setHover(a.name), onFocus: () => setHover(a.name) };
 
-          if (!linked) return <path key={a.slug} d={a.d} className={cls} {...on} />;
+          if (!linked) {
+            return <path key={a.slug} d={a.d} className={cls} style={areaVars(a)} fillRule="evenodd" {...on} />;
+          }
           return (
             <Link key={a.slug} href={`/blog/${AREA_GUIDES[a.name]}`} aria-label={`${a.name} guide`} {...on}>
               <title>{a.name}</title>
-              <path d={a.d} className={cls} />
+              <path d={a.d} className={cls} style={areaVars(a)} fillRule="evenodd" />
             </Link>
           );
         })}
 
-        {/* Labels last so they sit above every shape. The hovered one hands over to the card. */}
+        {/* Orientation lines above the fills: the A10 ring and the Amstel. */}
+        <path d={LINE_A10} className={styles.a10} />
+        <path d={LINE_AMSTEL} className={styles.amstel} />
+
         {CITY_AREAS.filter((a) => a.name !== hover).map((a) => (
-          <text
-            key={a.slug}
-            x={a.cx}
-            y={a.cy}
-            className={`${styles.label}${areaHasGuide(a.name) ? '' : ` ${styles.labelMuted}`}`}
-          >
-            {a.name}
-          </text>
+          <AreaLabel key={a.slug} a={a} muted={!areaHasGuide(a.name)} />
         ))}
       </svg>
 
       {area ? (
         <div
           className={styles.card}
-          style={{ left: `${(area.cx / VB_W) * 100}%`, top: `${(area.cy / VB_H) * 100}%` }}
+          style={{
+            left: `${(area.cx / VB_W) * 100}%`,
+            top: `${(area.cy / VB_H) * 100}%`,
+            ['--cardc' as string]: area.color,
+          }}
           aria-hidden="true"
         >
           <span className={styles.cardName}>{area.name}</span>
