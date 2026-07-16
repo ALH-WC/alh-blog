@@ -18,16 +18,23 @@
   height: auto;
 }
 
-/* Water underlay: the IJ, Amstel, lakes. Only visible through the land gaps. */
+/* Water underlay: the IJ, Amstel, lakes. Only visible through the land gaps.
+   A clear blue rather than the earlier grey-green, so water reads as water. */
 .water {
-  fill: #9fb4b3;
-  opacity: 0.85;
+  fill: #a7c8d4;
 }
 
-/* The port (Westpoort/Sloterdijk): present, but clearly not on offer. */
+/* Unnamed context outside the areas (currently none: the port was cut). */
 .rest {
   fill: var(--sand);
   opacity: 0.5;
+}
+
+/* Major parks, incl. the Amsterdamse Bos. Above the fills, out of the mouse's way. */
+.parks {
+  fill: #a4bf8e;
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .area {

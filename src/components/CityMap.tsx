@@ -2,7 +2,7 @@
 
 import { useState, type CSSProperties } from 'react';
 import Link from 'next/link';
-import { CITY_AREAS, CITY_REST_PATH, LINE_A10, LINE_AMSTEL, MAP_VIEWBOX, WATER_PATH, type CityArea } from '../lib/cityMap';
+import { CITY_AREAS, CITY_REST_PATH, LINE_A10, LINE_AMSTEL, MAP_VIEWBOX, PARKS_PATH, WATER_PATH, type CityArea } from '../lib/cityMap';
 import { AREA_GUIDES, areaHasGuide } from '../lib/neighborhoods';
 import styles from './CityMap.module.css';
 
@@ -67,8 +67,7 @@ export function CityMap({ tips = {} }: Props) {
       >
         {/* Water first: it shows through wherever the land shapes leave a gap. */}
         <path d={WATER_PATH} className={styles.water} fillRule="evenodd" />
-        {/* The port, unnamed, so the city silhouette reads whole. */}
-        <path d={CITY_REST_PATH} className={styles.rest} fillRule="evenodd" />
+        {CITY_REST_PATH ? <path d={CITY_REST_PATH} className={styles.rest} fillRule="evenodd" /> : null}
 
         {CITY_AREAS.map((a) => {
           const linked = areaHasGuide(a.name);
@@ -88,6 +87,8 @@ export function CityMap({ tips = {} }: Props) {
           );
         })}
 
+        {/* Parks sit over the area fills but never intercept the mouse. */}
+        <path d={PARKS_PATH} className={styles.parks} fillRule="evenodd" />
         {/* Orientation lines above the fills: the A10 ring and the Amstel. */}
         <path d={LINE_A10} className={styles.a10} />
         <path d={LINE_AMSTEL} className={styles.amstel} />

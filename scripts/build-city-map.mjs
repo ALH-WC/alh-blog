@@ -38,7 +38,8 @@ const AREAS = [
   { name: 'Centrum',                color: '#1f5a66' /* Ocean    */, codes: ['AA', 'AD', 'AE', 'AF', 'AH', 'AJ', 'AK'] },
   { name: 'Grachtengordel',         color: '#aa7a2c' /* Amber    */, codes: ['AC', 'AG'] },
   { name: 'Jordaan',                color: '#a85433' /* Rust     */, codes: ['AB'] },
-  { name: 'Westerpark',             color: '#2f6f5f' /* Teal     */, codes: ['EA', 'EB', 'EC', 'EG', 'EH', 'EJ'] },
+  { name: 'Westerpark',             color: '#2f6f5f' /* Teal     */, codes: ['EG', 'EH', 'EJ'] },
+  { name: 'Houthavens & Spaarndammerbuurt', color: '#32466b' /* Ink */, codes: ['EB', 'EC'] },
   { name: 'Bos en Lommer',          color: '#a5673a' /* Copper   */, codes: ['ED', 'EE', 'EF'] },
   { name: 'Oud-West',               color: '#77405b' /* Plum     */, codes: ['EQ', 'ES', 'ET', 'EU', 'EV'] },
   { name: 'De Baarsjes',            color: '#5f6e53' /* Sage     */, codes: ['EK', 'EL', 'EM', 'EN', 'EP', 'ER'] },
@@ -85,22 +86,28 @@ const AMS = 'https://maps.amsterdam.nl/open_geodata/geojson_lnglat.php?THEMA=geb
 // WFS 2.0 with EPSG:4326 wants the bbox in lat,lon order.
 const PDOK = 'https://service.pdok.nl/cbs/wijkenbuurten/2024/wfs/v1_0?request=GetFeature&service=WFS&version=2.0.0&outputFormat=application/json&srsName=EPSG:4326';
 
-const [inclGeo, exclGeo, pdokGem, pdokBuurt, osm] = await Promise.all([
+async function overpass(q) {
+  // Overpass 406s on Node's default fetch headers; identify ourselves.
+  return getJson('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'alh-blog-map-build/1.0' },
+    body: 'data=' + encodeURIComponent(q),
+  });
+}
+
+const [inclGeo, exclGeo, pdokGem, pdokBuurt, osm, osmParks] = await Promise.all([
   cached('wijk', () => getJson(AMS + 'INDELING_WIJK')),
   cached('wijk-exwater', () => getJson(AMS + 'INDELING_WIJK_EXWATER')),
   cached('pdok-gemeenten-bbox', () =>
     getJson(`${PDOK}&typeName=wijkenbuurten:gemeenten&BBOX=52.20,4.75,52.40,5.05,EPSG:4326`)),
   cached('pdok-buurten-bbox', () =>
     getJson(`${PDOK}&typeName=wijkenbuurten:buurten&BBOX=52.31,4.90,52.35,4.95,EPSG:4326`)),
-  cached('osm-lines', async () => {
-    const q = `[out:json][timeout:90];(way["highway"="motorway"]["ref"~"^A ?10$"](52.29,4.79,52.44,5.03);way["waterway"="river"]["name"="Amstel"](52.24,4.83,52.38,4.96););out geom;`;
-    // Overpass 406s on Node's default fetch headers; identify ourselves.
-    return getJson('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'alh-blog-map-build/1.0' },
-      body: 'data=' + encodeURIComponent(q),
-    });
-  }),
+  cached('osm-lines', () =>
+    overpass(`[out:json][timeout:90];(way["highway"="motorway"]["ref"~"^A ?10$"](52.29,4.79,52.44,5.03);way["waterway"="river"]["name"="Amstel"](52.24,4.83,52.38,4.96););out geom;`)),
+  // Major parks by explicit name, so the green stays deliberate at this scale.
+  // The Amsterdamse Bos is queried separately since it lies in Amstelveen.
+  cached('osm-parks', () =>
+    overpass(`[out:json][timeout:90];(nwr["leisure"="park"]["name"~"^(Vondelpark|Westerpark|Rembrandtpark|Erasmuspark|Sarphatipark|Oosterpark|Flevopark|Park Frankendael|Beatrixpark|Amstelpark|Sloterpark|Gaasperpark|Nelson Mandelapark|Diemerpark|Noorderpark|W\\\\. ?H\\\\. Vliegenbos|Gijsbrecht van Aemstelpark|Martin Luther Kingpark)$"](52.25,4.75,52.45,5.05);nwr["name"="Amsterdamse Bos"](52.25,4.70,52.36,4.90););out geom;`)),
 ]);
 
 // ---------- ring helpers ----------
@@ -201,16 +208,12 @@ const claimed = AREAS.filter((a) => a.resolvedCodes).flatMap((a) => a.resolvedCo
 const dupes = claimed.filter((c, i) => claimed.indexOf(c) !== i);
 if (dupes.length) throw new Error('wijk claimed by two areas: ' + dupes.join(', '));
 
-// Rest: whatever is left after cutting rural Noord, Weesp and Driemond. In
-// practice the port (Westpoort + Sloterdijk), kept so the silhouette reads whole.
-const restCodes = inclGeo.features
-  .filter((f) => {
-    const p = f.properties;
-    return !claimed.includes(p.Wijkcode) && p.Stadsdeel !== 'Weesp' && p.Wijk !== 'Waterland' && p.Wijk !== 'Driemond';
-  })
-  .map((f) => f.properties.Wijkcode);
-const restLand = unionRings(restCodes.flatMap((c) => ringsOf(exclByCode.get(c).geometry)));
-const restIncl = restCodes.flatMap((c) => ringsOf(inclByCode.get(c).geometry));
+// Nothing is kept outside the named areas any more: the port strip north of
+// Bos en Lommer and Westerpark (Westpoort, Sloterdijk, Sloterdijk-West) is
+// industry, so it is cut along with rural Noord, Weesp and Driemond. The map
+// ends where the neighbourhoods end.
+const restLand = [];
+const restIncl = [];
 
 // Water underlay: every included wijk WITH its water, as one shape. It sits
 // under the carved land, so it only shows where water actually is: the IJ, the
@@ -288,6 +291,71 @@ const osmWays = osm.elements.filter((e) => e.type === 'way');
 const a10Path = linePath(osmWays.filter((w) => w.tags?.highway === 'motorway'));
 const amstelPath = linePath(osmWays.filter((w) => w.tags?.waterway === 'river'));
 
+// ---------- parks ----------
+// Closed ways are rings as-is; multipolygon relations (Vondelpark, Rembrandtpark,
+// the Amsterdamse Bos) get their outer member ways stitched end-to-end.
+const toLonLat = (g) => g.map((p) => [p.lon, p.lat]);
+function relationOuterRings(rel) {
+  const parts = (rel.members || [])
+    .filter((m) => m.type === 'way' && (m.role === 'outer' || m.role === '') && m.geometry)
+    .map((m) => toLonLat(m.geometry));
+  const rings = [];
+  while (parts.length) {
+    const ring = parts.shift();
+    let extended = true;
+    while (extended && k(ring[0]) !== k(ring[ring.length - 1])) {
+      extended = false;
+      for (let i = 0; i < parts.length; i++) {
+        const p = parts[i];
+        if (k(p[0]) === k(ring[ring.length - 1])) ring.push(...p.slice(1));
+        else if (k(p[p.length - 1]) === k(ring[ring.length - 1])) ring.push(...p.slice(0, -1).reverse());
+        else if (k(p[p.length - 1]) === k(ring[0])) ring.unshift(...p.slice(0, -1));
+        else if (k(p[0]) === k(ring[0])) ring.unshift(...p.slice(1).reverse());
+        else continue;
+        parts.splice(i, 1);
+        extended = true;
+        break;
+      }
+    }
+    if (ring.length > 3 && k(ring[0]) === k(ring[ring.length - 1])) rings.push(ring);
+  }
+  return rings;
+}
+
+// Point-in-polygon (ray cast), used to drop any park whose centre is not inside
+// one of our areas, so nothing green floats where no land is drawn.
+function inRing(pt, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+    if (yi > pt[1] !== yj > pt[1] && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+// Test against the water-inclusive rings: Sloterpark's centroid falls in the
+// Sloterplas, which the carved land rings exclude but the wijk itself contains.
+const allAreaRings = AREAS.flatMap((a) => a.ringsIncl);
+const insideScope = (pt) => allAreaRings.some((r) => inRing(pt, r));
+
+const parkRings = [];
+const parkNames = new Set();
+for (const el of osmParks.elements) {
+  let rings = [];
+  if (el.type === 'way' && el.geometry) {
+    const ring = toLonLat(el.geometry);
+    if (k(ring[0]) === k(ring[ring.length - 1])) rings = [ring];
+  } else if (el.type === 'relation') {
+    rings = relationOuterRings(el);
+  }
+  for (const ring of rings) {
+    const c = ring.reduce((s, p) => [s[0] + p[0] / ring.length, s[1] + p[1] / ring.length], [0, 0]);
+    if (!insideScope(c)) continue;
+    parkRings.push(ring);
+    if (el.tags?.name) parkNames.add(el.tags.name);
+  }
+}
+const parksPath = toPath(parkRings, 45);
+
 // ---------- colours ----------
 const hexToRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 const mix = (hex, t) => {
@@ -342,9 +410,13 @@ export const MAP_VIEWBOX = '0 0 ${W} ${H}';
 export const WATER_PATH =
   '${waterPath}';
 
-/** The port (Westpoort/Sloterdijk): unnamed context so the city reads whole. */
+/** Unnamed context outside the areas. Currently empty: the port was cut. */
 export const CITY_REST_PATH =
   '${restPath}';
+
+/** Major parks, incl. the Amsterdamse Bos. Drawn over the areas, under labels. */
+export const PARKS_PATH =
+  '${parksPath}';
 
 /** A10 ring road centerline. */
 export const LINE_A10 =
@@ -369,5 +441,6 @@ areas.forEach((a) => {
   const rings = src.ringsLand.length;
   console.log(`  ${a.name.padEnd(24)} ${a.color}  ${String(rings).padStart(2)} ring(s)  ${(a.d.length / 1024).toFixed(1)}kb`);
 });
-console.log(`water: ${(waterPath.length / 1024).toFixed(1)}kb | rest: ${(restPath.length / 1024).toFixed(1)}kb | A10: ${(a10Path.length / 1024).toFixed(1)}kb | Amstel: ${(amstelPath.length / 1024).toFixed(1)}kb`);
+console.log(`water: ${(waterPath.length / 1024).toFixed(1)}kb | parks: ${(parksPath.length / 1024).toFixed(1)}kb | A10: ${(a10Path.length / 1024).toFixed(1)}kb | Amstel: ${(amstelPath.length / 1024).toFixed(1)}kb`);
+console.log(`parks kept: ${[...parkNames].sort().join(', ')}`);
 console.log(`wrote ${OUT} (${(ts.length / 1024).toFixed(1)}kb)`);
