@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getAllArticles } from '../../sanity/lib/queries';
+import { getArticleList } from '../../sanity/lib/queries';
 import { JsonLd } from '../../components/JsonLd';
 import BlogIndex from './BlogIndex';
 
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function BlogPage() {
-  const articles = await getAllArticles();
+  const articles = await getArticleList();
   const base = 'https://amsterdamlifehomes.com';
 
   // Note: no author or date fields anywhere, per client rule.

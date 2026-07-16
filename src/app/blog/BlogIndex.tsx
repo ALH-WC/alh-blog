@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import type { Article } from '../../lib/types';
+import type { ArticleListItem } from '../../lib/types';
 import { SECTIONS, CATEGORY_TO_SECTION } from '../../lib/sections';
 import { SiteNav } from '../../components/SiteNav';
 import { SiteFooter } from '../../components/SiteFooter';
@@ -35,7 +35,7 @@ async function postEmail(endpoint: string, payload: Record<string, unknown>) {
 // Booking link for the closing sales CTA (Cal.com video intake call).
 const INTAKE_URL = 'https://cal.com/amsterdam-life-homes/intake';
 
-export default function BlogIndex({ articles }: { articles: Article[] }) {
+export default function BlogIndex({ articles }: { articles: ArticleListItem[] }) {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState('latest');
   const [compact, setCompact] = useState(false);
@@ -51,7 +51,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
   const hero = useMemo(() => articles.find((a) => a.featured) ?? articles[0], [articles]);
   const latest = useMemo(() => articles.filter((a) => a !== hero).slice(0, 4), [articles, hero]);
   const bySection = useMemo(() => {
-    const map: Record<string, Article[]> = {};
+    const map: Record<string, ArticleListItem[]> = {};
     SECTIONS.forEach((s) => (map[s.key] = []));
     articles.forEach((a) => {
       const key = CATEGORY_TO_SECTION[a.category];
@@ -156,7 +156,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
     searchRef.current?.focus();
   };
 
-  const Card = (a: Article, cls: string, TitleTag: 'h3' | 'h4' = 'h3') => (
+  const Card = (a: ArticleListItem, cls: string, TitleTag: 'h3' | 'h4' = 'h3') => (
     <Link key={a._id} href={`/blog/${a.slug}`} className={`${styles.cardLink} ${styles.srow}`}>
       <span className={styles.scat}>{a.category}</span>
       {TitleTag === 'h3' ? <h3 className={styles.srowTitle}>{a.title}</h3> : <h4 className={styles.srowTitle}>{a.title}</h4>}
@@ -164,7 +164,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
     </Link>
   );
 
-  const FeatureCard = (a: Article, tall = false) => (
+  const FeatureCard = (a: ArticleListItem, tall = false) => (
     <Link href={`/blog/${a.slug}`} className={`${styles.cardLink} ${styles.cell} ${styles.featcard}`}>
       <span className={`${styles.fimg} ${styles.photo}${tall ? ` ${styles.fimgTall}` : ''}`}>
         <img src={a.imageUrl} alt={a.imageAlt} loading="lazy" />
