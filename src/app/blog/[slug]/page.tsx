@@ -9,6 +9,8 @@ import { SiteNav } from '../../../components/SiteNav';
 import { SiteFooter } from '../../../components/SiteFooter';
 import { HelpCta } from '../../../components/HelpCta';
 import { InlineSignup } from '../../../components/InlineSignup';
+import { CityMap } from '../../../components/CityMap';
+import { GUIDE_AREAS } from '../../../lib/neighborhoods';
 import styles from './article.module.css';
 
 const BASE = 'https://amsterdamlifehomes.com';
@@ -92,6 +94,9 @@ export default async function ArticlePage(
   const bodyStart = body.slice(0, insertAt);
   const bodyEnd = body.slice(insertAt);
 
+  // Set only for the guides that are about one mapped area.
+  const mapArea = GUIDE_AREAS[article.slug];
+
   const ogImg = article.ogImageUrl || article.imageUrl;
 
   // Article schema. No author or visible dates on the page, but datePublished is
@@ -156,10 +161,16 @@ export default async function ArticlePage(
 
           {article.dek ? <p className={styles.lead}>{article.dek}</p> : null}
 
+          {/* Neighbourhood guides get the city map with their area lit up, so a
+              reader can place it immediately. Everything else keeps its photo. */}
           <div className={styles.hero}>
-            <div className={styles.heroFrame}>
-              <img src={article.imageUrl} alt={article.imageAlt} />
-            </div>
+            {mapArea ? (
+              <CityMap active={mapArea} mode="hero" />
+            ) : (
+              <div className={styles.heroFrame}>
+                <img src={article.imageUrl} alt={article.imageAlt} />
+              </div>
+            )}
           </div>
 
           {article.summary || (article.keyTakeaways && article.keyTakeaways.length) ? (

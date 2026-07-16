@@ -1,0 +1,94 @@
+/* Amsterdam map. Two uses: the by-area index and the hero of a neighbourhood
+   guide. The whole city sits muted and the area in question carries the ink, so
+   a reader can place their neighbourhood at a glance.
+
+   The accent is black, so highlight/mute is carried by the paper-to-ink range
+   rather than by hue. */
+
+.wrap {
+  width: 100%;
+  background: var(--beige);
+}
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Amsterdam outside the curated areas: present, but barely. */
+.rest {
+  fill: var(--sand);
+  opacity: 0.45;
+}
+
+.area {
+  fill: var(--line-strong);
+  stroke: var(--beige);
+  stroke-width: 1.5;
+  transition: fill 0.18s ease;
+}
+/* Has a guide: reads as available. */
+.linked {
+  fill: #b9b1a2;
+  cursor: pointer;
+}
+.hit:hover .area,
+.hit:focus-visible .area {
+  fill: var(--ink);
+}
+.hit {
+  outline: none;
+}
+
+/* The neighbourhood being described. */
+.active {
+  fill: var(--ink);
+}
+
+.label {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--ink);
+  text-anchor: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--beige);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+/* No guide yet: named, but clearly not on offer. */
+.labelMuted {
+  fill: var(--faint-text);
+  font-weight: 500;
+}
+.labelActive {
+  fill: var(--on-dark);
+  stroke: none;
+  font-size: 15px;
+}
+
+/* Article hero: shorter, and only the active label shows. */
+.hero {
+  background: var(--beige);
+}
+.hero .svg {
+  max-height: 340px;
+}
+.hero .area {
+  stroke-width: 1;
+}
+
+@media (max-width: 900px) {
+  .label {
+    font-size: 15px;
+  }
+  .hero .svg {
+    max-height: 260px;
+  }
+}
+@media (max-width: 640px) {
+  .label {
+    font-size: 17px;
+  }
+}
