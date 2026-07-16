@@ -198,9 +198,6 @@
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-.sheadTitle em {
-  color: var(--accent);
-}
 .sheadDek {
   margin-top: 20px;
   font-size: 18px;

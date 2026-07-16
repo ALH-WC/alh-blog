@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { PortableTextBlock } from '@portabletext/types';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getAllArticles, getAllSlugs, getArticleBySlug } from '../../../sanity/lib/queries';
@@ -13,6 +14,31 @@ import styles from './article.module.css';
 const BASE = 'https://amsterdamlifehomes.com';
 
 export const revalidate = 60;
+
+// Where the newsletter band goes. Aim for the middle, but never directly under a
+// heading (it would read as that chapter's content) and never mid-list. Landing
+// just before a heading is ideal, since it falls on a natural section break.
+function signupIndex(body: PortableTextBlock[]): number {
+  if (body.length < 4) return body.length;
+  const isHeading = (b?: PortableTextBlock) => b?.style === 'h2' || b?.style === 'h3';
+  const isList = (b?: PortableTextBlock) => Boolean(b && 'listItem' in b && b.listItem);
+  const usable = (i: number) =>
+    i > 0 && i < body.length && !isHeading(body[i - 1]) && !(isList(body[i - 1]) && isList(body[i]));
+
+  const mid = Math.ceil(body.length / 2);
+  const window = Math.max(4, Math.round(body.length / 4));
+  const candidates: number[] = [];
+  for (let d = 0; d <= window; d++) {
+    candidates.push(mid + d);
+    if (d) candidates.push(mid - d);
+  }
+  // Prefer a section break: sit just above the next chapter heading.
+  const atBreak = candidates.find((i) => usable(i) && isHeading(body[i]));
+  if (atBreak !== undefined) return atBreak;
+  // Otherwise the nearest clean paragraph boundary.
+  const clean = candidates.find(usable);
+  return clean !== undefined ? clean : body.length;
+}
 
 export async function generateStaticParams() {
   const slugs = await getAllSlugs();
@@ -62,7 +88,7 @@ export default async function ArticlePage(
   // Split the body so the newsletter signup lands roughly in the middle
   // (or at the end of very short articles). Every article gets one.
   const body = article.body ?? [];
-  const insertAt = body.length >= 4 ? Math.ceil(body.length / 2) : body.length;
+  const insertAt = signupIndex(body);
   const bodyStart = body.slice(0, insertAt);
   const bodyEnd = body.slice(insertAt);
 

@@ -294,11 +294,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
               <div key={s.key}>
                 <div id={`sec-${s.key}`} data-sec={s.key} className={styles.shead}>
                   <div className={styles.sheadMain}>
-                    <h2 className={styles.sheadTitle}>
-                      {s.before}
-                      <em>{s.accent}</em>
-                      {s.after}
-                    </h2>
+                    <h2 className={styles.sheadTitle}>{s.title}</h2>
                     <p className={styles.sheadDek}>{s.dek}</p>
                   </div>
                   <button type="button" className={styles.viewall} onClick={() => setQuery(s.categories[0])}>
@@ -368,9 +364,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                     <div className={styles.shead} style={{ paddingTop: 56 }}>
                       <div className={styles.sheadMain}>
                         <span className={`${styles.eyebrow} ${styles.subEyebrow}`}>Every neighborhood, one by one</span>
-                        <h2 className={styles.sheadTitle}>
-                          A <em>guide</em> to each part of <em>the city</em>
-                        </h2>
+                        <h2 className={styles.sheadTitle}>A guide to each part of the city</h2>
                         <p className={styles.sheadDek}>
                           Tap a neighborhood to read its own guide: what it costs, who it suits, and what it is like to
                           live there.
