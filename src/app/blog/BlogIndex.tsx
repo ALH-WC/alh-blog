@@ -7,6 +7,8 @@ import { SECTIONS, CATEGORY_TO_SECTION } from '../../lib/sections';
 import { SiteNav } from '../../components/SiteNav';
 import { SiteFooter } from '../../components/SiteFooter';
 import { HelpCta } from '../../components/HelpCta';
+import { CityMap, type AreaTip } from '../../components/CityMap';
+import { AREA_GUIDES } from '../../lib/neighborhoods';
 import styles from './blog.module.css';
 
 function SearchIcon() {
@@ -33,23 +35,6 @@ async function postEmail(endpoint: string, payload: Record<string, unknown>) {
 // Booking link for the closing sales CTA (Cal.com video intake call).
 const INTAKE_URL = 'https://cal.com/amsterdam-life-homes/intake';
 
-// Amsterdam neighborhoods shown as the "by area" index under the Neighborhoods
-// chapter. Clicking one filters the guide to articles that mention it.
-const NEIGHBORHOODS = [
-  'Oud-Zuid',
-  'De Pijp',
-  'Oost',
-  'Noord',
-  'Jordaan',
-  'Zuidas',
-  'Oud-West',
-  'De Baarsjes',
-  'Westerpark',
-  'Rivierenbuurt',
-  'IJburg',
-  'Watergraafsmeer',
-];
-
 export default function BlogIndex({ articles }: { articles: Article[] }) {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState('latest');
@@ -75,9 +60,26 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
     return map;
   }, [articles]);
 
+  // Guide details for the map's hover card, keyed by area name. Built from the
+  // explicit area/slug table, never by matching names against titles.
+  const areaTips = useMemo(() => {
+    const bySlug = new Map(articles.map((a) => [a.slug, a]));
+    const out: Record<string, AreaTip> = {};
+    Object.entries(AREA_GUIDES).forEach(([area, slug]) => {
+      const a = bySlug.get(slug);
+      if (a) out[area] = { title: a.title, readMinutes: a.readMinutes };
+    });
+    return out;
+  }, [articles]);
+
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return null;
+    // "View all" passes a chapter's menu label. Match it to the chapter and show
+    // every category it holds; a plain substring match would only ever hit one of
+    // them and silently hide the rest.
+    const section = SECTIONS.find((s) => s.menu.toLowerCase() === q);
+    if (section) return articles.filter((a) => section.categories.includes(a.category));
     return articles.filter((a) => `${a.title} ${a.category} ${a.dek}`.toLowerCase().includes(q));
   }, [articles, query]);
 
@@ -297,7 +299,7 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                     <h2 className={styles.sheadTitle}>{s.title}</h2>
                     <p className={styles.sheadDek}>{s.dek}</p>
                   </div>
-                  <button type="button" className={styles.viewall} onClick={() => setQuery(s.categories[0])}>
+                  <button type="button" className={styles.viewall} onClick={() => setQuery(s.menu)}>
                     View all {s.menu} articles <span className={styles.ar}>→</span>
                   </button>
                 </div>
@@ -366,20 +368,13 @@ export default function BlogIndex({ articles }: { articles: Article[] }) {
                         <span className={`${styles.eyebrow} ${styles.subEyebrow}`}>Every neighborhood, one by one</span>
                         <h2 className={styles.sheadTitle}>A guide to each part of the city</h2>
                         <p className={styles.sheadDek}>
-                          Tap a neighborhood to read its own guide: what it costs, who it suits, and what it is like to
-                          live there.
+                          Find your part of Amsterdam on the map. Tap a neighborhood to read its guide: what it costs,
+                          who it suits, and what it is like to live there.
                         </p>
                       </div>
                     </div>
-                    <section className={styles.nbGrid} data-reveal="">
-                      {NEIGHBORHOODS.map((n) => (
-                        <button key={n} type="button" className={styles.nbCell} onClick={() => setQuery(n)}>
-                          <span className={styles.nbName}>{n}</span>
-                          <span className={styles.nbLink}>
-                            Read the guide <span className={styles.ar}>→</span>
-                          </span>
-                        </button>
-                      ))}
+                    <section data-reveal="">
+                      <CityMap tips={areaTips} />
                     </section>
                   </>
                 ) : null}
