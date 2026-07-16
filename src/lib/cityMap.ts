@@ -45,7 +45,7 @@ export interface CityLabel {
 export const MAP_VIEWBOX = '0 0 1000 928';
 
 /** The streets/canals/parks overlay, served as a cached raster. */
-export const MAP_SEAMS_SRC = '/map-vangogh2.png';
+export const MAP_SEAMS_SRC = '/map-vangogh3.png';
 
 export const CITY_AREAS: CityArea[] = [
   {
