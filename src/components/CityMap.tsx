@@ -1,8 +1,18 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { CITY_AREAS, CITY_REST_PATH, LINE_A10, LINE_AMSTEL, MAP_VIEWBOX, PARKS_PATH, WATER_PATH, type CityArea } from '../lib/cityMap';
+import {
+  CANALS_PATH,
+  CITY_AREAS,
+  CITY_LABELS,
+  LINE_A10,
+  MAP_VIEWBOX,
+  PARKS_PATH,
+  STREETS_MAJOR_PATH,
+  STREETS_MID_PATH,
+  STREETS_MINOR_PATH,
+} from '../lib/cityMap';
 import { AREA_GUIDES, areaHasGuide } from '../lib/neighborhoods';
 import styles from './CityMap.module.css';
 
@@ -19,36 +29,35 @@ interface Props {
 
 const [VB_W, VB_H] = MAP_VIEWBOX.split(' ').slice(2).map(Number);
 
-const areaVars = (a: CityArea) =>
-  ({ '--c': a.color, '--ts': a.tintStrong, '--tp': a.tintPale }) as CSSProperties;
-
-// Long names wrap onto two lines at the ampersand so they stay inside their shape.
-function AreaLabel({ a, muted }: { a: CityArea; muted: boolean }) {
-  const parts = a.name.split(' & ');
-  const cls = `${styles.label}${muted ? ` ${styles.labelMuted}` : ''}`;
-  if (parts.length === 1) {
-    return (
-      <text x={a.cx} y={a.cy} className={cls}>
-        {a.name}
-      </text>
-    );
-  }
+// Every area's cut-out label: a pill in the page's paper colour, holding a
+// floating black pill with the name in paper. Baked at build time with
+// collision-resolved positions; pointer-events none so the mouse always talks
+// to the block beneath.
+function Labels() {
   return (
-    <text x={a.cx} y={a.cy - 7} className={cls}>
-      <tspan x={a.cx}>{parts[0]}</tspan>
-      <tspan x={a.cx} dy="15">{`& ${parts[1]}`}</tspan>
-    </text>
+    <g className={styles.labels}>
+      {CITY_LABELS.map((L) =>
+        L.pills.map((p) => (
+          <g key={`${L.slug}-${p.t}`}>
+            <rect x={p.x} y={p.y} width={p.w} height={p.h} rx={p.h / 2} className={styles.pillCut} />
+            <rect x={p.x + 2.5} y={p.y + 2.5} width={p.w - 5} height={p.h - 5} rx={(p.h - 5) / 2} className={styles.pillInk} />
+            <text x={p.tx} y={p.ty} fontSize={L.size} letterSpacing={L.ls} className={styles.pillText}>
+              {p.t}
+            </text>
+          </g>
+        )),
+      )}
+    </g>
   );
 }
 
-// The interactive map on the by-area index: hover an area to pop up its guide,
-// click to open it. Areas without a guide say so rather than going nowhere.
+// The interactive mosaic map on the by-area index: saturated blocks separated by
+// paper-coloured streets and canals, parks in green, cut-out pill labels. Hover
+// an area to pop up its guide, click to open it; areas without a guide say so.
 //
 // Everything is baked into src/lib/cityMap.ts at build time from open geodata:
-// water-carved land shapes, the water underlay that shows through the gaps (the
-// IJ, Amstel, Sloterplas), and the A10 and Amstel centerlines. Plain inline SVG,
-// no external requests, no map library. The static article version lives in
-// CityMapHero so the article pages ship none of this JavaScript.
+// plain inline SVG, no external requests, no map library. The static article
+// version lives in CityMapHero so article pages ship none of this JavaScript.
 export function CityMap({ tips = {} }: Props) {
   const [hover, setHover] = useState<string | null>(null);
 
@@ -65,37 +74,31 @@ export function CityMap({ tips = {} }: Props) {
         aria-label="Map of Amsterdam and its neighbouring areas"
         onMouseLeave={() => setHover(null)}
       >
-        {/* Water first: it shows through wherever the land shapes leave a gap. */}
-        <path d={WATER_PATH} className={styles.water} fillRule="evenodd" />
-        {CITY_REST_PATH ? <path d={CITY_REST_PATH} className={styles.rest} fillRule="evenodd" /> : null}
-
         {CITY_AREAS.map((a) => {
           const linked = areaHasGuide(a.name);
-          const cls = `${styles.area}${linked ? ` ${styles.linked}` : ''}${
-            hover === a.name ? ` ${styles.hovered}` : ''
-          }`;
+          const cls = `${styles.area}${linked ? ` ${styles.linked}` : ''}${hover === a.name ? ` ${styles.hovered}` : ''}`;
           const on = { onMouseEnter: () => setHover(a.name), onFocus: () => setHover(a.name) };
 
           if (!linked) {
-            return <path key={a.slug} d={a.d} className={cls} style={areaVars(a)} fillRule="evenodd" {...on} />;
+            return <path key={a.slug} d={a.d} className={cls} style={{ fill: a.color }} fillRule="evenodd" {...on} />;
           }
           return (
             <Link key={a.slug} href={`/blog/${AREA_GUIDES[a.name]}`} aria-label={`${a.name} guide`} {...on}>
               <title>{a.name}</title>
-              <path d={a.d} className={cls} style={areaVars(a)} fillRule="evenodd" />
+              <path d={a.d} className={cls} style={{ fill: a.color }} fillRule="evenodd" />
             </Link>
           );
         })}
 
-        {/* Parks sit over the area fills but never intercept the mouse. */}
+        {/* Parks over the blocks, then the seams that cut the mosaic. */}
         <path d={PARKS_PATH} className={styles.parks} fillRule="evenodd" />
-        {/* Orientation lines above the fills: the A10 ring and the Amstel. */}
+        <path d={STREETS_MINOR_PATH} className={styles.sMinor} />
+        <path d={STREETS_MID_PATH} className={styles.sMid} />
+        <path d={STREETS_MAJOR_PATH} className={styles.sMajor} />
+        <path d={CANALS_PATH} className={styles.canal} />
         <path d={LINE_A10} className={styles.a10} />
-        <path d={LINE_AMSTEL} className={styles.amstel} />
 
-        {CITY_AREAS.filter((a) => a.name !== hover).map((a) => (
-          <AreaLabel key={a.slug} a={a} muted={!areaHasGuide(a.name)} />
-        ))}
+        <Labels />
       </svg>
 
       {area ? (
