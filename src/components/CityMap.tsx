@@ -85,7 +85,6 @@ export function CityMap({ tips = {} }: Props) {
           style={{
             left: `${(area.cx / VB_W) * 100}%`,
             top: `${(area.cy / VB_H) * 100}%`,
-            ['--cardc' as string]: area.color,
           }}
           aria-hidden="true"
         >
