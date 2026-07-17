@@ -44,9 +44,12 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
   const [modalBuy, setModalBuy] = useState(false);
   const [modalSent, setModalSent] = useState(false);
   const [popState, setPopState] = useState<'idle' | 'shown' | 'dismissed'>('idle');
-  const [scrolled, setScrolled] = useState(false);
+  // How far (0-64px) the category bar has pushed the site menu off the top.
+  // Scroll-linked: 1px of scroll moves both bars exactly 1px.
+  const [prog, setProg] = useState(0);
 
   const gmenuRef = useRef<HTMLElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
   const leadRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -90,11 +93,14 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
     const menu = () => gmenuRef.current;
     const onScroll = () => {
       const g = menu();
-      // The site menu collapses at the exact moment the category bar docks
-      // beneath it, never earlier: one signal drives both states.
-      const docked = g ? g.getBoundingClientRect().top <= 65 : false;
-      setCompact(docked);
-      setScrolled(docked);
+      // Migration progress, linked 1:1 to the scroll. The sentinel marks the
+      // bar's natural position: once it reaches the site menu's bottom edge
+      // (64px), every further pixel of scroll moves the site menu up 1px and
+      // lets the bar follow, until the bar owns the top edge at 64.
+      const sTop = dockRef.current?.getBoundingClientRect().top ?? Infinity;
+      const p = Math.min(64, Math.max(0, 64 - sTop));
+      setProg(p);
+      setCompact(p >= 64);
       // spy
       const off = (g?.offsetHeight ?? 0) + 64 + 24;
       let cur = 'latest';
@@ -198,7 +204,20 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
 
   return (
     <div className={styles.page}>
-      <SiteNav collapsed={scrolled} />
+      <SiteNav offset={prog} brandLifted />
+
+      {/* Viewport-fixed logo and contact button at the site menu's exact
+          coordinates. They never move: the menus slide beneath them. */}
+      <div className={styles.brandFix}>
+        <Link href="/blog" className={navStyles.logoWrap} aria-label="Amsterdam Life Homes home">
+          <span className={navStyles.logo}>Amsterdam Life Homes</span>
+        </Link>
+      </div>
+      <div className={`${styles.brandFix} ${styles.brandFixR}`}>
+        <a href="https://amsterdamlifehomes.com/#contact" className={navStyles.cta}>
+          Contact us
+        </a>
+      </div>
 
       {/* MASTHEAD */}
       <div className={styles.content}>
@@ -222,20 +241,16 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
       </div>
 
       {/* CATEGORY MENU */}
+      {/* Zero-height sentinel: marks the bar's natural (unstuck) position so
+          scroll progress past the docking point can be measured exactly. */}
+      <div ref={dockRef} aria-hidden="true" />
       <nav
-        className={`${styles.gmenu}${compact ? ` ${styles.gmenuCompact}` : ''}${scrolled ? ` ${styles.gmenuRaised}` : ''}`}
+        className={`${styles.gmenu}${compact ? ` ${styles.gmenuCompact}` : ''}${prog >= 64 ? ` ${styles.gmenuRaised}` : ''}`}
         ref={gmenuRef}
+        style={{ top: 64 - prog }}
         aria-label="Categories"
       >
         <div className={styles.gin}>
-          {/* The site menu's logo, migrated here while that menu is collapsed. */}
-          <div className={`${styles.gmig} ${styles.gmigL}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
-            {/* Identical markup and classes to the site menu's logo: same font,
-                size and spacing, so the handoff between the two is invisible. */}
-            <Link href="/blog" className={navStyles.logoWrap} aria-label="Amsterdam Life Homes home" tabIndex={scrolled ? 0 : -1}>
-              <span className={navStyles.logo}>Amsterdam Life Homes</span>
-            </Link>
-          </div>
           <div className={styles.gnav}>
             {menuItems.map((m) => (
               <button
@@ -264,12 +279,6 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
               </button>
             ) : null}
           </label>
-          {/* The site menu's contact button, migrated here while it is collapsed. */}
-          <div className={`${styles.gmig} ${styles.gmigR}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
-            <a href="https://amsterdamlifehomes.com/#contact" className={navStyles.cta} tabIndex={scrolled ? 0 : -1}>
-              Contact us
-            </a>
-          </div>
         </div>
       </nav>
 

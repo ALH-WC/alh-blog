@@ -49,7 +49,11 @@ function NavLink({
   );
 }
 
-export function SiteNav({ collapsed = false }: { collapsed?: boolean }) {
+// `offset` shifts the whole bar up by that many pixels (scroll-linked by the
+// blog index, so the bar moves at exactly the speed of the scroll).
+// `brandLifted` hides the bar's own logo and contact button on wide screens,
+// where the page renders viewport-fixed copies that never move.
+export function SiteNav({ offset = 0, brandLifted = false }: { offset?: number; brandLifted?: boolean }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -70,7 +74,11 @@ export function SiteNav({ collapsed = false }: { collapsed?: boolean }) {
   }, [open]);
 
   return (
-    <nav className={`${styles.nav}${collapsed && !open ? ` ${styles.navHidden}` : ''}`} aria-label="Primary">
+    <nav
+      className={`${styles.nav}${brandLifted ? ` ${styles.brandLifted}` : ''}`}
+      style={offset > 0 && !open ? { transform: `translateY(${-offset}px)` } : undefined}
+      aria-label="Primary"
+    >
       <div className={styles.inner}>
         <Link href="/blog" className={styles.logoWrap} aria-label="Amsterdam Life Homes home">
           <span className={styles.logo}>Amsterdam Life Homes</span>
