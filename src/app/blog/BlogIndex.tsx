@@ -307,17 +307,16 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
                     animation: transforming the map during scroll stutters. */}
                 {s.key === 'neighborhoods' ? (
                   <div id="sec-citymap" data-sec="citymap">
-                    <div className={styles.shead} style={{ paddingTop: 56 }}>
-                      <div className={styles.sheadMain}>
-                        <span className={`${styles.eyebrow} ${styles.subEyebrow}`}>Every neighborhood, one by one</span>
-                        <h2 className={styles.sheadTitle}>The city map</h2>
-                      </div>
-                    </div>
+                    {/* Title and dek overlay the map's empty top-left corner, so
+                        the title starts level with Noord at the map's top. */}
                     <section className={styles.mapWrap}>
-                      <p className={styles.mapDek}>
-                        Find your part of Amsterdam on the map. Tap a neighborhood to read its guide: what it costs,
-                        who it suits, and what it is like to live there.
-                      </p>
+                      <div className={styles.mapHead}>
+                        <h2 className={styles.sheadTitle}>The city map</h2>
+                        <p className={styles.mapDek}>
+                          Find your part of Amsterdam on the map. Tap a neighborhood to read its guide: what it costs,
+                          who it suits, and what it is like to live there.
+                        </p>
+                      </div>
                       <CityMap tips={areaTips} />
                     </section>
                   </div>

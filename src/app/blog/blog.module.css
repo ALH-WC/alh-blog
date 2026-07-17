@@ -1091,12 +1091,20 @@
    away, so the dek returns to normal flow above the map. */
 .mapWrap {
   position: relative;
+  margin-top: 72px;
 }
-.mapDek {
+/* Title + dek overlaying the map's empty top-left corner. The title's top edge
+   sits almost level with Noord, the map's northernmost shape. Same 20px gap
+   between title and dek as every other chapter head. */
+.mapHead {
   position: absolute;
-  top: 0;
+  top: 2.5%;
   left: 0;
   z-index: 1;
+  max-width: 420px;
+}
+.mapDek {
+  margin-top: 20px;
   max-width: 36ch;
   font-size: 18px;
   line-height: 1.55;
@@ -1104,9 +1112,13 @@
   pointer-events: none;
 }
 @media (max-width: 760px) {
-  .mapDek {
+  /* No empty corner to borrow on small screens: head flows above the map. */
+  .mapHead {
     position: static;
     max-width: none;
     margin-bottom: 18px;
+  }
+  .mapDek {
+    max-width: none;
   }
 }
