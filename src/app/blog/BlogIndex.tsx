@@ -90,8 +90,11 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
     const menu = () => gmenuRef.current;
     const onScroll = () => {
       const g = menu();
-      if (g) setCompact(g.getBoundingClientRect().top <= 65);
-      setScrolled(window.scrollY > 40);
+      // The site menu collapses at the exact moment the category bar docks
+      // beneath it, never earlier: one signal drives both states.
+      const docked = g ? g.getBoundingClientRect().top <= 65 : false;
+      setCompact(docked);
+      setScrolled(docked);
       // spy
       const off = (g?.offsetHeight ?? 0) + 64 + 24;
       let cur = 'latest';
@@ -226,7 +229,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
       >
         <div className={styles.gin}>
           {/* The site menu's logo, migrated here while that menu is collapsed. */}
-          <div className={`${styles.gmig}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
+          <div className={`${styles.gmig} ${styles.gmigL}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
             <a href="https://amsterdamlifehomes.com" className={`${navStyles.logo} ${styles.gmigLogo}`} tabIndex={scrolled ? 0 : -1}>
               Amsterdam Life Homes
             </a>
@@ -260,7 +263,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
             ) : null}
           </label>
           {/* The site menu's contact button, migrated here while it is collapsed. */}
-          <div className={`${styles.gmig}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
+          <div className={`${styles.gmig} ${styles.gmigR}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
             <a href="https://amsterdamlifehomes.com/#contact" className={navStyles.cta} tabIndex={scrolled ? 0 : -1}>
               Contact us
             </a>
@@ -325,17 +328,18 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
                     top-left corner, level with the top of the map. No reveal
                     animation: transforming the map during scroll stutters. */}
                 {s.key === 'neighborhoods' ? (
-                  <div id="sec-citymap" data-sec="citymap">
-                    {/* Title and dek overlay the map's empty top-left corner, so
-                        the title starts level with Noord at the map's top. */}
+                  <div id="sec-citymap" data-sec="citymap" className={styles.mapSec}>
+                    {/* Title and dek overlay the map's empty top-left corner,
+                        anchored to the section so they align with the other
+                        chapter titles, not with the narrower centered map. */}
+                    <div className={styles.mapHead}>
+                      <h2 className={styles.sheadTitle}>The city map</h2>
+                      <p className={styles.mapDek}>
+                        Find your part of Amsterdam on the map. Tap a neighborhood to read its guide: what it costs,
+                        who it suits, and what it is like to live there.
+                      </p>
+                    </div>
                     <section className={styles.mapWrap}>
-                      <div className={styles.mapHead}>
-                        <h2 className={styles.sheadTitle}>The city map</h2>
-                        <p className={styles.mapDek}>
-                          Find your part of Amsterdam on the map. Tap a neighborhood to read its guide: what it costs,
-                          who it suits, and what it is like to live there.
-                        </p>
-                      </div>
                       <CityMap tips={areaTips} />
                     </section>
                   </div>
