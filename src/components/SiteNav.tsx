@@ -49,7 +49,7 @@ function NavLink({
   );
 }
 
-export function SiteNav() {
+export function SiteNav({ collapsed = false }: { collapsed?: boolean }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -70,7 +70,7 @@ export function SiteNav() {
   }, [open]);
 
   return (
-    <nav className={styles.nav} aria-label="Primary">
+    <nav className={`${styles.nav}${collapsed && !open ? ` ${styles.navHidden}` : ''}`} aria-label="Primary">
       <div className={styles.inner}>
         <Link href="/blog" className={styles.logoWrap} aria-label="Amsterdam Life Homes home">
           <span className={styles.logo}>Amsterdam Life Homes</span>
