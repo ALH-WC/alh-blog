@@ -14,7 +14,6 @@
   height: var(--nav-height);
   background: var(--paper);
   box-sizing: border-box;
-  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .inner {
@@ -221,8 +220,13 @@
   }
 }
 
-/* Blog index: the site menu slides away while scrolled, leaving the category
-   bar as the only chrome. Its logo and contact button migrate there. */
-.navHidden {
-  transform: translateY(-100%);
+
+/* On wide screens the blog index renders viewport-fixed copies of the logo
+   and contact button that never move; the bar's own pair yields to them.
+   visibility (not display) keeps the bar layout identical. */
+@media (min-width: 1896px) {
+  .brandLifted .logoWrap,
+  .brandLifted .buttons {
+    visibility: hidden;
+  }
 }

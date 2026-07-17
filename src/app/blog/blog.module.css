@@ -91,39 +91,33 @@
   background: var(--paper);
   border-top: 1px solid var(--hairline);
   border-bottom: 1px solid var(--hairline);
-  transition: box-shadow 0.22s ease, top 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.22s ease;
 }
 /* While the site menu is collapsed the category bar owns the top edge. */
 .gmenuRaised {
   top: 0;
 }
-/* The site menu's logo and contact button, migrated into the category bar
-   while scrolled. Collapsed to zero width when the site menu is visible, so
-   the bar layout is untouched at the top of the page. */
-.gmig {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0;
-  white-space: nowrap;
-  pointer-events: none;
-  transition: opacity 0.3s ease 0.1s;
-}
-.gmigL {
+/* The logo and contact button, fixed to the viewport at the site menu's exact
+   coordinates. They never move or fade: both menu bars slide beneath them, so
+   whichever bar is at the top appears to carry them. Above the nav (z 100). */
+.brandFix {
+  position: fixed;
+  top: 0;
   left: var(--gutter);
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  z-index: 110;
 }
-.gmigR {
+.brandFixR {
+  left: auto;
   right: var(--gutter);
 }
-.gmigShow {
-  opacity: 1;
-  pointer-events: auto;
-}
-/* Below this the bar's items would collide with the absolute pair: the menu
-   row is ~1300px wide and centered, and the full-size logo needs ~290px of
-   clear paper on its side. Measured, not guessed. */
+/* Below this the centered menu row would collide with the full-size logo:
+   the bar keeps its own logo and contact instead. Measured, not guessed. */
 @media (max-width: 1895px) {
-  .gmig {
+  .brandFix {
     display: none;
   }
 }
@@ -149,6 +143,14 @@
 .gmenuCompact .gin {
   padding-top: 8px;
   padding-bottom: 8px;
+}
+/* While the bar owns the top edge on wide screens it hosts the fixed logo and
+   contact pair, so it keeps the site menu's full height instead of compacting. */
+@media (min-width: 1896px) {
+  .gmenuRaised .gin {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
 }
 .gnav {
   display: flex;
