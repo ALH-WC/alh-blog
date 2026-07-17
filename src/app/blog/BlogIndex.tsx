@@ -50,6 +50,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
 
   const gmenuRef = useRef<HTMLElement>(null);
   const dockRef = useRef<HTMLDivElement>(null);
+  const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leadRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -101,6 +102,21 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
       const p = Math.min(64, Math.max(0, 64 - sTop));
       setProg(p);
       setCompact(p >= 64);
+      // Soft close: if the scroll comes to rest inside the handoff zone, the
+      // page gently scrolls the few remaining pixels toward the nearest end,
+      // so the bars never sit half-migrated. The timer resets on every scroll
+      // event, so it never fights an active scroll, and smooth scrolling
+      // feeds back through this same handler, keeping the motion 1:1.
+      if (snapTimer.current) clearTimeout(snapTimer.current);
+      if (p > 0 && p < 64 && !window.matchMedia('(prefers-reduced-motion:reduce)').matches) {
+        snapTimer.current = setTimeout(() => {
+          const t = dockRef.current?.getBoundingClientRect().top;
+          if (t == null) return;
+          const pp = 64 - t;
+          if (pp <= 0 || pp >= 64) return;
+          window.scrollTo({ top: window.scrollY + (pp >= 32 ? t : -pp), behavior: 'smooth' });
+        }, 160);
+      }
       // spy
       const off = (g?.offsetHeight ?? 0) + 64 + 24;
       let cur = 'latest';
@@ -118,7 +134,10 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (snapTimer.current) clearTimeout(snapTimer.current);
+    };
   }, []);
 
   // Gentle reveal-on-scroll. Content ships visible; the effect only hides
