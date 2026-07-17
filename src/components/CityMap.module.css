@@ -38,14 +38,11 @@
 }
 /* Hover veil: a single translucent path painted over the active area. Never a
    CSS filter, which forces the browser to re-rasterize the whole bitmap layer
-   and visibly lags the page. The paper stroke repaints the divider gap over
-   the veil's own edge, so the tint stops exactly where the visible colour
-   stops instead of spilling onto the divider. */
+   and visibly lags the page. Pure tint, no stroke: the geometry itself (the
+   baked inset path) stops at the divider, so nothing opaque ever paints over
+   the map and the hovered area stays pixel-identical, just greyed. */
 .veil {
   fill: rgba(36, 29, 36, 0.18);
-  stroke: var(--paper);
-  stroke-width: 5;
-  stroke-linejoin: round;
   pointer-events: none;
 }
 
@@ -158,18 +155,18 @@
 
 /* Article hero: the quilt with every other area veiled to near-paper, so the
    active neighbourhood keeps its colour. An illustration there, not controls.
-   The wrap is sized to the map's own aspect ratio (1000x928 viewBox): the
+   The wrap is sized to the map's own aspect ratio (1000x887 viewBox): the
    overlay layers are stretched to the wrap, so any letterboxing would push
-   them out of register with the bitmap. 431px == 400px tall at that ratio. */
+   them out of register with the bitmap. 451px == 400px tall at that ratio. */
 .heroVeil {
   fill: rgba(245, 240, 230, 0.75);
 }
 .hero {
-  width: min(100%, 431px);
+  width: min(100%, 451px);
   margin-inline: auto;
 }
 @media (max-width: 900px) {
   .hero {
-    width: min(100%, 323px);
+    width: min(100%, 338px);
   }
 }

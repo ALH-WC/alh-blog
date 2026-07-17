@@ -73,8 +73,10 @@ export function CityMap({ tips = {} }: Props) {
           );
         })}
         {/* Hover: one translucent veil over the active area, above the bitmap
-            because the quilt is opaque. pointer-events stay with the shapes. */}
-        {area ? <path d={area.d} className={styles.veil} fillRule="evenodd" /> : null}
+            because it is opaque. The veil uses the inset path (v), so the tint
+            stops at the divider and paints over nothing: the map under the
+            hover stays pixel-identical, just greyed. */}
+        {area ? <path d={area.v} className={styles.veil} fillRule="evenodd" /> : null}
       </svg>
 
       <MapLabels />

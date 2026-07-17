@@ -44,7 +44,9 @@ const AREAS = [
   { name: 'De Pijp',                 codes: ['KE', 'KF', 'KG'] },
   { name: 'Rivierenbuurt',           codes: ['KK', 'KL', 'KM'] },
   { name: 'Zuidas',                  codes: ['KN', 'KP', 'KQ', 'KR'] },
-  { name: 'Noord',                   stadsdeel: 'Noord', excludeWijk: ['Waterland'] },
+  // Buurt-level; the shipyard appendix (Noorder IJplas, Cornelis Douwes) is
+  // excluded here and the client's drawn field cut is applied further down.
+  { name: 'Noord',                   buurtStadsdeel: 'Noord', excludeWijkB: ['Waterland'], excludeBuurt: ['Noorder IJplas', 'Cornelis Douwesterrein-West', 'Cornelis Douwesterrein-Oost'] },
   { name: 'Oud-Oost',                codes: ['MB', 'MC', 'MD', 'ME'] },
   { name: 'Indische Buurt',          codes: ['MA', 'MF', 'MG'] },
   { name: 'Watergraafsmeer',         codes: ['MM', 'MN', 'MP', 'MQ'] },
@@ -224,6 +226,13 @@ for (const a of AREAS) {
   if (a.pdok) {
     a.ringsLand = pdokRings(a);
     a.ringsIncl = a.ringsLand;
+  } else if (a.buurtStadsdeel) {
+    const feats = buurtExcl.features.filter(
+      (f) => f.properties.Stadsdeel === a.buurtStadsdeel && !(a.excludeWijkB || []).includes(f.properties.Wijk) && !(a.excludeBuurt || []).includes(f.properties.Buurt),
+    );
+    if (!feats.length) throw new Error('no buurten matched for ' + a.name);
+    a.ringsLand = unionRings(feats.flatMap((f) => ringsOf(f.geometry)));
+    a.ringsIncl = a.ringsLand;
   } else if (a.buurtGebied) {
     // Buurt-level union from the city's buurt layer: single source, so the
     // shared edges cancel cleanly.
@@ -239,6 +248,33 @@ for (const a of AREAS) {
     a.ringsIncl = a.resolvedCodes.flatMap((c) => ringsOf(inclByCode.get(c).geometry));
   }
 }
+// The client's field cut over Noord: everything inside this polygon (traced
+// from their annotated screenshot, calibrated on three pill anchors) is
+// deleted, boolean-geometrically, independent of administrative boundaries.
+const NOORD_FIELD_CUT = [
+  [4.861038, 52.421794], [4.864820, 52.417528], [4.867148, 52.418595],
+  [4.872967, 52.421438], [4.881695, 52.423393], [4.892460, 52.422149],
+  [4.902934, 52.419839], [4.913699, 52.417173], [4.924464, 52.414507],
+  [4.933192, 52.412019], [4.939011, 52.410064], [4.945412, 52.413263],
+  [4.945412, 52.429791], [4.860165, 52.429791],
+];
+{
+  const SC = 1e6;
+  const toC = (pts) => pts.map(([x, y]) => ({ X: Math.round(x * SC), Y: Math.round(y * SC) }));
+  const noordA = AREAS.find((a) => a.name === 'Noord');
+  const clipper = new ClipperLib.Clipper();
+  clipper.AddPaths(noordA.ringsLand.map(toC), ClipperLib.PolyType.ptSubject, true);
+  clipper.AddPaths([toC(NOORD_FIELD_CUT)], ClipperLib.PolyType.ptClip, true);
+  const out = new ClipperLib.Paths();
+  clipper.Execute(ClipperLib.ClipType.ctDifference, out, ClipperLib.PolyFillType.pftEvenOdd, ClipperLib.PolyFillType.pftEvenOdd);
+  noordA.ringsLand = out.map((path) => {
+    const ring = path.map((pt) => [pt.X / SC, pt.Y / SC]);
+    ring.push(ring[0]);
+    return ring;
+  });
+  noordA.ringsIncl = noordA.ringsLand;
+}
+
 const claimed = AREAS.filter((a) => a.resolvedCodes).flatMap((a) => a.resolvedCodes);
 const dupes = claimed.filter((c, i) => claimed.indexOf(c) !== i);
 if (dupes.length) throw new Error('wijk claimed by two areas: ' + dupes.join(', '));
@@ -416,6 +452,60 @@ function toPath(rings, minArea = 60, { soft = false, minIQ = 0, iters = 3 } = {}
 }
 // OSM ways -> stroked path. `thin` skips points that advance less than that many
 // viewBox units, which is what keeps the residential grain affordable.
+// Same refinement pipeline with an extra offset after the opening: used for
+// the street clip (streets never touch the outer edge) and the hover veil
+// (pure tint that stops at the divider, painting over nothing).
+function toPathInset(rings, inset) {
+  // Open the rings first, then classify hole-ness by containment (winding from
+  // the sources is not trustworthy after clipper normalizes it), and offset in
+  // whichever direction actually shrinks land: outers must lose area, holes
+  // must gain it. Trusting flags here once pushed the street clip outside the
+  // coast and painted a paper rim around the map.
+  const opened = [];
+  for (const ring of rings) {
+    let pts = [];
+    for (const pt of ring) {
+      const q = proj(pt);
+      const last = pts[pts.length - 1];
+      if (!last || last[0] !== q[0] || last[1] !== q[1]) pts.push(q);
+    }
+    while (pts.length > 1 && pts[0][0] === pts[pts.length - 1][0] && pts[0][1] === pts[pts.length - 1][1]) pts.pop();
+    if (pts.length < 3 || ringArea(pts) < 60) continue;
+    const hole = signedArea(pts) < 0;
+    for (const o of openRing(pts, 2.8, hole)) {
+      if (o.length >= 3 && ringArea(o) >= 60) opened.push(o);
+    }
+  }
+  const contained = (a, b) => inRingXY(a[0], b); // first vertex of a inside b
+  const out = [];
+  for (const ringPts of opened) {
+    const isHole = opened.some((other) => other !== ringPts && ringArea(other) > ringArea(ringPts) && contained(ringPts, other));
+    const before = ringArea(ringPts);
+    let result = offsetRing(ringPts, -inset);
+    const after = result.reduce((s, r) => s + ringArea(r), 0);
+    const wantGrow = isHole;
+    const grew = after > before;
+    if (grew !== wantGrow) result = offsetRing(ringPts, inset);
+    for (let piece of result) {
+      if (piece.length < 3) continue;
+      piece = dp(piece, 2.2);
+      if (piece.length < 3) continue;
+      piece = rnd1(chaikin(piece, 3));
+      out.push(encode(piece, true));
+    }
+  }
+  return out.join('');
+}
+// Point-in-ring for projected points.
+function inRingXY(pt, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+    if (yi > pt[1] !== yj > pt[1] && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
 function linePath(ways, thin = 0) {
   const segs = [];
   for (const w of ways) {
@@ -568,6 +658,7 @@ const areas = AREAS.map((a) => {
     name: a.name,
     slug: slugify(a.name),
     d: toPath(a.ringsLand, 60, { soft: true }),
+    v: toPathInset(a.ringsLand, 2.5),
     cx: x,
     cy: y,
     labelArea: area,
@@ -669,12 +760,21 @@ if (/[—–]/.test(JSON.stringify(areas) + JSON.stringify(labelsOut))) throw ne
 const SEAM = PAPER;
 // Every stroke is clipped to the land: paper-coloured lines outside the city
 // quantize to near-paper pixels in the palette PNG and ghost against the page.
+// 3.5 units keeps roads that hug the outer boundary (the dike road along the
+// Noord cut edge) from painting a paper line just inside the coast.
+const SIL_INSET = AREAS.map((a) => toPathInset(a.ringsLand, 3.5)).join('');
 const seamsSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-<defs><clipPath id="land">${areas.map((a) => `<path d="${a.d}" fill-rule="evenodd"/>`).join('')}</clipPath></defs>
-${areas.map((a) => `<path d="${a.d}" fill="${a.color}" fill-rule="evenodd"/>`).join('\n')}
+<defs>
+<clipPath id="land">${areas.map((a) => `<path d="${a.d}" fill-rule="evenodd"/>`).join('')}</clipPath>
+<clipPath id="land-inset"><path d="${SIL_INSET}" fill-rule="evenodd"/></clipPath>
+${areas.map((a) => `<clipPath id="not-${a.slug}">${areas.filter((b) => b !== a).map((b) => `<path d="${b.d}"/>`).join('')}</clipPath>`).join('')}
+</defs>
+${areas.map((a) => `<path d="${a.d}" fill="${a.color}" fill-rule="evenodd"/>`).join('')}
+${areas.map((a) => `<g clip-path="url(#not-${a.slug})"><path d="${a.d}" fill="none" stroke="${SEAM}" stroke-width="5" stroke-linejoin="round"/></g>`).join('')}
 <g clip-path="url(#land)">
-${areas.map((a) => `<path d="${a.d}" fill="none" stroke="${SEAM}" stroke-width="5" stroke-linejoin="round"/>`).join('')}
 <path d="${parksPath}" fill="${PARK_GREEN}" fill-rule="evenodd"/>
+</g>
+<g clip-path="url(#land-inset)">
 <g fill="none" stroke="${SEAM}" stroke-linecap="round" stroke-linejoin="round">
 <path d="${streetsMid}" stroke-width="1.6"/>
 <path d="${streetsMajor}" stroke-width="2.6"/>
@@ -688,10 +788,11 @@ fs.mkdirSync(PUB, { recursive: true });
 // Rendered at 1600px wide, comfortably above the ~760px the map displays at,
 // with a small palette: five flat colours plus antialiasing.
 const sharp = (await import('sharp')).default;
+fs.writeFileSync(path.join(CACHE_DIR, '.cache-debug-seams.svg'), seamsSvg);
 const png = await sharp(Buffer.from(seamsSvg), { density: (72 * 1600) / W })
   .png({ palette: true, colors: 64 })
   .toBuffer();
-fs.writeFileSync(path.join(PUB, 'map-london.png'), png);
+fs.writeFileSync(path.join(PUB, 'map-london2.png'), png);
 
 const ts = `// GENERATED by scripts/build-city-map.mjs. Do not edit by hand.
 //
@@ -710,6 +811,8 @@ export interface CityArea {
   slug: string;
   /** SVG path in MAP_VIEWBOX space. */
   d: string;
+  /** Veil path: the shape inset to the divider, for the pure-tint hover. */
+  v: string;
   /** Shoelace centroid of the largest ring. */
   cx: number;
   cy: number;
@@ -740,10 +843,10 @@ export interface CityLabel {
 export const MAP_VIEWBOX = '0 0 ${W} ${H}';
 
 /** The streets/canals/parks overlay, served as a cached raster. */
-export const MAP_SEAMS_SRC = '/map-london.png';
+export const MAP_SEAMS_SRC = '/map-london2.png';
 
 export const CITY_AREAS: CityArea[] = ${JSON.stringify(
-  areas.map(({ name, slug, d, cx, cy, color }) => ({ name, slug, d, cx, cy, color })),
+  areas.map(({ name, slug, d, v, cx, cy, color }) => ({ name, slug, d, v, cx, cy, color })),
   null,
   2,
 )};
@@ -759,5 +862,5 @@ areas.forEach((a) => console.log(`  ${a.name.padEnd(32)} ${a.color}`));
 console.log(`greens: ${parkRingsMain.length + parkRingsBig.length} candidate rings from ${parkNames.size} named places (parks, forests, reserves only)`);
 const kb = (x) => (x.length / 1024).toFixed(1) + 'kb';
 console.log(`image: mid ${kb(streetsMid)} | major ${kb(streetsMajor)} | canals ${kb(canalsPath)} | a10 ${kb(a10Path)} | parks ${kb(parksPath)}`);
-console.log(`wrote public/map-london.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
+console.log(`wrote public/map-london2.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
 console.log(`wrote ${OUT} (${(ts.length / 1024).toFixed(1)}kb, ships as JS)`);
