@@ -10,6 +10,7 @@ import { HelpCta } from '../../components/HelpCta';
 import { CityMap, type AreaTip } from '../../components/CityMap';
 import { AREA_GUIDES } from '../../lib/neighborhoods';
 import styles from './blog.module.css';
+import navStyles from '../../components/SiteNav.module.css';
 
 function SearchIcon() {
   return (
@@ -43,6 +44,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
   const [modalBuy, setModalBuy] = useState(false);
   const [modalSent, setModalSent] = useState(false);
   const [popState, setPopState] = useState<'idle' | 'shown' | 'dismissed'>('idle');
+  const [scrolled, setScrolled] = useState(false);
 
   const gmenuRef = useRef<HTMLElement>(null);
   const leadRef = useRef<HTMLElement>(null);
@@ -89,6 +91,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
     const onScroll = () => {
       const g = menu();
       if (g) setCompact(g.getBoundingClientRect().top <= 65);
+      setScrolled(window.scrollY > 40);
       // spy
       const off = (g?.offsetHeight ?? 0) + 64 + 24;
       let cur = 'latest';
@@ -192,7 +195,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
 
   return (
     <div className={styles.page}>
-      <SiteNav />
+      <SiteNav collapsed={scrolled} />
 
       {/* MASTHEAD */}
       <div className={styles.content}>
@@ -216,8 +219,18 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
       </div>
 
       {/* CATEGORY MENU */}
-      <nav className={`${styles.gmenu}${compact ? ` ${styles.gmenuCompact}` : ''}`} ref={gmenuRef} aria-label="Categories">
+      <nav
+        className={`${styles.gmenu}${compact ? ` ${styles.gmenuCompact}` : ''}${scrolled ? ` ${styles.gmenuRaised}` : ''}`}
+        ref={gmenuRef}
+        aria-label="Categories"
+      >
         <div className={styles.gin}>
+          {/* The site menu's logo, migrated here while that menu is collapsed. */}
+          <div className={`${styles.gmig}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
+            <a href="https://amsterdamlifehomes.com" className={`${navStyles.logo} ${styles.gmigLogo}`} tabIndex={scrolled ? 0 : -1}>
+              Amsterdam Life Homes
+            </a>
+          </div>
           <div className={styles.gnav}>
             {menuItems.map((m) => (
               <button
@@ -246,6 +259,12 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
               </button>
             ) : null}
           </label>
+          {/* The site menu's contact button, migrated here while it is collapsed. */}
+          <div className={`${styles.gmig}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
+            <a href="https://amsterdamlifehomes.com/#contact" className={navStyles.cta} tabIndex={scrolled ? 0 : -1}>
+              Contact us
+            </a>
+          </div>
         </div>
       </nav>
 
