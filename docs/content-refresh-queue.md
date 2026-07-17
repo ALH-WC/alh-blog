@@ -96,6 +96,24 @@ with a closing paragraph *after* their FAQ, which a naive strip-to-end would hav
 deleted. The three articles with no structured faqs were skipped so they keep the
 only FAQ they have; they will need this re-run once their metadata is generated.
 
+## Duplicate content, second pass (fixed)
+
+The first FAQ strip keyed on the "Frequently Asked Questions" heading and
+missed two shapes: a heading-less run of Q/A pairs ending the body
+(`hardware-stores`), and a heading reading "Frequently Asked Question",
+singular (`exploring-amsterdam-s-de-pijp`). Both stripped by
+`scripts/fix-leftover-dupes.mjs`, which requires the run's questions to be
+covered by the structured faqs before touching anything. The same script
+removed one sentence-as-heading that a takeaway repeated verbatim
+(`hardware-stores`, the bouwmarkt line).
+
+Audited all 116 articles for overlap between the body and the added fields
+(`scripts/audit-duplication.mjs`). The remaining overlap is by design:
+takeaways and summaries are grounded in the body, so section headings and
+lede sentences share their words. Removing those would gut the articles.
+The three held articles keep their in-body FAQs until their refresh, and
+`digid-for-expats` is legitimately written in question-styled sections.
+
 ## Editorial observations (no action taken)
 
 - `perfect-tips-for-hosting-a-memorable-housewarming-party` has no Amsterdam or
