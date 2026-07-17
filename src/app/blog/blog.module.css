@@ -101,23 +101,31 @@
    while scrolled. Collapsed to zero width when the site menu is visible, so
    the bar layout is untouched at the top of the page. */
 .gmig {
-  max-width: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   opacity: 0;
-  transform: translateY(-8px);
-  overflow: hidden;
   white-space: nowrap;
-  flex-shrink: 0;
-  transition: max-width 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease 0.08s, transform 0.38s ease;
+  pointer-events: none;
+  transition: opacity 0.3s ease 0.1s;
+}
+.gmigL {
+  left: var(--gutter);
+}
+.gmigR {
+  right: var(--gutter);
 }
 .gmigShow {
-  max-width: 300px;
   opacity: 1;
-  transform: none;
+  pointer-events: auto;
 }
 .gmigLogo {
-  font-size: 21px !important;
+  font-size: 22px !important;
 }
-@media (max-width: 980px) {
+/* Below this the bar's items would collide with the absolute pair: the menu
+   row is ~1300px wide and centered, and the logo needs ~250px of clear paper
+   on each side. Measured, not guessed. */
+@media (max-width: 1830px) {
   .gmig {
     display: none;
   }
@@ -133,8 +141,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 30px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   transition: padding 0.22s ease;
+}
+@media (max-width: 980px) {
+  .gin {
+    flex-wrap: wrap;
+  }
 }
 .gmenuCompact .gin {
   padding-top: 8px;
@@ -1120,41 +1133,44 @@
   }
 }
 
-/* The city map section: the dek sits in the map's empty top-left corner, its
-   top level with the top of the map. On narrow screens that corner shrinks
-   away, so the dek returns to normal flow above the map. */
+/* The city map section: the map takes three quarters of the column, pushed to
+   the right so the head owns a clear column of paper on the left. The dek is
+   capped at 300px so no text line ever crosses the map's left edge (the coast
+   is painted almost to that edge from unit row 228 down). */
 .mapWrap {
   position: relative;
   margin-top: 72px;
-  /* Client request: the map at roughly three quarters of the column. */
   width: 75%;
-  margin-inline: auto;
+  margin-left: auto;
+  margin-right: 0;
 }
-@media (max-width: 900px) {
-  .mapWrap {
-    width: 100%;
-  }
+/* Title + dek anchored to the full-width section so the title shares its left
+   edge with every other chapter title. Same 20px title-dek gap as the other
+   chapter heads; the title's top sits just below the map's top edge, level
+   with Noord. */
+.mapSec {
+  position: relative;
 }
-/* Title + dek overlaying the map's empty top-left corner. The title's top edge
-   sits almost level with Noord, the map's northernmost shape. Same 20px gap
-   between title and dek as every other chapter head. */
 .mapHead {
+  /* The wrap's top margin collapses through the section, so the map's top
+     edge IS the section's top edge: 24px puts the title level with Noord. */
   position: absolute;
-  top: 2.5%;
+  top: 24px;
   left: 0;
   z-index: 1;
-  max-width: 420px;
+  max-width: 300px;
 }
 .mapDek {
   margin-top: 20px;
-  max-width: 36ch;
+  max-width: 300px;
   font-size: 18px;
   line-height: 1.55;
   color: var(--body-text);
   pointer-events: none;
 }
-@media (max-width: 760px) {
-  /* No empty corner to borrow on small screens: head flows above the map. */
+@media (max-width: 1100px) {
+  /* The left paper column gets too narrow to host the head: it returns to
+     normal flow above the map, and the map re-centers. */
   .mapHead {
     position: static;
     max-width: none;
@@ -1162,5 +1178,13 @@
   }
   .mapDek {
     max-width: none;
+  }
+  .mapWrap {
+    margin-inline: auto;
+  }
+}
+@media (max-width: 900px) {
+  .mapWrap {
+    width: 100%;
   }
 }
