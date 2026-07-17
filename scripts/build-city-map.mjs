@@ -21,6 +21,7 @@
 // fetched at runtime.
 import fs from 'node:fs';
 import path from 'node:path';
+import ClipperLib from 'clipper-lib';
 
 const OUT = path.join(process.cwd(), 'src', 'lib', 'cityMap.ts');
 const CACHE_DIR = path.join(process.cwd(), 'scripts');
@@ -63,13 +64,12 @@ const AREAS = [
   { name: 'Duivendrecht',            pdok: { type: 'buurt', gemeente: 'Ouder-Amstel', buurten: ['Duivendrecht', 'Industriegebied Amstel'] } },
 ];
 
-// Van Gogh palette, one hue per neighbourhood; second iteration on client
-// request, warmer and softer than the first: wheat gold, burnt orange from the
-// Bedroom, cornflower blue from its walls, deep petrol night, iris violet and
-// oxide rose. Cypress green stays reserved for parks, which render as flat
-// solid shapes above the streets, so the Amsterdamse Bos is simply green.
-const VANGOGH_HUES = ['#c9973b', '#b0562f', '#526d9e', '#31556e', '#6f6396', '#95483f'];
-const PARK_GREEN = '#2f5240';
+// Approved palette, after the client's London block-print reference: one hue
+// per neighbourhood, all warm. The reference's teal was dropped on request
+// ("replace the blue parts"), so nothing on the map is blue and green means
+// parks alone. No two neighbouring areas share a hue (enforced below).
+const AREA_HUES = ['#ef8f2e', '#c9642c', '#e05340', '#d9a441', '#8a5a33', '#c2a26a'];
+const PARK_GREEN = '#4f7247';
 // Cross-source neighbours: the PDOK shapes share no vertices with the Amsterdam
 // layer, so vertex matching cannot see these borders.
 const EXTRA_ADJACENT = [
@@ -273,15 +273,70 @@ function encode(pts, close) {
   let d = `M${pts[0][0]} ${pts[0][1]}`;
   if (pts.length > 1) {
     const deltas = [];
-    for (let i = 1; i < pts.length; i++) deltas.push(`${pts[i][0] - pts[i - 1][0]} ${pts[i][1] - pts[i - 1][1]}`);
+    for (let i = 1; i < pts.length; i++) {
+      deltas.push(`${+(pts[i][0] - pts[i - 1][0]).toFixed(1)} ${+(pts[i][1] - pts[i - 1][1]).toFixed(1)}`);
+    }
     d += 'l' + deltas.join(' ');
   }
   return close ? d + 'Z' : d;
 }
-// Chaikin corner cutting: rounds every edge off (client request). Direction
-// symmetric, so the shared border of two neighbouring areas smooths to the
-// same curve on both sides.
-function chaikin(pts, iters = 2) {
+
+// ---------- shape refinement ----------
+// Morphological opening: shrink every ring then regrow it. Thin peninsulas,
+// dock combs and sliver rims (thinner than ~2*delta) do not survive the shrink
+// and never come back, which is what removes the scruff along the waterfront.
+// Holes get the mirrored treatment so thin water slits heal shut while real
+// lakes stay open.
+const CLIP_SCALE = 100;
+function offsetRing(pts, delta) {
+  const path = pts.map(([x, y]) => ({ X: Math.round(x * CLIP_SCALE), Y: Math.round(y * CLIP_SCALE) }));
+  const co = new ClipperLib.ClipperOffset(2, 0.25 * CLIP_SCALE);
+  co.AddPath(path, ClipperLib.JoinType.jtRound, ClipperLib.EndType.etClosedPolygon);
+  const out = new ClipperLib.Paths();
+  co.Execute(out, delta * CLIP_SCALE);
+  return out.map((p) => p.map((pt) => [pt.X / CLIP_SCALE, pt.Y / CLIP_SCALE]));
+}
+function openRing(pts, delta, isHole) {
+  const d1 = isHole ? delta : -delta;
+  let mids = offsetRing(pts, d1);
+  let out = [];
+  for (const m of mids) out = out.concat(offsetRing(m, -d1));
+  return out;
+}
+const signedArea = (pts) => {
+  let a = 0;
+  for (let i = 0; i < pts.length; i++) {
+    const [x1, y1] = pts[i], [x2, y2] = pts[(i + 1) % pts.length];
+    a += x1 * y2 - x2 * y1;
+  }
+  return a / 2;
+};
+
+// Douglas-Peucker. This is what actually removes rough edges: Chaikin alone
+// only softens corners that the source noise keeps recreating.
+function dp(pts, eps) {
+  if (pts.length < 3) return pts;
+  const keep = new Uint8Array(pts.length);
+  keep[0] = keep[pts.length - 1] = 1;
+  const stack = [[0, pts.length - 1]];
+  while (stack.length) {
+    const [a, b] = stack.pop();
+    const [ax, ay] = pts[a], [bx, by] = pts[b];
+    const dx = bx - ax, dy = by - ay;
+    const len = Math.hypot(dx, dy) || 1;
+    let maxD = -1, maxI = -1;
+    for (let i = a + 1; i < b; i++) {
+      const d = Math.abs(dy * pts[i][0] - dx * pts[i][1] + bx * ay - by * ax) / len;
+      if (d > maxD) { maxD = d; maxI = i; }
+    }
+    if (maxD > eps) { keep[maxI] = 1; stack.push([a, maxI], [maxI, b]); }
+  }
+  return pts.filter((_, i) => keep[i]);
+}
+// Chaikin corner cutting. Closed variant for rings, open variant for streets
+// (endpoints stay put). Symmetric, so a border shared by two areas smooths to
+// the same curve from both sides.
+function chaikin(pts, iters) {
   let cur = pts;
   for (let n = 0; n < iters; n++) {
     const out = [];
@@ -294,7 +349,28 @@ function chaikin(pts, iters = 2) {
   }
   return cur;
 }
-const ringPerimeter = (pts) => {
+function chaikinOpen(pts, iters) {
+  let cur = pts;
+  for (let n = 0; n < iters; n++) {
+    if (cur.length < 3) return cur;
+    const out = [cur[0]];
+    for (let i = 0; i < cur.length - 1; i++) {
+      const a = cur[i], b = cur[i + 1];
+      out.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25]);
+      out.push([a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]);
+    }
+    out.push(cur[cur.length - 1]);
+    cur = out;
+  }
+  return cur;
+}
+// One decimal: enough precision to keep the curves flowing, half the bytes of
+// full float output. Consecutive duplicates go.
+const rnd1 = (raw) => {
+  const r = raw.map((p) => [+p[0].toFixed(1), +p[1].toFixed(1)]);
+  return r.filter((p, i) => i === 0 || p[0] !== r[i - 1][0] || p[1] !== r[i - 1][1]);
+};
+const perimeter = (pts) => {
   let p = 0;
   for (let i = 0; i < pts.length; i++) {
     const [x1, y1] = pts[i], [x2, y2] = pts[(i + 1) % pts.length];
@@ -307,7 +383,11 @@ const ringPerimeter = (pts) => {
 // minArea so carved canals do not become subpixel noise. `soft` rounds the
 // shape off; `minIQ` drops long slivers (isoperimetric quotient: a circle is 1,
 // a hairline strip approaches 0), which is what keeps odd spots off the map.
-function toPath(rings, minArea = 60, { soft = false, minIQ = 0 } = {}) {
+// Refine a ring set into a path, mirroring the approved mockup exactly:
+// filter the raw ring, open it (shrink-regrow kills scruff thinner than
+// ~2*2.8 units), re-filter the surviving pieces, then simplify and curve.
+// Curving before simplifying just rounds noise the data keeps recreating.
+function toPath(rings, minArea = 60, { soft = false, minIQ = 0, iters = 3 } = {}) {
   const out = [];
   for (const ring of rings) {
     let pts = [];
@@ -318,18 +398,19 @@ function toPath(rings, minArea = 60, { soft = false, minIQ = 0 } = {}) {
     }
     while (pts.length > 1 && pts[0][0] === pts[pts.length - 1][0] && pts[0][1] === pts[pts.length - 1][1]) pts.pop();
     if (pts.length < 3 || ringArea(pts) < minArea) continue;
-    if (minIQ > 0) {
-      const iq = (4 * Math.PI * ringArea(pts)) / ringPerimeter(pts) ** 2;
-      if (iq < minIQ) continue;
+    if (minIQ > 0 && (4 * Math.PI * ringArea(pts)) / perimeter(pts) ** 2 < minIQ) continue;
+    if (!soft) {
+      out.push(encode(pts, true));
+      continue;
     }
-    if (soft) {
-      if (pts.length > 60) pts = pts.filter((_, i) => i % 2 === 0);
-      // Integers keep the relative encoding clean; at display scale one
-      // viewBox unit is sub-pixel, so the rounding is invisible.
-      const smooth = chaikin(pts, 2).map((p) => [Math.round(p[0]), Math.round(p[1])]);
-      pts = smooth.filter((p, i) => i === 0 || p[0] !== smooth[i - 1][0] || p[1] !== smooth[i - 1][1]);
+    const hole = signedArea(pts) < 0;
+    for (let opened of openRing(pts, 2.8, hole)) {
+      if (opened.length < 3 || ringArea(opened) < minArea) continue;
+      opened = dp(opened, 2.2);
+      if (opened.length < 3) continue;
+      opened = rnd1(chaikin(opened, iters));
+      out.push(encode(opened, true));
     }
-    out.push(encode(pts, true));
   }
   return out.join('');
 }
@@ -348,7 +429,9 @@ function linePath(ways, thin = 0) {
       pts.push(q);
     }
     if (pts.length > 1 && pts.some((p) => p[0] > -20 && p[0] < W + 20 && p[1] > -20 && p[1] < H + 20)) {
-      segs.push(encode(pts, false));
+      // Same treatment as the shapes: simplify, then curve. Streets drawn
+      // straight from OSM vertices read as surveyed segments, not drawn lines.
+      segs.push(encode(rnd1(chaikinOpen(dp(pts, 3), 2)), false));
     }
   }
   return segs.join('');
@@ -373,7 +456,7 @@ function anchor(rings) {
 
 // ---------- streets & lines ----------
 const sw = osmStreets.elements.filter((e) => e.type === 'way');
-const streetsMid = linePath(sw.filter((w) => /^(secondary|tertiary)$/.test(w.tags.highway || '')), 3);
+const streetsMid = linePath(sw.filter((w) => /^(secondary|tertiary)$/.test(w.tags.highway || '')), 2);
 const streetsMajor = linePath(sw.filter((w) => /^(motorway|trunk|primary)$/.test(w.tags.highway || '')), 2);
 const canalsPath = linePath(sw.filter((w) => w.tags.waterway), 2);
 const a10Path = linePath(osmLines.elements.filter((e) => e.type === 'way' && e.tags?.highway === 'motorway'), 2);
@@ -446,7 +529,7 @@ for (const el of osmGreens.elements) {
 }
 // Fewer, bigger greens (client request): a park earns its place from ~0.08 km2,
 // anonymous forest/reserve patches from ~0.16 km2. Small pocket greens drop out.
-const parksPath = toPath(parkRingsMain, 120, { soft: true, minIQ: 0.08 }) + toPath(parkRingsBig, 250, { soft: true, minIQ: 0.08 });
+const parksPath = toPath(parkRingsMain, 120, { soft: true, minIQ: 0.08, iters: 2 }) + toPath(parkRingsBig, 250, { soft: true, minIQ: 0.08, iters: 2 });
 
 // ---------- one Van Gogh hue per neighbourhood ----------
 // Adjacency from shared source vertices (pre-projection), plus the known
@@ -468,10 +551,10 @@ EXTRA_ADJACENT.forEach(([a, b]) => { adjacency.get(a).add(b); adjacency.get(b).a
 const hueOf = new Map();
 for (const a of AREAS.slice().sort((x, y) => adjacency.get(y.name).size - adjacency.get(x.name).size)) {
   const taken = new Set([...adjacency.get(a.name)].map((n) => hueOf.get(n)).filter(Boolean));
-  const counts = new Map(VANGOGH_HUES.map((h) => [h, 0]));
+  const counts = new Map(AREA_HUES.map((h) => [h, 0]));
   for (const h of hueOf.values()) counts.set(h, (counts.get(h) ?? 0) + 1);
-  const options = VANGOGH_HUES.filter((h) => !taken.has(h)).sort((x, y) => counts.get(x) - counts.get(y));
-  hueOf.set(a.name, options[0] ?? VANGOGH_HUES[0]);
+  const options = AREA_HUES.filter((h) => !taken.has(h)).sort((x, y) => counts.get(x) - counts.get(y));
+  hueOf.set(a.name, options[0] ?? AREA_HUES[0]);
 }
 for (const [a, neighbours] of adjacency) {
   for (const n of neighbours) if (hueOf.get(a) === hueOf.get(n)) throw new Error(`same hue on neighbours: ${a} / ${n}`);
@@ -590,14 +673,14 @@ const seamsSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="$
 <defs><clipPath id="land">${areas.map((a) => `<path d="${a.d}" fill-rule="evenodd"/>`).join('')}</clipPath></defs>
 ${areas.map((a) => `<path d="${a.d}" fill="${a.color}" fill-rule="evenodd"/>`).join('\n')}
 <g clip-path="url(#land)">
-<g fill="none" stroke="${SEAM}" stroke-linecap="round" stroke-linejoin="round">
-<path d="${streetsMid}" stroke-width="1.1"/>
-<path d="${streetsMajor}" stroke-width="1.8"/>
-<path d="${canalsPath}" stroke-width="1.2"/>
-<path d="${a10Path}" stroke-width="2.6"/>
-</g>
 ${areas.map((a) => `<path d="${a.d}" fill="none" stroke="${SEAM}" stroke-width="5" stroke-linejoin="round"/>`).join('')}
 <path d="${parksPath}" fill="${PARK_GREEN}" fill-rule="evenodd"/>
+<g fill="none" stroke="${SEAM}" stroke-linecap="round" stroke-linejoin="round">
+<path d="${streetsMid}" stroke-width="1.6"/>
+<path d="${streetsMajor}" stroke-width="2.6"/>
+<path d="${canalsPath}" stroke-width="1.8"/>
+<path d="${a10Path}" stroke-width="3.5"/>
+</g>
 </g>
 </svg>`;
 const PUB = path.join(process.cwd(), 'public');
@@ -608,7 +691,7 @@ const sharp = (await import('sharp')).default;
 const png = await sharp(Buffer.from(seamsSvg), { density: (72 * 1600) / W })
   .png({ palette: true, colors: 64 })
   .toBuffer();
-fs.writeFileSync(path.join(PUB, 'map-vangogh3.png'), png);
+fs.writeFileSync(path.join(PUB, 'map-london.png'), png);
 
 const ts = `// GENERATED by scripts/build-city-map.mjs. Do not edit by hand.
 //
@@ -657,7 +740,7 @@ export interface CityLabel {
 export const MAP_VIEWBOX = '0 0 ${W} ${H}';
 
 /** The streets/canals/parks overlay, served as a cached raster. */
-export const MAP_SEAMS_SRC = '/map-vangogh3.png';
+export const MAP_SEAMS_SRC = '/map-london.png';
 
 export const CITY_AREAS: CityArea[] = ${JSON.stringify(
   areas.map(({ name, slug, d, cx, cy, color }) => ({ name, slug, d, cx, cy, color })),
@@ -676,5 +759,5 @@ areas.forEach((a) => console.log(`  ${a.name.padEnd(32)} ${a.color}`));
 console.log(`greens: ${parkRingsMain.length + parkRingsBig.length} candidate rings from ${parkNames.size} named places (parks, forests, reserves only)`);
 const kb = (x) => (x.length / 1024).toFixed(1) + 'kb';
 console.log(`image: mid ${kb(streetsMid)} | major ${kb(streetsMajor)} | canals ${kb(canalsPath)} | a10 ${kb(a10Path)} | parks ${kb(parksPath)}`);
-console.log(`wrote public/map-vangogh3.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
+console.log(`wrote public/map-london.png (${(png.length / 1024).toFixed(1)}kb bitmap, from ${(seamsSvg.length / 1024).toFixed(1)}kb of vectors)`);
 console.log(`wrote ${OUT} (${(ts.length / 1024).toFixed(1)}kb, ships as JS)`);

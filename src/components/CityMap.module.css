@@ -1,12 +1,12 @@
-/* The quilt map, after the client's reference poster. One colour per buurt in
-   rose, olive-gold and charcoal; parks in teal; main streets and canals as
-   thick rounded lines in the page's paper colour, so the seams and the water
-   read as cuts through the map to the page. Every area is named by a cut-out
+/* The approved map: one warm hue per neighbourhood (the London block-print
+   palette, blues swapped out), parks green, smoothed shapes and streets, and
+   the water reading as cut-outs to the page. Every area is named by a cut-out
    pill (paper) holding a floating black pill with the name in paper.
 
-   All of that lives in one cached bitmap (map-quilt.png). This file styles the
-   three light layers above it: invisible hit shapes, the hover veil, and the
-   pill labels. */
+   All of that lives in one cached bitmap (map-london.png). This file styles
+   the three light layers above it: invisible hit shapes, the hover veil, and
+   the pill labels, plus the hover card, which follows the same design language
+   as the article lead CTA (HelpCta): dark panel, cream text, hairline rules. */
 
 .wrap {
   position: relative;
@@ -38,9 +38,14 @@
 }
 /* Hover veil: a single translucent path painted over the active area. Never a
    CSS filter, which forces the browser to re-rasterize the whole bitmap layer
-   and visibly lags the page. */
+   and visibly lags the page. The paper stroke repaints the divider gap over
+   the veil's own edge, so the tint stops exactly where the visible colour
+   stops instead of spilling onto the divider. */
 .veil {
-  fill: rgba(36, 29, 22, 0.2);
+  fill: rgba(36, 29, 36, 0.18);
+  stroke: var(--paper);
+  stroke-width: 5;
+  stroke-linejoin: round;
   pointer-events: none;
 }
 
@@ -65,23 +70,24 @@
   text-anchor: middle;
 }
 
-/* Hover card. Anchored to the area's centroid rather than the cursor, so it
-   holds still while you move within an area. */
+/* Hover card, in the article CTA's design language (HelpCta): dark panel,
+   cream text, uppercase kicker, Spectral title, muted sub, hairline rule.
+   Anchored to the area's centroid rather than the cursor, so it holds still
+   while you move within an area. */
 .card {
   position: absolute;
   z-index: 2;
   transform: translate(-50%, calc(-100% - 14px));
-  min-width: 190px;
-  max-width: 260px;
-  padding: 14px 16px;
-  background: var(--cardc, var(--dark));
-  color: #ffffff;
+  min-width: 220px;
+  max-width: 280px;
+  padding: 20px 22px;
+  background: var(--dark);
+  color: var(--on-dark);
   display: flex;
   flex-direction: column;
-  gap: 5px;
   pointer-events: none; /* never eat the click meant for the area underneath */
   animation: pop 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2);
-  box-shadow: 0 10px 28px rgba(36, 29, 22, 0.25);
+  box-shadow: 0 14px 44px rgba(20, 14, 8, 0.3);
 }
 .card::after {
   content: '';
@@ -90,7 +96,7 @@
   top: 100%;
   transform: translateX(-50%);
   border: 7px solid transparent;
-  border-top-color: var(--cardc, var(--dark));
+  border-top-color: var(--dark);
 }
 @keyframes pop {
   from {
@@ -107,42 +113,47 @@
     animation: none;
   }
 }
+/* Area name as the panel kicker, like "How we can help". */
 .cardName {
-  font-family: var(--display);
-  font-style: italic;
-  font-size: 19px;
-  line-height: 1.1;
-  color: #ffffff;
-}
-.cardTitle {
   font-family: var(--sans);
-  font-size: 13px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark);
+}
+/* Guide title as the Spectral option label, above a hairline. */
+.cardTitle {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--on-dark);
+  border-top: 1px solid rgba(242, 236, 225, 0.14);
+  padding-top: 12px;
+  margin-top: 10px;
 }
 .cardFoot {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 3px;
+  margin-top: 6px;
   font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #ffffff;
+  font-size: 12.5px;
+  color: var(--on-dark-muted);
 }
 .cardArrow {
-  font-size: 14px;
+  font-size: 15px;
+  color: var(--on-dark);
 }
 .cardSoon {
   font-family: var(--sans);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.78);
+  font-size: 12.5px;
+  color: var(--on-dark-muted);
+  border-top: 1px solid rgba(242, 236, 225, 0.14);
+  padding-top: 12px;
+  margin-top: 10px;
 }
 
 /* Article hero: the quilt with every other area veiled to near-paper, so the
