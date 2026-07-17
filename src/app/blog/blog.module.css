@@ -119,13 +119,10 @@
   opacity: 1;
   pointer-events: auto;
 }
-.gmigLogo {
-  font-size: 22px !important;
-}
 /* Below this the bar's items would collide with the absolute pair: the menu
-   row is ~1300px wide and centered, and the logo needs ~250px of clear paper
-   on each side. Measured, not guessed. */
-@media (max-width: 1830px) {
+   row is ~1300px wide and centered, and the full-size logo needs ~290px of
+   clear paper on its side. Measured, not guessed. */
+@media (max-width: 1895px) {
   .gmig {
     display: none;
   }

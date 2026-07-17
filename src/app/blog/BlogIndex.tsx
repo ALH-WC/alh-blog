@@ -230,9 +230,11 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
         <div className={styles.gin}>
           {/* The site menu's logo, migrated here while that menu is collapsed. */}
           <div className={`${styles.gmig} ${styles.gmigL}${scrolled ? ` ${styles.gmigShow}` : ''}`} aria-hidden={!scrolled}>
-            <a href="https://amsterdamlifehomes.com" className={`${navStyles.logo} ${styles.gmigLogo}`} tabIndex={scrolled ? 0 : -1}>
-              Amsterdam Life Homes
-            </a>
+            {/* Identical markup and classes to the site menu's logo: same font,
+                size and spacing, so the handoff between the two is invisible. */}
+            <Link href="/blog" className={navStyles.logoWrap} aria-label="Amsterdam Life Homes home" tabIndex={scrolled ? 0 : -1}>
+              <span className={navStyles.logo}>Amsterdam Life Homes</span>
+            </Link>
           </div>
           <div className={styles.gnav}>
             {menuItems.map((m) => (
