@@ -52,6 +52,8 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
   const dockRef = useRef<HTMLDivElement>(null);
   const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const snapTarget = useRef<number | null>(null);
+  const lastY = useRef(0);
+  const scrollDir = useRef(0);
   const leadRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -95,6 +97,10 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
     const menu = () => gmenuRef.current;
     const onScroll = () => {
       const g = menu();
+      // Direction of travel, for the soft close below.
+      const y = window.scrollY;
+      if (y !== lastY.current) scrollDir.current = y > lastY.current ? 1 : -1;
+      lastY.current = y;
       // Migration progress, linked 1:1 to the scroll. The sentinel marks the
       // bar's natural position: once it reaches the site menu's bottom edge
       // (64px), every further pixel of scroll moves the site menu up 1px and
@@ -119,11 +125,14 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
           if (t == null) return;
           const pp = 64 - t;
           if (pp <= 1.5 || pp >= 62.5) return;
-          // Whole-pixel target, overshooting the boundary by 2px so the
-          // landing is unambiguously outside the zone. If the browser could
-          // not reach the previous target (rubber-banding, rounding), issuing
-          // the same one again would loop: suppress repeats.
-          const target = Math.round(pp >= 32 ? window.scrollY + t + 2 : window.scrollY - pp - 2);
+          // Settle in the direction the reader was scrolling, never against
+          // it: snapping to the nearest end used to fling the page back up
+          // against a slow downward scroll, which the next wheel tick undid,
+          // looping forever. Whole-pixel target, overshooting the boundary by
+          // 2px so the landing is unambiguously outside the zone; a target
+          // the browser could not reach is never issued twice.
+          const goClose = scrollDir.current > 0 || (scrollDir.current === 0 && pp >= 32);
+          const target = Math.round(goClose ? window.scrollY + t + 2 : window.scrollY - pp - 2);
           if (snapTarget.current !== null && Math.abs(target - snapTarget.current) <= 4) return;
           snapTarget.current = target;
           window.scrollTo({ top: target, behavior: 'smooth' });
