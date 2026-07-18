@@ -283,6 +283,16 @@ export const article = defineType({
         'Pins this article as the big feature card of its chapter block on the guide. If several articles in one chapter have this on, the newest wins.',
     }),
     defineField({
+      name: 'related',
+      title: 'Keep reading (override)',
+      type: 'array',
+      group: 'placement',
+      of: [defineArrayMember({ type: 'reference', to: [{ type: 'article' }] })],
+      validation: (r) => r.max(3),
+      description:
+        'Hand-picked "Keep reading" links at the end of the article. Left empty, three are chosen automatically: same chapter first, then related chapters, newest first. Automatic picks fill any slots you leave open.',
+    }),
+    defineField({
       name: 'publishedAt',
       title: 'Published date',
       type: 'datetime',

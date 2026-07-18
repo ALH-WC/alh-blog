@@ -51,6 +51,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
   const gmenuRef = useRef<HTMLElement>(null);
   const dockRef = useRef<HTMLDivElement>(null);
   const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const snapTarget = useRef<number | null>(null);
   const leadRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -108,13 +109,24 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
       // event, so it never fights an active scroll, and smooth scrolling
       // feeds back through this same handler, keeping the motion 1:1.
       if (snapTimer.current) clearTimeout(snapTimer.current);
-      if (p > 0 && p < 64 && !window.matchMedia('(prefers-reduced-motion:reduce)').matches) {
+      // Epsilon zone: a smooth scroll that lands a sub-pixel short of the
+      // boundary must count as arrived, or the settle re-arms forever.
+      const inZone = p > 1.5 && p < 62.5;
+      if (!inZone) snapTarget.current = null;
+      if (inZone && !window.matchMedia('(prefers-reduced-motion:reduce)').matches) {
         snapTimer.current = setTimeout(() => {
           const t = dockRef.current?.getBoundingClientRect().top;
           if (t == null) return;
           const pp = 64 - t;
-          if (pp <= 0 || pp >= 64) return;
-          window.scrollTo({ top: window.scrollY + (pp >= 32 ? t : -pp), behavior: 'smooth' });
+          if (pp <= 1.5 || pp >= 62.5) return;
+          // Whole-pixel target, overshooting the boundary by 2px so the
+          // landing is unambiguously outside the zone. If the browser could
+          // not reach the previous target (rubber-banding, rounding), issuing
+          // the same one again would loop: suppress repeats.
+          const target = Math.round(pp >= 32 ? window.scrollY + t + 2 : window.scrollY - pp - 2);
+          if (snapTarget.current !== null && Math.abs(target - snapTarget.current) <= 4) return;
+          snapTarget.current = target;
+          window.scrollTo({ top: target, behavior: 'smooth' });
         }, 160);
       }
       // spy
