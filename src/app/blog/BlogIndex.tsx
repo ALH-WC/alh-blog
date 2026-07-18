@@ -115,7 +115,11 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
       // Hysteresis: docked latches at 64 and releases only below 56, so the
       // layout-affecting docked styles cannot flap at the threshold.
       setCompact((c) => (p >= 64 ? true : p <= 56 ? false : c));
-      setMini((m) => (p >= 40 ? true : p <= 24 ? false : m));
+      // The collapse starts almost as soon as the handoff begins (the bar is
+      // still ~60px below the logo row then), so the logo is small before
+      // the bar carries the menu titles into its row; it re-expands only
+      // when the bar has dropped back out of that row.
+      setMini((m) => (p >= 6 ? true : p <= 2 ? false : m));
       // Soft close: if the scroll comes to rest inside the handoff zone, the
       // page gently scrolls the few remaining pixels toward the nearest end,
       // so the bars never sit half-migrated. The timer resets on every scroll
