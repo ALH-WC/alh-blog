@@ -224,7 +224,7 @@
 /* On wide screens the blog index renders viewport-fixed copies of the logo
    and contact button that never move; the bar's own pair yields to them.
    visibility (not display) keeps the bar layout identical. */
-@media (min-width: 1896px) {
+@media (min-width: 1360px) {
   .brandLifted .logoWrap,
   .brandLifted .buttons {
     visibility: hidden;

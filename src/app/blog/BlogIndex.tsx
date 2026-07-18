@@ -228,8 +228,29 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
       {/* Viewport-fixed logo and contact button at the site menu's exact
           coordinates. They never move: the menus slide beneath them. */}
       <div className={styles.brandFix}>
-        <Link href="/blog" className={navStyles.logoWrap} aria-label="Amsterdam Life Homes home">
-          <span className={navStyles.logo}>Amsterdam Life Homes</span>
+        {/* Each word's tail lives in a clipped window that narrows to zero
+            while its letters slide left, so on laptop widths the logo closes
+            up to "ALH" once the bar docks: the A never moves, L and then H
+            slide left against it. Full logo everywhere above 1895px. */}
+        <Link
+          href="/blog"
+          className={`${navStyles.logoWrap}${prog >= 64 ? ` ${styles.logoMini}` : ''}`}
+          aria-label="Amsterdam Life Homes home"
+        >
+          <span className={navStyles.logo} aria-hidden="true">
+            <span>A</span>
+            <span className={`${styles.lrest} ${styles.lr10}`}>
+              <span className={styles.lin}>msterdam&nbsp;</span>
+            </span>
+            <span>L</span>
+            <span className={`${styles.lrest} ${styles.lr4}`}>
+              <span className={styles.lin}>ife&nbsp;</span>
+            </span>
+            <span>H</span>
+            <span className={`${styles.lrest} ${styles.lr6}`}>
+              <span className={styles.lin}>omes</span>
+            </span>
+          </span>
         </Link>
       </div>
       <div className={`${styles.brandFix} ${styles.brandFixR}`}>
