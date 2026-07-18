@@ -143,10 +143,10 @@
 }
 @media (max-width: 1895px) {
   .lrest {
-    transition: max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: max-width 0.65s cubic-bezier(0.45, 0, 0.15, 1);
   }
   .lin {
-    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.65s cubic-bezier(0.45, 0, 0.15, 1);
   }
   .logoMini .lrest {
     max-width: 0;
@@ -199,6 +199,15 @@
 @media (min-width: 1360px) and (max-width: 1895px) {
   .gmenuRaised .gin {
     padding: 15px 150px 15px 105px;
+    /* On docking, the row starts with full-logo clearance and only slides
+       left once the collapse to ALH is mostly done, so "The Latest" can
+       never sit under the still-wide logo. */
+    animation: ginClear 0.5s cubic-bezier(0.3, 0, 0.2, 1) 0.3s backwards;
+  }
+  @keyframes ginClear {
+    from {
+      padding-left: 300px;
+    }
   }
   .gmenuRaised .gnav {
     /* Never wrap while docked: a second row changes the bar's height at the
@@ -1090,17 +1099,9 @@
   }
 }
 
-/* SUBTLE MOTION — hover zoom on image cards + gentle reveal on scroll */
+/* SUBTLE MOTION — gentle reveal on scroll */
 .fimg {
   overflow: hidden;
-}
-.fimg img,
-.phCell img {
-  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.featcard:hover .fimg img,
-.phCell:hover img {
-  transform: scale(1.045);
 }
 .reveal {
   opacity: 0;

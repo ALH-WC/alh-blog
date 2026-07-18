@@ -47,6 +47,10 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
   // How far (0-64px) the category bar has pushed the site menu off the top.
   // Scroll-linked: 1px of scroll moves both bars exactly 1px.
   const [prog, setProg] = useState(0);
+  // The ALH collapse runs on its own thresholds: it starts before the bar
+  // docks (head start for the 0.65s letters) and re-expands only once the
+  // bar has moved well clear of the logo row on the way back up.
+  const [mini, setMini] = useState(false);
 
   const gmenuRef = useRef<HTMLElement>(null);
   const dockRef = useRef<HTMLDivElement>(null);
@@ -111,6 +115,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
       // Hysteresis: docked latches at 64 and releases only below 56, so the
       // layout-affecting docked styles cannot flap at the threshold.
       setCompact((c) => (p >= 64 ? true : p <= 56 ? false : c));
+      setMini((m) => (p >= 40 ? true : p <= 24 ? false : m));
       // Soft close: if the scroll comes to rest inside the handoff zone, the
       // page gently scrolls the few remaining pixels toward the nearest end,
       // so the bars never sit half-migrated. The timer resets on every scroll
@@ -257,7 +262,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
             slide left against it. Full logo everywhere above 1895px. */}
         <Link
           href="/blog"
-          className={`${navStyles.logoWrap}${compact ? ` ${styles.logoMini}` : ''}`}
+          className={`${navStyles.logoWrap}${mini ? ` ${styles.logoMini}` : ''}`}
           aria-label="Amsterdam Life Homes home"
         >
           <span className={navStyles.logo} aria-hidden="true">
