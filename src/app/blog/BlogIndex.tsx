@@ -54,7 +54,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
   const leadRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const hero = useMemo(() => articles.find((a) => a.featured) ?? articles[0], [articles]);
+  const hero = useMemo(() => articles[0], [articles]);
   const latest = useMemo(() => articles.filter((a) => a !== hero).slice(0, 4), [articles, hero]);
   const bySection = useMemo(() => {
     const map: Record<string, ArticleListItem[]> = {};
@@ -369,8 +369,12 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
           {SECTIONS.map((s) => {
             const items = bySection[s.key] ?? [];
             if (items.length === 0) return null;
-            const feature = items[0];
-            const rest = items.slice(1, 5);
+            // The chapter's feature card is the article marked "Hero of its
+            // chapter" in the Studio; without one, the newest article leads.
+            const heroPick = items.find((a) => a.sectionHero) ?? items[0];
+            const ordered = heroPick === items[0] ? items : [heroPick, ...items.filter((a) => a !== heroPick)];
+            const feature = ordered[0];
+            const rest = ordered.slice(1, 5);
             const trio = s.key === 'life';
             return (
               <Fragment key={s.key}>
@@ -408,7 +412,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
 
                 {trio ? (
                   <section className={`${styles.cells} ${styles.c3}`} data-reveal="">
-                    {items.slice(0, 3).map((a) => (
+                    {ordered.slice(0, 3).map((a) => (
                       <Link key={a._id} href={`/blog/${a.slug}`} className={`${styles.cardLink} ${styles.cell} ${styles.phCell} ${styles.photo}`}>
                         <img src={a.imageUrl} alt="" loading="lazy" />
                         <span className={styles.tag}>{a.category}</span>

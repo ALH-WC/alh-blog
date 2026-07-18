@@ -1,7 +1,7 @@
 import type { StructureResolver } from 'sanity/structure';
 import { SECTIONS } from '../lib/sections';
 
-// Groups articles by chapter (and a Featured shortcut) in the Studio desk.
+// Groups articles by chapter (and a chapter-heroes shortcut) in the Studio desk.
 export const structure: StructureResolver = (S) =>
   S.list()
     .title('The Amsterdam Guide')
@@ -10,11 +10,11 @@ export const structure: StructureResolver = (S) =>
         .title('All articles')
         .child(S.documentTypeList('article').title('All articles')),
       S.listItem()
-        .title('★ Featured ("Start here")')
+        .title('★ Chapter heroes')
         .child(
           S.documentList()
-            .title('Featured')
-            .filter('_type == "article" && featured == true'),
+            .title('Chapter heroes')
+            .filter('_type == "article" && sectionHero == true'),
         ),
       S.divider(),
       ...SECTIONS.map((section) =>

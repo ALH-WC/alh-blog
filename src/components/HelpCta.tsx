@@ -35,7 +35,7 @@ export function HelpCta({ mode = 'panel' }: { mode?: 'tab' | 'panel' }) {
   const body = (
     <>
       <p className={styles.kicker}>New to Amsterdam?</p>
-      <p className={styles.lead}>Tell us what you are looking for and we will show you exactly how we can help.</p>
+      <p className={styles.lead}>We help fellow expats rent, let, and buy their home in Amsterdam.</p>
       <div className={styles.options}>
         {OPTIONS.map((o) => (
           <a key={o.href} href={o.href} className={styles.option}>

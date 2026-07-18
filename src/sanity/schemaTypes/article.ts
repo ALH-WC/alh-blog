@@ -1,5 +1,5 @@
 import { defineField, defineType, defineArrayMember } from 'sanity';
-import { CATEGORIES, SECTIONS } from '../../lib/sections';
+import { CATEGORIES } from '../../lib/sections';
 
 // Ordered "steps" callout (Spectral numbers), used inside the body.
 const stepsCallout = defineArrayMember({
@@ -274,12 +274,13 @@ export const article = defineType({
       description: 'Extra categories this article also fits (used for search and relatedness).',
     }),
     defineField({
-      name: 'featured',
-      title: 'Feature as "Start here"',
+      name: 'sectionHero',
+      title: 'Hero of its chapter',
       type: 'boolean',
       group: 'placement',
       initialValue: false,
-      description: 'Pins this as the flagship article at the very top of the guide. The newest featured one wins.',
+      description:
+        'Pins this article as the big feature card of its chapter block on the guide. If several articles in one chapter have this on, the newest wins.',
     }),
     defineField({
       name: 'publishedAt',
@@ -291,12 +292,11 @@ export const article = defineType({
     }),
   ],
   preview: {
-    select: { title: 'title', category: 'category', featured: 'featured', media: 'heroImage' },
-    prepare({ title, category, featured, media }) {
-      const section = SECTIONS.find((s) => s.categories.includes(category))?.menu ?? category;
+    select: { title: 'title', category: 'category', sectionHero: 'sectionHero', media: 'heroImage' },
+    prepare({ title, category, sectionHero, media }) {
       return {
-        title: featured ? `★ ${title}` : title,
-        subtitle: `${section} · ${category}`,
+        title: sectionHero ? `★ ${title}` : title,
+        subtitle: category,
         media,
       };
     },
