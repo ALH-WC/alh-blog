@@ -85,7 +85,23 @@ export default async function ArticlePage(
   const [article, all] = await Promise.all([getArticleBySlug(slug), getArticleList()]);
   if (!article) notFound();
 
-  const related = all.filter((a) => a.slug !== article.slug).slice(0, 3);
+  // "Keep reading": three internal links on every article. Studio picks
+  // (the "Keep reading (override)" field) come first; automatic picks fill
+  // the rest by relevance: same chapter, then chapters this article is also
+  // relevant to, then anything else. `all` is newest-first throughout.
+  const pool = all.filter((a) => a.slug !== article.slug);
+  const picked = (article.relatedSlugs ?? [])
+    .map((rs) => pool.find((a) => a.slug === rs))
+    .filter((a): a is (typeof pool)[number] => Boolean(a));
+  const remaining = pool.filter((a) => !picked.includes(a));
+  const sameChapter = remaining.filter((a) => a.category === article.category);
+  const alsoRelevant = remaining.filter(
+    (a) =>
+      !sameChapter.includes(a) &&
+      (article.categories?.includes(a.category) || a.categories?.includes(article.category)),
+  );
+  const filler = remaining.filter((a) => !sameChapter.includes(a) && !alsoRelevant.includes(a));
+  const related = [...picked, ...sameChapter, ...alsoRelevant, ...filler].slice(0, 3);
 
   // Split the body so the newsletter signup lands roughly in the middle
   // (or at the end of very short articles). Every article gets one.

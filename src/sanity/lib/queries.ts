@@ -24,7 +24,8 @@ const ARTICLE_PROJECTION = `{
   summary,
   keyTakeaways,
   faqs,
-  publishedAt
+  publishedAt,
+  "relatedSlugs": related[]->slug.current
 }`;
 
 const ALL_ARTICLES_QUERY = `*[_type == "article" && defined(slug.current)]
@@ -72,6 +73,7 @@ interface RawDoc {
   keyTakeaways?: string[];
   faqs?: { question: string; answer: string }[];
   publishedAt?: string;
+  relatedSlugs?: (string | null)[];
 }
 
 function mapDoc(doc: RawDoc): Article {
@@ -101,6 +103,7 @@ function mapDoc(doc: RawDoc): Article {
     keyTakeaways: doc.keyTakeaways,
     faqs: doc.faqs,
     publishedAt: doc.publishedAt,
+    relatedSlugs: doc.relatedSlugs?.filter((x): x is string => Boolean(x)),
   };
 }
 

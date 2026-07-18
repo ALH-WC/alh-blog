@@ -60,4 +60,6 @@ export interface Article {
   categories?: Category[];
   /** Not displayed; used only in JSON-LD as a freshness signal. */
   publishedAt?: string;
+  /** Hand-picked "Keep reading" slugs from the Studio; auto picks fill the rest. */
+  relatedSlugs?: string[];
 }
