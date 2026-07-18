@@ -5,7 +5,7 @@
 // chapter titles; each chapter gathers one or more categories.
 //
 // A chapter only renders five cards, and its "View all" filters by the whole
-// chapter, so a category folded into a crowded chapter can end up invisible. Eat
+// chapter, so a category folded into a crowded chapter can end up invisible. Food
 // & Drink used to sit inside Life & culture and none of its articles reached the
 // top five, which is why it now has a chapter of its own.
 
@@ -13,8 +13,8 @@ export const CATEGORIES = [
   'Immigration',
   'Housing',
   'Neighborhoods',
-  'Eat & Drink',
-  'Finances & Work',
+  'Food & Drink',
+  'Finance & Work',
   'Life & Culture',
 ] as const;
 
@@ -26,9 +26,11 @@ export type Category = (typeof CATEGORIES)[number];
 // chapter it always belonged to.
 export const LEGACY_CATEGORY_MAP: Record<string, Category> = {
   'Need to know': 'Housing',
-  Work: 'Finances & Work',
-  Finance: 'Finances & Work',
+  Work: 'Finance & Work',
+  Finance: 'Finance & Work',
+  'Finances & Work': 'Finance & Work',
   'See & Do': 'Life & Culture',
+  'Eat & Drink': 'Food & Drink',
 };
 
 export const normalizeCategory = (c: string): Category =>
@@ -72,17 +74,17 @@ export const SECTIONS: Section[] = [
   },
   {
     key: 'food',
-    menu: 'Eat & Drink',
-    title: 'Eat & Drink',
+    menu: 'Food & Drink',
+    title: 'Food & Drink',
     dek: 'Where to eat, what to order, and the places locals go back to.',
-    categories: ['Eat & Drink'],
+    categories: ['Food & Drink'],
   },
   {
     key: 'money',
-    menu: 'Finances & Work',
-    title: 'Finances & Work',
+    menu: 'Finance & Work',
+    title: 'Finance & Work',
     dek: 'Real numbers, current rules, and how work fits in. No surprises.',
-    categories: ['Finances & Work'],
+    categories: ['Finance & Work'],
   },
   {
     key: 'life',
