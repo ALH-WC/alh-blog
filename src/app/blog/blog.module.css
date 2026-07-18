@@ -1,6 +1,11 @@
 .page {
   background: var(--paper);
   padding-top: var(--nav-height);
+  /* Scroll anchoring reacts to the category bar changing height at the dock
+     threshold by adjusting the scroll position, which crosses the threshold
+     back: an oscillation loop. The bar is the only thing that resizes here,
+     so anchoring gives us nothing worth that. */
+  overflow-anchor: none;
 }
 .content {
   max-width: var(--content-width);
@@ -193,13 +198,20 @@
    tightens slightly to keep everything on one line. */
 @media (min-width: 1360px) and (max-width: 1895px) {
   .gmenuRaised .gin {
-    padding: 15px 155px 15px 110px;
+    padding: 15px 150px 15px 105px;
   }
   .gmenuRaised .gnav {
-    gap: 16px;
+    /* Never wrap while docked: a second row changes the bar's height at the
+       dock threshold, and that layout jump is what fed the scroll loop. */
+    flex-wrap: nowrap;
+    gap: 15px;
+  }
+  .gmenuRaised .gitem {
+    font-size: 14px;
   }
   .gmenuRaised .gsearch {
-    min-width: 170px;
+    min-width: 150px;
+    flex-shrink: 1;
   }
 }
 .gnav {
