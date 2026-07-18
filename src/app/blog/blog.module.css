@@ -114,9 +114,45 @@
   left: auto;
   right: var(--gutter);
 }
-/* Below this the centered menu row would collide with the full-size logo:
-   the bar keeps its own logo and contact instead. Measured, not guessed. */
+/* Collapsing logo. Each tail is a clipped window (max-width) holding letters
+   that slide left as it narrows, so the word closes up into its initial.
+   Only active below 1896px, where the full logo cannot share the docked bar
+   with the menu row; above that the windows simply never narrow. */
+.lrest {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+.lin {
+  display: inline-block;
+}
+.lr10 {
+  max-width: 10ch;
+}
+.lr4 {
+  max-width: 4ch;
+}
+.lr6 {
+  max-width: 6ch;
+}
 @media (max-width: 1895px) {
+  .lrest {
+    transition: max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .lin {
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .logoMini .lrest {
+    max-width: 0;
+  }
+  .logoMini .lin {
+    transform: translateX(-100%);
+  }
+}
+/* Below this the site nav is a drawer and the bar has no room at all:
+   no fixed pair. */
+@media (max-width: 1359px) {
   .brandFix {
     display: none;
   }
@@ -150,6 +186,20 @@
   .gmenuRaised .gin {
     padding-top: 15px;
     padding-bottom: 15px;
+  }
+}
+/* Laptop widths: the docked bar hosts the collapsed ALH logo on its left and
+   the contact button on its right, so its row clears both corners and
+   tightens slightly to keep everything on one line. */
+@media (min-width: 1360px) and (max-width: 1895px) {
+  .gmenuRaised .gin {
+    padding: 15px 155px 15px 110px;
+  }
+  .gmenuRaised .gnav {
+    gap: 16px;
+  }
+  .gmenuRaised .gsearch {
+    min-width: 170px;
   }
 }
 .gnav {
