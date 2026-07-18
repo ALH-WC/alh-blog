@@ -74,7 +74,7 @@
   white-space: nowrap;
 }
 .form button:hover {
-  background: #ffffff;
+  background: var(--paper);
 }
 .fine {
   margin-top: 18px;

@@ -485,7 +485,7 @@
   left: 20px;
   z-index: 2;
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -495,14 +495,14 @@
 .phSub {
   position: relative;
   z-index: 2;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(245, 240, 230, 0.92);
   font-size: 13.5px;
   margin-bottom: 7px;
 }
 .phCap {
   position: relative;
   z-index: 2;
-  color: #fff;
+  color: var(--paper);
   font-family: var(--display);
   font-size: 25px;
   font-weight: 500;
@@ -857,7 +857,7 @@
   white-space: nowrap;
 }
 .nlpopForm button:hover {
-  background: #ffffff;
+  background: var(--paper);
 }
 .nlpopFine {
   margin-top: 18px;
@@ -1003,7 +1003,7 @@
 }
 .btnDark {
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
   border: 0;
   padding: 14px 32px;
   font-family: var(--sans);
@@ -1051,7 +1051,7 @@
   gap: 10px;
   margin-top: 32px;
   background: var(--accent);
-  color: #fff;
+  color: var(--paper);
   font-family: var(--sans);
   font-weight: 600;
   font-size: 16px;
@@ -1060,7 +1060,7 @@
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .closingCta .ar {
-  color: #fff;
+  color: var(--paper);
   font-size: 18px;
   transition: transform 0.3s;
 }
@@ -1207,11 +1207,13 @@
   top: 24px;
   left: 0;
   z-index: 1;
-  max-width: 300px;
+  /* Wide enough that the dek fills the map's empty top-left corner before
+     wrapping, instead of stacking narrow lines down into the artwork. */
+  max-width: 640px;
 }
 .mapDek {
   margin-top: 20px;
-  max-width: 300px;
+  max-width: 640px;
   font-size: 18px;
   line-height: 1.55;
   color: var(--body-text);

@@ -11,16 +11,28 @@
 
 export const CATEGORIES = [
   'Immigration',
-  'Need to know',
-  'Work',
-  'Finance',
+  'Housing',
   'Neighborhoods',
-  'Life & Culture',
   'Eat & Drink',
-  'See & Do',
+  'Finances & Work',
+  'Life & Culture',
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
+
+// The taxonomy used to have more granular labels. Every article was migrated
+// to the chapter-level categories above, but this map keeps the site tolerant
+// of a stray legacy value (an old draft, an import) by folding it into the
+// chapter it always belonged to.
+export const LEGACY_CATEGORY_MAP: Record<string, Category> = {
+  'Need to know': 'Housing',
+  Work: 'Finances & Work',
+  Finance: 'Finances & Work',
+  'See & Do': 'Life & Culture',
+};
+
+export const normalizeCategory = (c: string): Category =>
+  (LEGACY_CATEGORY_MAP[c] ?? c) as Category;
 
 export interface Section {
   /** Stable key, used for menu data attributes and scroll-spy. */
@@ -49,7 +61,7 @@ export const SECTIONS: Section[] = [
     menu: 'Housing',
     title: 'Housing',
     dek: 'How this market really works, from people inside it daily.',
-    categories: ['Need to know'],
+    categories: ['Housing'],
   },
   {
     key: 'neighborhoods',
@@ -70,14 +82,14 @@ export const SECTIONS: Section[] = [
     menu: 'Finances & Work',
     title: 'Finances & Work',
     dek: 'Real numbers, current rules, and how work fits in. No surprises.',
-    categories: ['Finance', 'Work'],
+    categories: ['Finances & Work'],
   },
   {
     key: 'life',
     menu: 'Life & Culture',
     title: 'Life & Culture',
     dek: 'Seeing, doing, and the part that makes it home.',
-    categories: ['Life & Culture', 'See & Do'],
+    categories: ['Life & Culture'],
   },
 ];
 

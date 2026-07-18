@@ -2,6 +2,7 @@ import type { PortableTextBlock } from '@portabletext/types';
 import { client } from './client';
 import { urlForImage } from './image';
 import type { Article, ArticleListItem, Category } from '../../lib/types';
+import { normalizeCategory } from '../../lib/sections';
 import { sampleArticles } from '../../lib/sampleData';
 
 const ARTICLE_PROJECTION = `{
@@ -12,7 +13,7 @@ const ARTICLE_PROJECTION = `{
   category,
   categories,
   readMinutes,
-  featured,
+  sectionHero,
   heroImage,
   ogImage,
   body,
@@ -27,7 +28,7 @@ const ARTICLE_PROJECTION = `{
 }`;
 
 const ALL_ARTICLES_QUERY = `*[_type == "article" && defined(slug.current)]
-  | order(featured desc, _createdAt desc) ${ARTICLE_PROJECTION}`;
+  | order(_createdAt desc) ${ARTICLE_PROJECTION}`;
 
 // Card-level fields only. The index hands the whole list to a client component
 // and Next serializes those props into the HTML, so every field here is paid
@@ -40,12 +41,12 @@ const LIST_PROJECTION = `{
   category,
   categories,
   readMinutes,
-  featured,
+  sectionHero,
   heroImage
 }`;
 
 const ARTICLE_LIST_QUERY = `*[_type == "article" && defined(slug.current)]
-  | order(featured desc, _createdAt desc) ${LIST_PROJECTION}`;
+  | order(_createdAt desc) ${LIST_PROJECTION}`;
 
 const ARTICLE_BY_SLUG_QUERY = `*[_type == "article" && slug.current == $slug][0] ${ARTICLE_PROJECTION}`;
 
@@ -59,7 +60,7 @@ interface RawDoc {
   category: Category;
   categories?: Category[];
   readMinutes: number;
-  featured?: boolean;
+  sectionHero?: boolean;
   heroImage?: { alt?: string } | null;
   ogImage?: unknown;
   body?: PortableTextBlock[];
@@ -84,10 +85,10 @@ function mapDoc(doc: RawDoc): Article {
     title: doc.title,
     dek: doc.dek ?? '',
     slug: doc.slug,
-    category: doc.category,
-    categories: doc.categories,
+    category: normalizeCategory(doc.category),
+    categories: doc.categories ? [...new Set(doc.categories.map(normalizeCategory))] : undefined,
     readMinutes: doc.readMinutes,
-    featured: Boolean(doc.featured),
+    sectionHero: Boolean(doc.sectionHero),
     imageUrl,
     imageAlt: doc.heroImage?.alt ?? doc.title,
     body: doc.body ?? [],
@@ -110,10 +111,10 @@ function toListItem(doc: RawDoc): ArticleListItem {
     title: doc.title,
     dek: doc.dek ?? '',
     slug: doc.slug,
-    category: doc.category,
-    categories: doc.categories,
+    category: normalizeCategory(doc.category),
+    categories: doc.categories ? [...new Set(doc.categories.map(normalizeCategory))] : undefined,
     readMinutes: doc.readMinutes,
-    featured: Boolean(doc.featured),
+    sectionHero: Boolean(doc.sectionHero),
     imageUrl: built ? built.width(1200).height(800).url() : `https://picsum.photos/seed/${doc.slug}/1200/800`,
     imageAlt: doc.heroImage?.alt ?? doc.title,
   };
@@ -138,7 +139,7 @@ const toSampleListItem = (a: Article): ArticleListItem => ({
   category: a.category,
   categories: a.categories,
   readMinutes: a.readMinutes,
-  featured: a.featured,
+  sectionHero: a.sectionHero,
   imageUrl: a.imageUrl,
   imageAlt: a.imageAlt,
 });

@@ -64,34 +64,34 @@ interface Seed {
   slug: string;
   category: Category;
   readMinutes: number;
-  featured?: boolean;
+  sectionHero?: boolean;
   body?: PortableTextBlock[];
 }
 
 const seeds: Seed[] = [
-  { title: 'Renting in Amsterdam without a BSN: the chicken and egg problem, solved', dek: 'Someone told you that you need a BSN to rent, and an address to get a BSN. Only one of those is true. Here is the sequence that actually works.', slug: 'renting-without-bsn', category: 'Need to know', readMinutes: 8, featured: true, body: bsnBody },
+  { title: 'Renting in Amsterdam without a BSN: the chicken and egg problem, solved', dek: 'Someone told you that you need a BSN to rent, and an address to get a BSN. Only one of those is true. Here is the sequence that actually works.', slug: 'renting-without-bsn', category: 'Housing', readMinutes: 8, sectionHero: true, body: bsnBody },
   { title: 'Your first 30 days in Amsterdam: the checklist that actually works', dek: 'BSN, bank account, health insurance, DigiD. The exact order to do things in, and what can wait.', slug: 'first-30-days', category: 'Immigration', readMinutes: 9 },
   { title: 'Registering at your address: how the BSN process really goes', dek: 'What actually happens at the gemeente appointment, and what to bring.', slug: 'registering-your-address', category: 'Immigration', readMinutes: 6 },
   { title: 'Moving to Amsterdam with kids: schools, daycare, and waiting lists', dek: 'Schools, daycare, and the waiting lists nobody warns you about.', slug: 'moving-with-kids', category: 'Immigration', readMinutes: 11 },
-  { title: 'Why good apartments disappear in 48 hours, and how prepared renters move faster', dek: 'The speed of this market surprises everyone. How the winners see listings before they go public.', slug: 'apartments-48-hours', category: 'Need to know', readMinutes: 7 },
-  { title: 'What landlords actually look for in expat tenants', dek: 'Income, documents, and the small things that decide who gets the keys.', slug: 'what-landlords-look-for', category: 'Need to know', readMinutes: 7 },
-  { title: 'Rental contracts in the Netherlands, decoded', dek: 'Fixed term, indefinite, diplomatic clause. What the contract types mean for you.', slug: 'rental-contracts-decoded', category: 'Need to know', readMinutes: 10 },
-  { title: 'Deposit rules in 2026 and how to actually get yours back', dek: 'What a landlord can and cannot hold back, and how to protect your deposit.', slug: 'deposit-rules-2026', category: 'Need to know', readMinutes: 6 },
-  { title: 'The 15-minute viewing: spotting red flags fast', dek: 'A quick checklist for the things that matter when you only have minutes.', slug: '15-minute-viewing', category: 'Need to know', readMinutes: 5 },
-  { title: 'Utilities, internet, and city taxes: your real monthly costs beyond rent', dek: 'The full picture of what an Amsterdam home costs per month beyond the rent itself.', slug: 'utilities-and-costs', category: 'Finance', readMinutes: 7 },
-  { title: 'The 30% ruling in 2026 and what it means for your rent budget', dek: 'How the ruling works now, and what it does to what you can afford.', slug: '30-percent-ruling', category: 'Finance', readMinutes: 8 },
-  { title: 'Income requirements for renting: what agencies really check', dek: 'The three-times-rent rule of thumb, and how strict it really is.', slug: 'income-requirements', category: 'Finance', readMinutes: 6 },
-  { title: 'Opening a Dutch bank account fast, even before you land', dek: 'The routes to a working Dutch account, including options you can start from abroad.', slug: 'dutch-bank-account', category: 'Finance', readMinutes: 5 },
-  { title: 'Dutch health insurance: how to pick in one evening', dek: 'A simple way to choose a policy without losing a weekend to it.', slug: 'dutch-health-insurance', category: 'Finance', readMinutes: 7 },
-  { title: 'Highly skilled migrant salary thresholds, explained simply', dek: 'The numbers that matter for the HSM permit, in plain language.', slug: 'hsm-thresholds', category: 'Work', readMinutes: 7 },
-  { title: 'Going freelance in the Netherlands: ZZP basics for expats', dek: 'What ZZP means, and the first steps to working for yourself here.', slug: 'freelance-zzp', category: 'Work', readMinutes: 8 },
+  { title: 'Why good apartments disappear in 48 hours, and how prepared renters move faster', dek: 'The speed of this market surprises everyone. How the winners see listings before they go public.', slug: 'apartments-48-hours', category: 'Housing', readMinutes: 7 },
+  { title: 'What landlords actually look for in expat tenants', dek: 'Income, documents, and the small things that decide who gets the keys.', slug: 'what-landlords-look-for', category: 'Housing', readMinutes: 7 },
+  { title: 'Rental contracts in the Netherlands, decoded', dek: 'Fixed term, indefinite, diplomatic clause. What the contract types mean for you.', slug: 'rental-contracts-decoded', category: 'Housing', readMinutes: 10 },
+  { title: 'Deposit rules in 2026 and how to actually get yours back', dek: 'What a landlord can and cannot hold back, and how to protect your deposit.', slug: 'deposit-rules-2026', category: 'Housing', readMinutes: 6 },
+  { title: 'The 15-minute viewing: spotting red flags fast', dek: 'A quick checklist for the things that matter when you only have minutes.', slug: '15-minute-viewing', category: 'Housing', readMinutes: 5 },
+  { title: 'Utilities, internet, and city taxes: your real monthly costs beyond rent', dek: 'The full picture of what an Amsterdam home costs per month beyond the rent itself.', slug: 'utilities-and-costs', category: 'Finances & Work', readMinutes: 7 },
+  { title: 'The 30% ruling in 2026 and what it means for your rent budget', dek: 'How the ruling works now, and what it does to what you can afford.', slug: '30-percent-ruling', category: 'Finances & Work', readMinutes: 8 },
+  { title: 'Income requirements for renting: what agencies really check', dek: 'The three-times-rent rule of thumb, and how strict it really is.', slug: 'income-requirements', category: 'Finances & Work', readMinutes: 6 },
+  { title: 'Opening a Dutch bank account fast, even before you land', dek: 'The routes to a working Dutch account, including options you can start from abroad.', slug: 'dutch-bank-account', category: 'Finances & Work', readMinutes: 5 },
+  { title: 'Dutch health insurance: how to pick in one evening', dek: 'A simple way to choose a policy without losing a weekend to it.', slug: 'dutch-health-insurance', category: 'Finances & Work', readMinutes: 7 },
+  { title: 'Highly skilled migrant salary thresholds, explained simply', dek: 'The numbers that matter for the HSM permit, in plain language.', slug: 'hsm-thresholds', category: 'Finances & Work', readMinutes: 7 },
+  { title: 'Going freelance in the Netherlands: ZZP basics for expats', dek: 'What ZZP means, and the first steps to working for yourself here.', slug: 'freelance-zzp', category: 'Finances & Work', readMinutes: 8 },
   { title: 'Oud-Zuid vs De Pijp vs Oost: where do you actually belong?', dek: 'An honest comparison from the people who do viewings in all three every week.', slug: 'oudzuid-depijp-oost', category: 'Neighborhoods', readMinutes: 12 },
   { title: 'The quiet neighbourhoods families love, that tourists never see', dek: 'Where families settle, and why.', slug: 'quiet-family-neighbourhoods', category: 'Neighborhoods', readMinutes: 9 },
   { title: 'Living in Noord: the ferry life, honestly', dek: 'The trade-offs of the north bank, from people who live there.', slug: 'living-in-noord', category: 'Neighborhoods', readMinutes: 8 },
   { title: 'Zuidas beyond the office towers', dek: 'What it is actually like to live in the business district.', slug: 'zuidas-beyond-offices', category: 'Neighborhoods', readMinutes: 7 },
   { title: 'How to make Dutch friends (yes, really)', dek: 'The unwritten rules of friendship here, and how to get past them.', slug: 'make-dutch-friends', category: 'Life & Culture', readMinutes: 6 },
   { title: 'Brunch beyond the tourist spots: where locals actually go', dek: 'The neighbourhood cafes worth your Saturday.', slug: 'brunch-beyond-tourists', category: 'Eat & Drink', readMinutes: 5 },
-  { title: 'A year of Amsterdam seasons, and what nobody tells you about winter', dek: 'How the light, the weather, and the city change across the year.', slug: 'amsterdam-seasons', category: 'See & Do', readMinutes: 6 },
+  { title: 'A year of Amsterdam seasons, and what nobody tells you about winter', dek: 'How the light, the weather, and the city change across the year.', slug: 'amsterdam-seasons', category: 'Life & Culture', readMinutes: 6 },
 ];
 
 export const sampleArticles: Article[] = seeds.map((s, i) => ({
@@ -101,7 +101,7 @@ export const sampleArticles: Article[] = seeds.map((s, i) => ({
   slug: s.slug,
   category: s.category,
   readMinutes: s.readMinutes,
-  featured: Boolean(s.featured),
+  sectionHero: Boolean(s.sectionHero),
   imageUrl: `https://picsum.photos/seed/${s.slug}/1200/800`,
   imageAlt: s.title,
   body: s.body ?? [],

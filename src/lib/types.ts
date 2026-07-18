@@ -18,7 +18,7 @@ export interface ArticleListItem {
   category: Category;
   categories?: Category[];
   readMinutes: number;
-  featured: boolean;
+  sectionHero: boolean;
   imageUrl: string;
   imageAlt: string;
 }
@@ -36,8 +36,8 @@ export interface Article {
   slug: string;
   category: Category;
   readMinutes: number;
-  /** Marks the flagship "Start here" article at the very top of the index. */
-  featured: boolean;
+  /** Pins the article as the big feature card of its chapter block. */
+  sectionHero: boolean;
   /** Resolved hero image URL (Sanity CDN or picsum placeholder). */
   imageUrl: string;
   imageAlt: string;
