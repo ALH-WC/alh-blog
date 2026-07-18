@@ -262,6 +262,15 @@ export const article = defineType({
       validation: (r) => r.required(),
     }),
     defineField({
+      name: 'sectionHero',
+      title: 'Hero of this chapter',
+      type: 'boolean',
+      group: 'placement',
+      initialValue: false,
+      description:
+        'Pins this article as the big feature card of its chapter block on the guide. If several articles in one chapter have this on, the newest wins.',
+    }),
+    defineField({
       name: 'categories',
       title: 'Also relevant to',
       type: 'array',
@@ -272,15 +281,6 @@ export const article = defineType({
         layout: 'grid',
       },
       description: 'Extra categories this article also fits (used for search and relatedness).',
-    }),
-    defineField({
-      name: 'sectionHero',
-      title: 'Hero of its chapter',
-      type: 'boolean',
-      group: 'placement',
-      initialValue: false,
-      description:
-        'Pins this article as the big feature card of its chapter block on the guide. If several articles in one chapter have this on, the newest wins.',
     }),
     defineField({
       name: 'related',
