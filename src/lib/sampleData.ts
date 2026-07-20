@@ -90,7 +90,7 @@ const seeds: Seed[] = [
   { title: 'Living in Noord: the ferry life, honestly', dek: 'The trade-offs of the north bank, from people who live there.', slug: 'living-in-noord', category: 'Neighborhoods', readMinutes: 8 },
   { title: 'Zuidas beyond the office towers', dek: 'What it is actually like to live in the business district.', slug: 'zuidas-beyond-offices', category: 'Neighborhoods', readMinutes: 7 },
   { title: 'How to make Dutch friends (yes, really)', dek: 'The unwritten rules of friendship here, and how to get past them.', slug: 'make-dutch-friends', category: 'Life & Culture', readMinutes: 6 },
-  { title: 'Brunch beyond the tourist spots: where locals actually go', dek: 'The neighbourhood cafes worth your Saturday.', slug: 'brunch-beyond-tourists', category: 'Food & Drink', readMinutes: 5 },
+  { title: 'Brunch beyond the tourist spots: where locals actually go', dek: 'The neighbourhood cafes worth your Saturday.', slug: 'brunch-beyond-tourists', category: 'Eat & Drink', readMinutes: 5 },
   { title: 'A year of Amsterdam seasons, and what nobody tells you about winter', dek: 'How the light, the weather, and the city change across the year.', slug: 'amsterdam-seasons', category: 'Life & Culture', readMinutes: 6 },
 ];
 
