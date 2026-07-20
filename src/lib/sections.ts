@@ -13,7 +13,7 @@ export const CATEGORIES = [
   'Immigration',
   'Housing',
   'Neighborhoods',
-  'Food & Drink',
+  'Eat & Drink',
   'Finance & Work',
   'Life & Culture',
 ] as const;
@@ -30,7 +30,7 @@ export const LEGACY_CATEGORY_MAP: Record<string, Category> = {
   Finance: 'Finance & Work',
   'Finances & Work': 'Finance & Work',
   'See & Do': 'Life & Culture',
-  'Eat & Drink': 'Food & Drink',
+  'Food & Drink': 'Eat & Drink',
 };
 
 export const normalizeCategory = (c: string): Category =>
@@ -74,10 +74,10 @@ export const SECTIONS: Section[] = [
   },
   {
     key: 'food',
-    menu: 'Food & Drink',
-    title: 'Food & Drink',
+    menu: 'Eat & Drink',
+    title: 'Eat & Drink',
     dek: 'Where to eat, what to order, and the places locals go back to.',
-    categories: ['Food & Drink'],
+    categories: ['Eat & Drink'],
   },
   {
     key: 'money',
