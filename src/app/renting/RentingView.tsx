@@ -21,6 +21,7 @@ const NAV_LINKS = [
 
 export default function RentingView() {
   const [navHide, setNavHide] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [navSolid, setNavSolid] = useState(false);
   const [popShown, setPopShown] = useState(false);
   const [popDismissed, setPopDismissed] = useState(false);
@@ -104,7 +105,34 @@ export default function RentingView() {
           )}
         </div>
         <a className={styles.navBtn} href="#contact">Contact us</a>
+        <button
+          type="button"
+          className={styles.burger}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <span /><span />
+        </button>
       </nav>
+      {menuOpen ? (
+        <div className={styles.mnav}>
+          <button type="button" className={styles.mnavClose} aria-label="Close menu" onClick={() => setMenuOpen(false)}>&times;</button>
+          <div className={styles.mnavLinks}>
+            {NAV_LINKS.map((l) =>
+              l.internal ? (
+                <Link key={l.href} href={l.href} onClick={() => setMenuOpen(false)}>{l.label}</Link>
+              ) : (
+                <a key={l.href} href={`https://amsterdamlifehomes.com${l.href}`}>{l.label}</a>
+              ),
+            )}
+            <a href="#contact" onClick={() => setMenuOpen(false)}>Contact us</a>
+          </div>
+          <a className={styles.mnavCta} href={INTAKE_URL} target="_blank" rel="noreferrer">
+            Schedule a free video intake call <span className={styles.ar}>&rarr;</span>
+          </a>
+        </div>
+      ) : null}
 
       {/* HERO */}
       <div className={styles.hero}>
@@ -126,7 +154,7 @@ export default function RentingView() {
       {/* TAG BAND */}
       <div className={styles.tagband}>
         <h2>Amsterdam&apos;s boutique housing agency,<br />run by local expats.</h2>
-        <p>We have been in your shoes, know what you are looking for,<br />and simply treat you the way we want to be treated.</p>
+        <p>We have been in your shoes, know what you are looking for,<br />{' '}and simply treat you the way we want to be treated.</p>
         <a className={styles.tlink} href={INTAKE_URL} target="_blank" rel="noreferrer">
           Schedule a free video intake call <span className={styles.ar}>&rarr;</span>
         </a>
@@ -263,7 +291,7 @@ export default function RentingView() {
       {/* GUIDE BAND */}
       <Link className={styles.guideband} href="/blog">
         <span className={styles.eyebrow} style={{ marginBottom: 12 }}>Learn about</span>
-        <h3>Our Amsterdam guide <span className={styles.gar}>&#8599;</span></h3>
+        <h3>Our Amsterdam guide&nbsp;<span className={styles.gar}>&#8599;</span></h3>
         <p>Anything you need to know when moving here</p>
         <span className={styles.gcats}>
           <span className={styles.glabel}>Read about:</span>
