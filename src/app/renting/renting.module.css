@@ -7,6 +7,7 @@
   color: var(--body-text);
   font-size: 16.5px;
   line-height: 1.62;
+  overflow-x: clip;
 }
 .page a,
 .page button {
@@ -219,6 +220,10 @@
 }
 .sheadWide p {
   max-width: none;
+}
+.formTitle {
+  font-size: 29px;
+  white-space: nowrap;
 }
 
 .tagband {
@@ -691,6 +696,20 @@
 .guideband:hover .gin2 {
   transform: none;
 }
+@media (hover: none), (max-width: 1100px) {
+  .gwin {
+    max-width: none;
+    overflow: visible;
+  }
+  .gin2 {
+    transform: none;
+    white-space: normal;
+  }
+  .gcats {
+    white-space: normal;
+    overflow: visible;
+  }
+}
 
 .faqwrap {
   display: grid;
@@ -1003,13 +1022,33 @@
     padding: 0 22px 44px;
   }
   .heroIn h1 {
-    font-size: 31px;
+    font-size: 26px;
   }
-  .c4,
+  .heroIn p {
+    font-size: 16px;
+  }
   .c3,
   .c2,
   .tiles {
     grid-template-columns: 1fr;
+  }
+  /* stats stay a compact 2x2 on phones */
+  .c4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .c4 .cell {
+    border-right: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    padding: 24px 22px;
+  }
+  .c4 .cell:nth-child(2n) {
+    border-right: none;
+  }
+  .c4 .cell:nth-last-child(-n + 2) {
+    border-bottom: none;
+  }
+  .statN {
+    font-size: 30px;
   }
   .cell {
     border-right: none;
@@ -1077,6 +1116,32 @@
     left: 16px;
     right: 16px;
     width: auto;
+    padding: 20px 18px 18px;
+  }
+  .ctapop h4 {
+    font-size: 21px;
+  }
+  .formTitle {
+    font-size: 23px;
+  }
+  .panel {
+    padding: 40px 22px;
+  }
+  .two {
+    margin-top: 64px;
+  }
+  .prow {
+    padding: 24px 22px;
+  }
+  .shead {
+    padding-top: 56px;
+  }
+  .guideband h3 {
+    font-size: 32px;
+  }
+  .tagband h2 br,
+  .tagband p br {
+    display: none;
   }
   .tile {
     aspect-ratio: 4/3.4;
