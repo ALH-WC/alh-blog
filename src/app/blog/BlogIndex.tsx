@@ -296,7 +296,9 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
         <div className={styles.mast}>
           <div>
             <h1 className={styles.mastTitle}>
-              <span className={styles.brand}>The Amsterdam Guide</span> we wish someone had handed us.
+              <span className={styles.brand}>The Amsterdam Guide</span>
+              <br />we wish someone
+              <br />had handed us.
             </h1>
           </div>
           <div className={styles.mright}>
