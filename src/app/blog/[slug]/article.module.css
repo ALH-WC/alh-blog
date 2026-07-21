@@ -263,7 +263,12 @@
   .lead {
     font-size: 19px;
   }
+  /* Cover paintings carry their own painted titles: show them whole. */
   .heroFrame {
-    height: 240px;
+    height: auto;
+  }
+  .heroFrame img {
+    display: block;
+    height: auto;
   }
 }

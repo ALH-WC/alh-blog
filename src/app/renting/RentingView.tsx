@@ -292,7 +292,7 @@ export default function RentingView() {
       <Link className={styles.guideband} href="/blog">
         <span className={styles.eyebrow} style={{ marginBottom: 12 }}>Learn about</span>
         <h3>Our Amsterdam guide&nbsp;<span className={styles.gar}>&#8599;</span></h3>
-        <p>Anything you need to know when moving here</p>
+        <p>Anything you need to know when moving here&nbsp;<span className={`${styles.gar} ${styles.garSub}`}>&#8599;</span></p>
         <span className={styles.gcats}>
           <span className={styles.glabel}>Read about:</span>
           <span className={styles.gwin}><span className={styles.gin2}>Immigration &middot; Housing &middot; Neighborhoods &middot; Food &amp; Drinks &middot; Finance &amp; Work &middot; Life &amp; Culture</span></span>
