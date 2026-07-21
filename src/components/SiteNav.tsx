@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './SiteNav.module.css';
 
-// "Contact us" points at the main site's contact section; the dedicated intake
-// CTA books a Cal.com video call.
-const CONTACT_URL = 'https://amsterdamlifehomes.com/#contact';
+// "Contact us" opens our own contact page; the dedicated intake CTA books a
+// Cal.com video call.
+const CONTACT_URL = '/contact';
 const INTAKE_URL = 'https://cal.com/amsterdam-life-homes/intake';
 
 // Reconstructed from the ALH Framer "Navigation" component.
@@ -19,8 +19,8 @@ const LINKS = [
   { href: '/blog', label: 'Our Amsterdam guide', current: true },
 ];
 
-// Blog routes are served by this app; the others are served by the main Framer
-// site, so they use a full navigation rather than client-side routing.
+// Everything except the homepage sections ("/#…", still on the Framer site)
+// is served by this app and can client-side navigate.
 function NavLink({
   href,
   label,
@@ -35,7 +35,7 @@ function NavLink({
   onClick?: () => void;
 }) {
   const currentAttr = current ? { 'aria-current': 'page' as const } : {};
-  if (href.startsWith('/blog')) {
+  if (href.startsWith('/') && !href.startsWith('/#')) {
     return (
       <Link href={href} className={className} onClick={onClick} {...currentAttr}>
         {label}
@@ -43,7 +43,12 @@ function NavLink({
     );
   }
   return (
-    <a href={href} className={className} onClick={onClick} {...currentAttr}>
+    <a
+      href={href.startsWith('/#') ? `https://amsterdamlifehomes.com${href}` : href}
+      className={className}
+      onClick={onClick}
+      {...currentAttr}
+    >
       {label}
     </a>
   );

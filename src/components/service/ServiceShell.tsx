@@ -11,11 +11,13 @@ import styles from '../../app/renting/renting.module.css';
 // hide-on-down / solid-on-up behavior, the shared hamburger drawer, the CTA
 // pop-up after a quarter of the page, and the shared footer. Page sections
 // render as children between nav and footer.
+// "About us" is still a section on the live Framer homepage; everything else
+// is served by this app.
 const NAV_LINKS = [
-  { href: '/renting', label: 'Renting' },
-  { href: '/buying', label: 'Buying' },
-  { href: '/letting', label: 'Letting' },
-  { href: '/b2b', label: 'Corporate' },
+  { href: '/renting', label: 'Renting', internal: true },
+  { href: '/buying', label: 'Buying', internal: true },
+  { href: '/letting', label: 'Letting', internal: true },
+  { href: '/b2b', label: 'Corporate', internal: true },
   { href: '/#about-us', label: 'About us' },
   { href: '/blog', label: 'Our Amsterdam guide', internal: true },
 ];
@@ -65,7 +67,7 @@ export function ServiceShell({ current, heroless = false, children }: { current:
         <div className={styles.navLinks}>
           {NAV_LINKS.map((l) =>
             l.internal ? (
-              <Link key={l.href} href={l.href}>{l.label}</Link>
+              <Link key={l.href} href={l.href} className={l.href === current ? styles.cur : undefined}>{l.label}</Link>
             ) : (
               <a key={l.href} href={`https://amsterdamlifehomes.com${l.href}`} className={l.href === current ? styles.cur : undefined}>{l.label}</a>
             ),

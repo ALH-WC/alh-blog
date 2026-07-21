@@ -39,10 +39,10 @@ export function SiteFooter() {
           {/* Navigate */}
           <div>
             <h4 className={styles.colhead}>Navigate</h4>
-            <a className={styles.flink} href="https://amsterdamlifehomes.com/renting">Renting</a>
-            <a className={styles.flink} href="https://amsterdamlifehomes.com/buying">Buying</a>
-            <a className={styles.flink} href="https://amsterdamlifehomes.com/letting">Letting</a>
-            <a className={styles.flink} href="https://amsterdamlifehomes.com/b2b">B2B</a>
+            <Link className={styles.flink} href="/renting">Renting</Link>
+            <Link className={styles.flink} href="/buying">Buying</Link>
+            <Link className={styles.flink} href="/letting">Letting</Link>
+            <Link className={styles.flink} href="/b2b">B2B</Link>
           </div>
 
           {/* Company */}
@@ -51,7 +51,7 @@ export function SiteFooter() {
             <a className={styles.flink} href="https://amsterdamlifehomes.com/#about-us">About us</a>
             <a className={styles.flink} href="https://amsterdamlifehomes.com/#review">Reviews</a>
             <Link className={styles.flink} href="/blog">Our Amsterdam Guide</Link>
-            <a className={styles.flink} href="https://amsterdamlifehomes.com/contact">Contact</a>
+            <Link className={styles.flink} href="/contact">Contact</Link>
           </div>
 
           {/* Newsletter */}
