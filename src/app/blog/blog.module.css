@@ -200,10 +200,17 @@
    gives way to the fixed Contact button, by exactly the intrusion depth at
    the current viewport width, floored at the normal gutter. */
 @media (min-width: 1360px) and (max-width: 1895px) {
-  /* The search bar sits at its docked position permanently, so the handoff
-     never moves it. */
+  /* Everything the docking used to change is applied permanently, so the
+     handoff moves nothing: the search sits at its docked position and the
+     row metrics are identical in both states. */
   .gin {
     padding-right: max(var(--gutter), calc(838px - 50vw));
+  }
+  .gnav {
+    gap: 20px;
+  }
+  .gsearch {
+    min-width: 220px;
   }
   .gmenuRaised .gin {
     padding-top: 15px;
@@ -214,10 +221,6 @@
     /* Never wrap while docked: a second row changes the bar's height at the
        dock threshold, and that layout jump is what fed the scroll loop. */
     flex-wrap: nowrap;
-  }
-  .gmenuRaised .gsearch {
-    min-width: 150px;
-    flex-shrink: 1;
   }
 }
 .gnav {
@@ -304,9 +307,9 @@
   background: var(--sand);
   padding: 2px 14px 6px;
   margin-left: -14px;
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 50px;
+  font-family: var(--sans);
+  font-weight: 650;
+  font-size: 44px;
   line-height: 1.16;
   letter-spacing: -0.01em;
   color: var(--ink);

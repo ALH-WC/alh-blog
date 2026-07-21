@@ -34,10 +34,9 @@ export default function RentingView() {
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      // Guard against a zero-height viewport at hydration (embedded panes):
-      // the nav is never solid while actually at the top.
-      const ih = window.innerHeight || 900;
-      setNavSolid(y > 200 && y > ih - 90);
+      // Transparent only at the very top (over the hero's first pixels);
+      // anywhere else a visible nav is solid: light background, dark items.
+      setNavSolid(y > 80);
       if (y > 120 && y > lastY.current + 2) setNavHide(true);
       else if (y < lastY.current - 2 || y <= 120) setNavHide(false);
       lastY.current = y;

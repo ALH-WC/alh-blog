@@ -108,9 +108,9 @@
   background: var(--sand);
   padding: 2px 14px 6px;
   margin-left: -14px;
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 36px;
+  font-family: var(--sans);
+  font-weight: 650;
+  font-size: 32px;
   color: var(--ink);
 }
 .kheadLink {
@@ -215,9 +215,9 @@
   padding: 0 var(--gutter);
 }
 .faqTitle {
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 30px;
+  font-family: var(--sans);
+  font-weight: 650;
+  font-size: 27px;
   color: var(--ink);
   margin-bottom: 8px;
 }
