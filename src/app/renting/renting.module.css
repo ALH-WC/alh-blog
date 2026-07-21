@@ -224,6 +224,13 @@
   color: var(--on-dark);
   font-weight: 600;
   font-size: 16px;
+  white-space: nowrap;
+}
+@media (max-width: 380px) {
+  .mnavBtn {
+    font-size: 14.5px;
+    padding: 14px 16px;
+  }
 }
 .mnavBtnAlt {
   background: transparent;
@@ -1143,11 +1150,10 @@
     padding: 0 22px 110px;
   }
   .heroIn h1 {
-    font-size: 33px;
-    line-height: 1.12;
-  }
-  .heroIn h1 br {
-    display: none;
+    /* the three fixed lines stay; the size follows the screen so the
+       longest line always fits */
+    font-size: clamp(21px, 7vw, 31px);
+    line-height: 1.14;
   }
   .heroIn p {
     font-size: 16px;
