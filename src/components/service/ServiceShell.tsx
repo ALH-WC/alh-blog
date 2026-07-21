@@ -20,7 +20,9 @@ const NAV_LINKS = [
   { href: '/blog', label: 'Our Amsterdam guide', internal: true },
 ];
 
-export function ServiceShell({ current, children }: { current: string; children: React.ReactNode }) {
+// `heroless` renders the solid nav from the start: pages without a photo hero
+// have no dark ground for the transparent paper items to sit on.
+export function ServiceShell({ current, heroless = false, children }: { current: string; heroless?: boolean; children: React.ReactNode }) {
   const [navHide, setNavHide] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [navSolid, setNavSolid] = useState(false);
@@ -56,7 +58,7 @@ export function ServiceShell({ current, children }: { current: string; children:
   return (
     <div className={styles.page}>
       <nav
-        className={`${styles.nav}${navHide ? ` ${styles.navHide}` : ''}${navSolid ? ` ${styles.navSolid}` : ''}`}
+        className={`${styles.nav}${navHide ? ` ${styles.navHide}` : ''}${heroless || navSolid ? ` ${styles.navSolid}` : ''}`}
         aria-label="Primary"
       >
         <Link href="/blog" className={styles.navLogo}>Amsterdam Life Homes</Link>
