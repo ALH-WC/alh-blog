@@ -37,6 +37,13 @@
   --radius-pill: 999px;
 }
 
+/* Phones use the tighter gutter everywhere var(--gutter) is consumed. */
+@media (max-width: 640px) {
+  :root {
+    --gutter: 22px;
+  }
+}
+
 *,
 *::before,
 *::after {

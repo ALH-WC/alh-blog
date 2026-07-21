@@ -255,7 +255,7 @@
 }
 .statN {
   font-family: var(--display);
-  font-weight: 500;
+  font-weight: 650;
   font-size: 38px;
   color: var(--ink);
 }
@@ -291,7 +291,7 @@
 }
 .tagband h2 {
   font-family: var(--display);
-  font-weight: 500;
+  font-weight: 650;
   font-size: 40px;
   color: var(--ink);
   max-width: 880px;
@@ -461,7 +461,7 @@
 }
 .rev q {
   font-family: var(--display);
-  font-weight: 500;
+  font-weight: 650;
   font-size: 21px;
   line-height: 1.3;
   color: var(--ink);
@@ -709,6 +709,9 @@
   display: inline-block;
   color: var(--gold);
   transition: transform 0.35s ease;
+}
+.garSub {
+  display: none;
 }
 .guideband:hover .gar {
   transform: translate(6px, -6px);
@@ -1097,7 +1100,7 @@
     min-height: 560px;
   }
   .heroIn {
-    padding: 0 22px 52px;
+    padding: 0 22px 110px;
   }
   .heroIn h1 {
     font-size: 33px;
@@ -1216,6 +1219,13 @@
   }
   .gcats {
     display: none;
+  }
+  /* the arrow moves from the title to the end of the sub line */
+  .guideband h3 .gar {
+    display: none;
+  }
+  .garSub {
+    display: inline-block;
   }
   .opts {
     flex-wrap: nowrap;
