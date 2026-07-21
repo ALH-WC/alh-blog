@@ -916,14 +916,14 @@
   padding: 0 16px;
   border: 1px solid #4a3f34;
   border-right: 0;
-  background: #1b1610;
-  color: var(--on-dark);
+  background: var(--paper);
+  color: var(--dark);
   font-size: 15px;
   outline: none;
   min-width: 0;
 }
 .nlpopForm input::placeholder {
-  color: #8a7f72;
+  color: var(--muted-text);
 }
 .nlpopForm button {
   height: 52px;

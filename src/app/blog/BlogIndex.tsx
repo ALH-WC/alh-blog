@@ -355,6 +355,14 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
               aria-label="Search all articles"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                /* results filter live; Enter's only job is to put the
+                   keyboard away on phones */
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.currentTarget.blur();
+                }
+              }}
             />
             {query ? (
               <button type="button" className={styles.gclear} aria-label="Clear search" onClick={clearSearch}>
