@@ -55,12 +55,12 @@
   margin-left: -18px;
 }
 .secT {
-  font-family: var(--sans);
-  font-weight: 650;
-  font-size: 34px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 36px;
   letter-spacing: -0.01em;
   color: var(--ink);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 /* Fixed nav: transparent over the hero, hides on scroll down, glides back
@@ -83,17 +83,14 @@
   transform: translateY(-100%);
 }
 .navSolid {
-  background: var(--paper);
-  border-bottom-color: var(--hairline);
+  background: var(--dark);
+  border-bottom-color: rgba(242, 236, 225, 0.12);
 }
 .navLogo {
   font-family: var(--logo-font);
   font-size: 23px;
   letter-spacing: -1px;
   color: #fff;
-}
-.navSolid .navLogo {
-  color: var(--ink);
 }
 .navLinks {
   justify-self: center;
@@ -103,18 +100,11 @@
   font-size: 15.5px;
   color: rgba(255, 255, 255, 0.88);
 }
-.navSolid .navLinks {
-  color: #57493a;
-}
 .navLinks .cur {
   color: #fff;
   font-weight: 600;
   border-bottom: 1px solid rgba(255, 255, 255, 0.7);
   padding-bottom: 2px;
-}
-.navSolid .navLinks .cur {
-  color: var(--ink);
-  border-color: var(--ink);
 }
 .navBtn {
   justify-self: end;
@@ -125,9 +115,6 @@
 }
 .navBtn:hover {
   transform: translateY(-2px);
-}
-.navSolid .navBtn {
-  color: var(--ink);
 }
 
 .hero {

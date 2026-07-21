@@ -1,146 +1,178 @@
-/* Light, warm footer, matching the finalized blog design.
-   Warm greige ground, black text, terracotta accent, Spectral wordmark. */
+/* Site-wide footer, standardized on the renting page design (v2) on the warm
+   --footer band. Column headings carry the sand highlight. */
 .footer {
   background: var(--footer);
   border-top: 1px solid #dad1bf;
-  color: var(--ink);
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  color: var(--body-text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.footer a,
+.footer button {
+  cursor: pointer;
 }
 .inner {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: 74px 64px 44px;
-  display: flex;
-  flex-direction: column;
-  gap: 58px;
+  padding: 72px var(--gutter) 44px;
 }
-.footer a {
-  color: inherit;
-  text-decoration: none;
-  transition: opacity 0.2s;
-}
-.footer a:hover {
-  opacity: 0.6;
-}
-
-/* Top grid: 4fr / 2fr / 2fr (desktop) */
 .grid {
   display: grid;
-  grid-template-columns: 4fr 2fr 2fr;
+  grid-template-columns: 1.6fr 1fr 1fr 1.3fr;
   gap: 56px;
-  align-items: start;
-}
-
-/* Column 1 - brand */
-.brand {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
 }
 .logo {
+  display: inline-block;
   font-family: var(--logo-font);
   font-weight: 400;
-  font-size: 40px;
-  letter-spacing: -1px;
-  line-height: 1.2;
+  font-size: 31px;
+  letter-spacing: -0.5px;
   color: var(--ink);
+  margin-bottom: 20px;
+  text-decoration: none;
 }
 .tagline {
-  max-width: 300px;
-  margin: 0;
-  line-height: 1.5;
-  color: #6b6357;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  color: #57493a;
 }
-.contact {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.contact a {
-  color: #6b6357;
+.cline {
+  display: block;
+  color: #57493a;
+  text-decoration: none;
+  line-height: 2.0;
 }
 .hours {
-  margin: 0;
-  color: var(--ink);
+  margin-top: 14px;
+  color: #57493a;
 }
 .social {
   display: flex;
+  gap: 18px;
+  margin-top: 20px;
+  color: var(--ink);
+}
+.social a {
+  color: var(--ink);
+  transition: transform 0.25s ease;
+  display: inline-flex;
+}
+.social a:hover {
+  transform: translateY(-2px);
+}
+.colhead {
+  display: inline-block;
+  background: var(--sand);
+  padding: 5px 12px 6px;
+  margin-left: -12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.flink {
+  display: block;
+  font-size: 15px;
+  line-height: 2.05;
+  color: #57493a;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.flink:hover {
+  color: var(--ink);
+}
+.newsdek {
+  font-size: 14.5px;
+  color: #57493a;
+}
+.email {
+  border: 0;
+  border-bottom: 1px solid #c9bfa9;
+  background: transparent;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--ink);
+  padding: 8px 0;
+  width: 100%;
+  outline: none;
+  margin-top: 10px;
+}
+.email::placeholder {
+  color: var(--faint-text);
+}
+.email:focus {
+  border-bottom-color: var(--ink);
+}
+.subscribe {
+  display: inline-block;
+  margin-top: 14px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  transition: transform 0.25s ease;
+}
+.subscribe:hover {
+  transform: translateY(-2px);
+}
+.subscribe .ar {
+  display: inline-block;
+  margin-left: 8px;
+  color: var(--gold);
+  transition: transform 0.25s ease;
+}
+.subscribe:hover .ar {
+  transform: translateX(4px);
+}
+.bottom {
+  margin-top: 56px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  color: var(--ink);
+  font-size: 13.5px;
+  color: var(--muted-text);
 }
-
-/* Column 2 - nav */
-.nav {
+.legal {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  color: var(--ink);
-}
-
-/* Column 3 - partners */
-.partners {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: #6b6357;
-}
-.partner {
-  font-weight: 600;
-  color: var(--ink);
-}
-
-/* Bottom closure */
-.closure {
-  border-top: 1px solid #dad1bf;
-  padding-top: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.copy {
-  margin: 0;
-  color: #8a8175;
+  gap: 26px;
 }
 .legal a {
-  color: #8a8175;
+  color: var(--muted-text);
+  text-decoration: none;
+}
+.legal a:hover {
+  color: var(--ink);
 }
 
-/* Tablet (810 to 1199px) */
-@media (max-width: 1199px) {
+@media (max-width: 1100px) {
   .inner {
-    padding: 64px 40px 40px;
-    gap: 48px;
+    padding: 60px 40px 36px;
   }
   .grid {
-    grid-template-columns: 3fr 2fr 2fr;
-    gap: 48px;
-  }
-  .logo {
-    font-size: 34px;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
   }
 }
-
-/* Mobile (< 810px) */
-@media (max-width: 809px) {
+@media (max-width: 700px) {
   .inner {
-    padding: 48px 20px 32px;
-    gap: 30px;
+    padding: 48px 22px 30px;
   }
   .grid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 36px;
   }
-  .logo {
-    font-size: 32px;
-  }
-  .closure {
+  .bottom {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    gap: 10px;
   }
 }
