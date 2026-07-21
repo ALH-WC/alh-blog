@@ -321,8 +321,8 @@ export default function RentingView() {
             <div><label>Phone number</label><input className={styles.in} placeholder="+1 ..." /></div>
           </div>
           <label>Maximum monthly rent I can pay</label>
-          <input className={styles.in} placeholder="&euro;2200 or more" />
-          <div className={styles.help}>We can only help with rental budgets starting at &euro;2200. <a href="#gate">See our requirements</a></div>
+          <input className={styles.in} placeholder="€2200 or more" />
+          <div className={styles.help}>We can only help with rental budgets starting at €2200. <a href="#gate">See our requirements</a></div>
           <label>A bit about yourself and what you are looking for</label>
           <input className={styles.in} placeholder="Tell us about your move" />
           {['Subscribe to our Amsterdam newsletter', 'I agree to the privacy policy'].map((t, i) => (
