@@ -48,9 +48,9 @@ export default function LettingPage() {
 
       <ServiceTiles
         tiles={[
-          ['/renting/hero-canal.jpg', 'Canal houses in Amsterdam', 'Looking for a rental home?', 'https://amsterdamlifehomes.com/renting'],
-          ['/buying/hero.webp', 'A warm Amsterdam apartment living room', 'Thinking about buying instead?', 'https://amsterdamlifehomes.com/buying'],
-          ['/renting/tile-corporate.jpg', 'A leafy Amsterdam lane', 'Relocating employees to Amsterdam?', 'https://amsterdamlifehomes.com/b2b'],
+          ['/renting/hero-canal.jpg', 'Canal houses in Amsterdam', 'Looking for a rental home?', '/renting'],
+          ['/buying/hero.webp', 'A warm Amsterdam apartment living room', 'Thinking about buying instead?', '/buying'],
+          ['/renting/tile-corporate.jpg', 'A leafy Amsterdam lane', 'Relocating employees to Amsterdam?', '/b2b'],
         ]}
       />
 

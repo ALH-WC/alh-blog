@@ -10,11 +10,13 @@ import {
 } from '../../lib/renting';
 import styles from './renting.module.css';
 
+// "About us" is still a section on the live Framer homepage; everything else
+// is served by this app.
 const NAV_LINKS = [
-  { href: '/renting', label: 'Renting', current: true },
-  { href: '/buying', label: 'Buying' },
-  { href: '/letting', label: 'Letting' },
-  { href: '/b2b', label: 'Corporate' },
+  { href: '/renting', label: 'Renting', current: true, internal: true },
+  { href: '/buying', label: 'Buying', internal: true },
+  { href: '/letting', label: 'Letting', internal: true },
+  { href: '/b2b', label: 'Corporate', internal: true },
   { href: '/#about-us', label: 'About us' },
   { href: '/blog', label: 'Our Amsterdam guide', internal: true },
 ];
@@ -98,9 +100,9 @@ export default function RentingView() {
         <div className={styles.navLinks}>
           {NAV_LINKS.map((l) =>
             l.internal ? (
-              <Link key={l.href} href={l.href}>{l.label}</Link>
+              <Link key={l.href} href={l.href} className={l.current ? styles.cur : undefined}>{l.label}</Link>
             ) : (
-              <a key={l.href} href={`https://amsterdamlifehomes.com${l.href === '/renting' ? '/renting' : l.href}`} className={l.current ? styles.cur : undefined}>{l.label}</a>
+              <a key={l.href} href={`https://amsterdamlifehomes.com${l.href}`} className={l.current ? styles.cur : undefined}>{l.label}</a>
             ),
           )}
         </div>
@@ -283,9 +285,9 @@ export default function RentingView() {
       </div>
       <div className={styles.tiles}>
         {[
-          ['/renting/hero-canal.jpg', 'Canal houses in Amsterdam', 'Thinking about buying instead?', 'https://amsterdamlifehomes.com/buying'],
-          ['/renting/tile-letting.jpg', 'Bicycles on a canal bridge', 'Looking to let your property?', 'https://amsterdamlifehomes.com/letting'],
-          ['/renting/tile-corporate.jpg', 'A leafy Amsterdam lane', 'Relocating employees to Amsterdam?', 'https://amsterdamlifehomes.com/b2b'],
+          ['/renting/hero-canal.jpg', 'Canal houses in Amsterdam', 'Thinking about buying instead?', '/buying'],
+          ['/renting/tile-letting.jpg', 'Bicycles on a canal bridge', 'Looking to let your property?', '/letting'],
+          ['/renting/tile-corporate.jpg', 'A leafy Amsterdam lane', 'Relocating employees to Amsterdam?', '/b2b'],
         ].map(([img, alt, cap, href]) => (
           <a className={styles.tile} href={href} key={cap}>
             {/* eslint-disable-next-line @next/next/no-img-element */}

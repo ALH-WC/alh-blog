@@ -287,7 +287,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
         </Link>
       </div>
       <div className={`${styles.brandFix} ${styles.brandFixR}`}>
-        <a href="https://amsterdamlifehomes.com/#contact" className={navStyles.cta}>
+        <a href="/contact" className={navStyles.cta}>
           Contact us
         </a>
       </div>

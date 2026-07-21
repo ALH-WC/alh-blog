@@ -48,9 +48,9 @@ export default function BuyingPage() {
 
       <ServiceTiles
         tiles={[
-          ['/renting/hero-canal.jpg', 'Canal houses in Amsterdam', 'Looking for a rental home?', 'https://amsterdamlifehomes.com/renting'],
-          ['/renting/tile-letting.jpg', 'Bicycles on a canal bridge', 'Looking to let your property?', 'https://amsterdamlifehomes.com/letting'],
-          ['/renting/tile-corporate.jpg', 'A leafy Amsterdam lane', 'Relocating employees to Amsterdam?', 'https://amsterdamlifehomes.com/b2b'],
+          ['/renting/hero-canal.jpg', 'Canal houses in Amsterdam', 'Looking for a rental home?', '/renting'],
+          ['/renting/tile-letting.jpg', 'Bicycles on a canal bridge', 'Looking to let your property?', '/letting'],
+          ['/renting/tile-corporate.jpg', 'A leafy Amsterdam lane', 'Relocating employees to Amsterdam?', '/b2b'],
         ]}
       />
 
