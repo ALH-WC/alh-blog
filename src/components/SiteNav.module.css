@@ -90,7 +90,7 @@
   font-size: 16px;
   line-height: 1;
   text-decoration: none;
-  background: var(--ink);
+  background: var(--dark);
   color: var(--paper);
   white-space: nowrap;
   transition: opacity 0.2s;
@@ -185,7 +185,7 @@
   text-decoration: none;
 }
 .btnBlack {
-  background: var(--ink);
+  background: var(--dark);
   color: var(--paper);
 }
 .btnAlt {
