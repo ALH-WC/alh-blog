@@ -34,11 +34,19 @@ export default function RentingView() {
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      // Transparent only at the very top (over the hero's first pixels);
-      // anywhere else a visible nav is solid: light background, dark items.
-      setNavSolid(y > 80);
-      if (y > 120 && y > lastY.current + 2) setNavHide(true);
-      else if (y < lastY.current - 2 || y <= 120) setNavHide(false);
+      // From the top, scrolling down simply hides the transparent nav; the
+      // solid (light bg, dark items) design appears only when the nav is
+      // revealed by scrolling up, and the top restores the transparent
+      // original.
+      if (y <= 80) {
+        setNavSolid(false);
+        setNavHide(false);
+      } else if (y > lastY.current + 2) {
+        if (y > 120) setNavHide(true);
+      } else if (y < lastY.current - 2) {
+        setNavHide(false);
+        setNavSolid(true);
+      }
       lastY.current = y;
       const q = (document.documentElement.scrollHeight - window.innerHeight) * 0.25;
       setPopShown(y > q);
@@ -286,6 +294,11 @@ export default function RentingView() {
           <span className={styles.eyebrow}>Get in touch</span>
           <h2 className={styles.secT} style={{ fontSize: 29, whiteSpace: 'nowrap' }}>Your home in Amsterdam<br />starts here</h2>
           <p style={{ marginTop: 20, fontSize: 16, maxWidth: 400 }}>{FORM_INTRO}</p>
+          <div className={styles.panelContact}>
+            <a href="mailto:home@amsterdamlifehomes.com">home@amsterdamlifehomes.com</a>
+            <a href="tel:+31613749944">+31 6 1374 9944</a>
+            <p>Mon - Fri: 9 AM - 5 PM CEST</p>
+          </div>
         </div>
         <div className={styles.frm}>
           <label>I am interested in</label>
