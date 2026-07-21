@@ -40,6 +40,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
   const [query, setQuery] = useState('');
   const [active, setActive] = useState('latest');
   const [compact, setCompact] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
   const [modalHouse, setModalHouse] = useState<'single' | 'family' | null>(null);
   const [modalBuy, setModalBuy] = useState(false);
   const [modalSent, setModalSent] = useState(false);
@@ -325,6 +326,14 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
         aria-label="Categories"
       >
         <div className={styles.gin}>
+          <button
+            type="button"
+            className={styles.gcatBtn}
+            aria-expanded={catOpen}
+            onClick={() => setCatOpen((v) => !v)}
+          >
+            Categories <span className={styles.gchev}>{catOpen ? '\u25B4' : '\u25BE'}</span>
+          </button>
           <div className={styles.gnav}>
             {menuItems.map((m) => (
               <button
@@ -354,6 +363,25 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
             ) : null}
           </label>
         </div>
+        {catOpen ? (
+          <div className={styles.gdrop}>
+            {menuItems.map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                className={`${styles.gdropItem}${active === m.key ? ` ${styles.gdropCur}` : ''}`}
+                onClick={() => {
+                  setCatOpen(false);
+                  /* scroll after the panel unmounts so the bar-height offset
+                     is measured on the closed bar */
+                  setTimeout(() => scrollTo(m.key === 'latest' ? 'latest' : `sec-${m.key}`), 0);
+                }}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </nav>
 
       {results ? (
@@ -424,13 +452,29 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
                     <div className={styles.mapHead}>
                       <h2 className={styles.sheadTitle}>The city map</h2>
                       <p className={styles.mapDek}>
-                        Find your part of Amsterdam on the map. Tap a neighborhood to read its guide: what it costs,
-                        who it suits, and what it is like to live there.
+                        <span className={styles.mapDekDesk}>Find your part of Amsterdam on the map. </span>Tap a
+                        neighborhood to read its guide: what it costs, who it suits, and what it is like to live there.
                       </p>
                     </div>
                     <section className={styles.mapWrap}>
                       <CityMap tips={areaTips} />
                     </section>
+                    {/* Phones swap the illustrated map for simple blocks:
+                        every area with a guide, tappable. */}
+                    <div className={styles.mapBlocks}>
+                      {Object.entries(AREA_GUIDES).map(([area, slug]) => (
+                        <Link key={area} href={`/blog/${slug}`} className={styles.mapBlock}>
+                          <span className={styles.mapBlockName}>{area}</span>
+                          {areaTips[area] ? (
+                            <span className={styles.mapBlockRt}>{areaTips[area].readMinutes} min read</span>
+                          ) : null}
+                        </Link>
+                      ))}
+                      <p className={styles.mapNoteM}>
+                        More neighborhood guides are on the way. The full illustrated city map lives on the desktop
+                        version of this page.
+                      </p>
+                    </div>
                   </div>
                 ) : null}
               <div>
