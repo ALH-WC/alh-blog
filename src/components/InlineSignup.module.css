@@ -29,7 +29,7 @@
 }
 .title em {
   color: var(--on-dark);
-  font-style: italic;
+  font-style: normal;
 }
 .lead {
   font-size: 15.5px;
