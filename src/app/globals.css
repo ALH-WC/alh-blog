@@ -18,7 +18,7 @@
   --footer: #eae2d3;
 
   /* Type */
-  --display: var(--font-spectral), Georgia, 'Times New Roman', serif;
+  --display: var(--font-mixta), Georgia, 'Times New Roman', serif;
   --sans: var(--font-inter), system-ui, -apple-system, sans-serif;
   --ui-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
   --logo-font: var(--font-mixta), Georgia, 'Times New Roman', serif;
