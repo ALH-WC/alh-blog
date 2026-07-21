@@ -109,7 +109,7 @@
   padding: 2px 14px 6px;
   margin-left: -14px;
   font-family: var(--display);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 36px;
   color: var(--ink);
 }
@@ -216,7 +216,7 @@
 }
 .faqTitle {
   font-family: var(--display);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 30px;
   color: var(--ink);
   margin-bottom: 8px;
