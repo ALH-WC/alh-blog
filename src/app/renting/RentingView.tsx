@@ -126,11 +126,13 @@ export default function RentingView() {
                 <a key={l.href} href={`https://amsterdamlifehomes.com${l.href}`}>{l.label}</a>
               ),
             )}
-            <a href="#contact" onClick={() => setMenuOpen(false)}>Contact us</a>
           </div>
-          <a className={styles.mnavCta} href={INTAKE_URL} target="_blank" rel="noreferrer">
-            Schedule a free video intake call <span className={styles.ar}>&rarr;</span>
-          </a>
+          <div className={styles.mnavBtns}>
+            <a className={styles.mnavBtn} href="#contact" onClick={() => setMenuOpen(false)}>Contact us</a>
+            <a className={`${styles.mnavBtn} ${styles.mnavBtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">
+              Schedule a Free Video Intake Call &rarr;
+            </a>
+          </div>
         </div>
       ) : null}
 

@@ -175,7 +175,6 @@
   align-items: center;
   justify-content: center;
   padding: 14px 22px;
-  border-radius: 10px;
   font-family: var(--ui-sans);
   font-size: 16px;
   text-decoration: none;
@@ -202,7 +201,10 @@
     display: grid;
   }
   .inner {
-    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 22px;
   }
 }
 
