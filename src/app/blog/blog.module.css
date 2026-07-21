@@ -61,7 +61,7 @@
 .mastTitle {
   font-family: var(--display);
   font-weight: 500;
-  font-size: 84px;
+  font-size: 76px;
   line-height: 0.96;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -1062,8 +1062,8 @@
   align-items: center;
   gap: 10px;
   margin-top: 32px;
-  background: var(--accent);
-  color: var(--paper);
+  background: var(--dark);
+  color: var(--on-dark);
   font-family: var(--sans);
   font-weight: 600;
   font-size: 16px;

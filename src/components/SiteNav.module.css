@@ -17,9 +17,9 @@
 }
 
 .inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 20px;
   width: 100%;
   max-width: none;
@@ -40,7 +40,7 @@
 .logo {
   font-family: var(--logo-font);
   font-weight: 400;
-  font-size: 27px;
+  font-size: 23px;
   letter-spacing: -1px;
   line-height: 1.2;
   color: var(--ink);
@@ -49,6 +49,7 @@
 
 /* Center links (desktop) */
 .links {
+  justify-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,6 +75,7 @@
 
 /* CTA button (desktop) */
 .buttons {
+  justify-self: end;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -81,22 +83,16 @@
   flex-shrink: 0;
 }
 .cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 18px;
-  border-radius: 0;
+  display: inline-block;
+  color: var(--ink);
   font-family: var(--ui-sans);
-  font-size: 16px;
-  line-height: 1;
+  font-weight: 600;
+  font-size: 15px;
   text-decoration: none;
-  background: var(--dark);
-  color: var(--paper);
-  white-space: nowrap;
-  transition: opacity 0.2s;
+  transition: transform 0.25s ease;
 }
 .cta:hover {
-  opacity: 0.88;
+  transform: translateY(-2px);
 }
 
 /* Hairline under the bar */
