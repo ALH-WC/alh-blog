@@ -202,7 +202,7 @@ export default function RentingView() {
       <div className={`${styles.shead} ${styles.sheadWide}`} id="reviews">
         <span className={styles.eyebrow}>Google reviews</span>
         <h2 className={`${styles.secT} ${styles.hl}`}>Don&apos;t just take our word for it</h2>
-        <p style={{ whiteSpace: 'nowrap' }}>We believe that the true measure of our success lies in the satisfaction of our clients.<br />85% of our business comes from referrals.</p>
+        <p>We believe that the true measure of our success lies in the satisfaction of our clients.<br />85% of our business comes from referrals.</p>
       </div>
       <div style={{ padding: '0 var(--gutter) 40px' }}>
         <a className={styles.tlink} href="https://www.google.com/search?q=amsterdam+life+homes+reviews" target="_blank" rel="noreferrer">Read all Google reviews <span className={styles.ar}>&#8599;</span></a>
@@ -292,7 +292,7 @@ export default function RentingView() {
       <div className={styles.formwrap} id="contact">
         <div className={styles.panel}>
           <span className={styles.eyebrow}>Get in touch</span>
-          <h2 className={styles.secT} style={{ fontSize: 29, whiteSpace: 'nowrap' }}>Your home in Amsterdam<br />starts here</h2>
+          <h2 className={`${styles.secT} ${styles.formTitle}`}>Your home in Amsterdam<br />starts here</h2>
           <p style={{ marginTop: 20, fontSize: 16, maxWidth: 400 }}>{FORM_INTRO}</p>
           <div className={styles.panelContact}>
             <a href="mailto:home@amsterdamlifehomes.com">home@amsterdamlifehomes.com</a>
