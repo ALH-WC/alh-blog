@@ -55,12 +55,12 @@
   margin-left: -18px;
 }
 .secT {
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: 36px;
+  font-family: var(--sans);
+  font-weight: 650;
+  font-size: 34px;
   letter-spacing: -0.01em;
   color: var(--ink);
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 /* Fixed nav: transparent over the hero, hides on scroll down, glides back
@@ -83,8 +83,21 @@
   transform: translateY(-100%);
 }
 .navSolid {
-  background: var(--dark);
-  border-bottom-color: rgba(242, 236, 225, 0.12);
+  background: var(--paper);
+  border-bottom-color: var(--hairline);
+}
+.navSolid .navLogo {
+  color: var(--ink);
+}
+.navSolid .navLinks {
+  color: #57493a;
+}
+.navSolid .navLinks .cur {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.navSolid .navBtn {
+  color: var(--ink);
 }
 .navLogo {
   font-family: var(--logo-font);
@@ -757,6 +770,7 @@
   margin-top: 8px;
 }
 .help a {
+  color: var(--gold);
   text-decoration: underline;
   text-underline-offset: 3px;
 }

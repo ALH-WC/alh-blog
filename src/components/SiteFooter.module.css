@@ -62,15 +62,11 @@
   transform: translateY(-2px);
 }
 .colhead {
-  display: inline-block;
-  background: var(--sand);
-  padding: 5px 12px 6px;
-  margin-left: -12px;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: var(--gold);
   margin-bottom: 16px;
 }
 .flink {
