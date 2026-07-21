@@ -1,13 +1,14 @@
 :root {
-  /* Palette. Titles and body are black; hairlines stay a soft warm grey;
-     terracotta is the single accent, on a warm paper ground. */
+  /* Palette per design system v2 (Warm Paper): titles in ink, body in warm
+     sandy greys, never cold grey and never pure black. Accent stays the
+     blog's own black. */
   --paper: #f5f0e6;
   --beige: #efebe2;
   --sand: #eadfc9;
-  --ink: #000000;
-  --body-text: #000000;
-  --muted-text: #000000;
-  --faint-text: #9a8f7d; /* input placeholders only */
+  --ink: #141414;
+  --body-text: #86745a;
+  --muted-text: #a28e70;
+  --faint-text: #a28e70; /* input placeholders */
   --hairline: #e5e0d7;
   --line-strong: #cfc8bb;
   --accent: #000000;
