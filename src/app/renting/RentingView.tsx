@@ -117,7 +117,12 @@ export default function RentingView() {
       </nav>
       {menuOpen ? (
         <div className={styles.mnav}>
-          <button type="button" className={styles.mnavClose} aria-label="Close menu" onClick={() => setMenuOpen(false)}>&times;</button>
+          <div className={styles.mnavHead}>
+            <Link href="/blog" className={styles.mnavLogo} onClick={() => setMenuOpen(false)}>Amsterdam Life Homes</Link>
+            <button type="button" className={styles.mnavClose} aria-label="Close menu" onClick={() => setMenuOpen(false)}>
+              <span /><span />
+            </button>
+          </div>
           <div className={styles.mnavLinks}>
             {NAV_LINKS.map((l) =>
               l.internal ? (

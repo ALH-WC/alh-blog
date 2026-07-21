@@ -157,29 +157,57 @@
   background: var(--paper);
   display: flex;
   flex-direction: column;
-  padding: 76px 26px 34px;
+  padding: 0 22px 40px;
+}
+.mnavHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 56px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.mnavLogo {
+  font-family: var(--logo-font);
+  font-size: 21px;
+  letter-spacing: -1px;
+  color: var(--ink);
+  white-space: nowrap;
 }
 .mnavClose {
-  position: absolute;
-  top: 14px;
-  right: 20px;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  margin-right: -12px;
   background: none;
   border: 0;
-  font-size: 34px;
-  line-height: 1;
-  color: var(--ink);
+}
+.mnavClose span {
+  position: absolute;
+  left: 12px;
+  top: 21px;
+  width: 20px;
+  height: 2px;
+  background: var(--ink);
+}
+.mnavClose span:first-child {
+  transform: rotate(45deg);
+}
+.mnavClose span:last-child {
+  transform: rotate(-45deg);
 }
 .mnavLinks {
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  padding: 20px 0;
 }
 .mnavLinks a {
-  font-size: 21px;
-  font-weight: 600;
+  display: block;
+  width: fit-content;
+  font-size: 24px;
+  line-height: 1.5;
   color: var(--ink);
-  padding: 15px 0;
-  border-bottom: 1px solid var(--hairline);
-  width: 100%;
 }
 .mnavBtns {
   margin-top: auto;
@@ -265,9 +293,10 @@
   border-right: none;
 }
 .statN {
-  font-family: var(--display);
-  font-weight: 500;
+  font-family: var(--sans);
+  font-weight: 650;
   font-size: 38px;
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
 .statL {
