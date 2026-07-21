@@ -148,7 +148,7 @@
 .drawerLinks {
   list-style: none;
   margin: 0;
-  padding: 20px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -165,9 +165,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 20px;
-  padding-bottom: 40px;
-  max-width: 400px;
+  padding: 20px 22px 40px;
   margin-top: auto;
 }
 .btn {
@@ -178,6 +176,14 @@
   font-family: var(--ui-sans);
   font-size: 16px;
   text-decoration: none;
+  /* the intake label and its arrow are one line, always */
+  white-space: nowrap;
+}
+@media (max-width: 380px) {
+  .btn {
+    font-size: 14.5px;
+    padding: 14px 16px;
+  }
 }
 .btnBlack {
   background: var(--dark);

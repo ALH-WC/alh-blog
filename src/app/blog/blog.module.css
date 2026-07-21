@@ -918,9 +918,13 @@
   border-right: 0;
   background: var(--paper);
   color: var(--dark);
+  font-family: var(--sans);
   font-size: 15px;
   outline: none;
   min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
 }
 .nlpopForm input::placeholder {
   color: var(--muted-text);
@@ -1255,9 +1259,15 @@
   }
   .nlpopForm {
     flex-direction: column;
+    gap: 12px;
   }
   .nlpopForm input {
-    border-right: 1px solid #4a3f34;
+    border: 0;
+    height: 54px;
+    font-size: 16px;
+  }
+  .nlpopForm button {
+    height: 54px;
   }
   /* Card padding follows the phone gutter (44px + 30px left barely half the
      screen for content). */
