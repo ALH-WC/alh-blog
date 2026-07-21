@@ -113,6 +113,9 @@
   font-size: 15.5px;
   color: rgba(255, 255, 255, 0.88);
 }
+.navLinks a {
+  color: inherit;
+}
 .navLinks .cur {
   color: #fff;
   font-weight: 600;
