@@ -200,11 +200,15 @@
    gives way to the fixed Contact button, by exactly the intrusion depth at
    the current viewport width, floored at the normal gutter. */
 @media (min-width: 1360px) and (max-width: 1895px) {
+  /* The search bar sits at its docked position permanently, so the handoff
+     never moves it. */
+  .gin {
+    padding-right: max(var(--gutter), calc(838px - 50vw));
+  }
   .gmenuRaised .gin {
     padding-top: 15px;
     padding-bottom: 15px;
     padding-left: max(var(--gutter), calc(761px - 50vw));
-    padding-right: max(var(--gutter), calc(838px - 50vw));
   }
   .gmenuRaised .gnav {
     /* Never wrap while docked: a second row changes the bar's height at the
@@ -301,7 +305,7 @@
   padding: 2px 14px 6px;
   margin-left: -14px;
   font-family: var(--display);
-  font-weight: 500;
+  font-weight: 700;
   font-size: 50px;
   line-height: 1.16;
   letter-spacing: -0.01em;
