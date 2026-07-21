@@ -315,6 +315,20 @@
   padding: 104px var(--gutter) 60px;
   max-width: 1200px;
 }
+/* Page title for heroless pages (contact): the Mixta H1 on paper. */
+.pageTitle {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 54px;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+@media (max-width: 700px) {
+  .pageTitle {
+    font-size: 32px;
+  }
+}
 .shead .eyebrow {
   margin-bottom: 20px;
 }
