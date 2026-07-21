@@ -293,6 +293,21 @@
   font-size: 16px;
   max-width: 400px;
 }
+.panelContact {
+  margin-top: 28px;
+}
+.panelContact a,
+.panelContact p {
+  display: block;
+  width: fit-content;
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 2.0;
+  color: #57493a;
+}
+.panelContact a:hover {
+  color: var(--ink);
+}
 .prow {
   display: grid;
   grid-template-columns: 96px 1fr;
@@ -393,7 +408,9 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   min-height: 2.6em;
-  margin-bottom: 13px;
+  margin: 0 0 13px -12px;
+  background: var(--sand);
+  padding: 8px 12px;
 }
 .rev p {
   font-size: 16px;
@@ -407,18 +424,20 @@
   margin-top: auto;
   padding-top: 20px;
   display: flex;
-  gap: 8px;
+  gap: 6px 0;
   flex-wrap: wrap;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: var(--gold);
 }
 .rtags span {
   white-space: nowrap;
-  background: var(--sand);
-  padding: 5px 11px;
+}
+.rtags span + span::before {
+  content: ' · ';
+  white-space: pre;
 }
 .who {
   margin-top: 9px;
