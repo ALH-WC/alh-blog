@@ -106,3 +106,8 @@ button {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Every button is visibly clickable. */
+button {
+  cursor: pointer;
+}
