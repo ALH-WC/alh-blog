@@ -39,6 +39,7 @@
 }
 .cline {
   display: block;
+  width: fit-content;
   color: #57493a;
   text-decoration: none;
   line-height: 2.0;
@@ -64,13 +65,15 @@
 .colhead {
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--gold);
   margin-bottom: 16px;
+  white-space: nowrap;
 }
 .flink {
   display: block;
+  width: fit-content;
   font-size: 15px;
   line-height: 2.05;
   color: #57493a;
