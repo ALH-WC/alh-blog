@@ -68,7 +68,7 @@ export function SiteFooter() {
         </div>
 
         <div className={styles.bottom}>
-          <span>&copy; 2026 Welleton &amp; It&apos;s you. It&apos;s us. All rights reserved.</span>
+          <span>&copy; 2026 It&apos;s you. It&apos;s us. All rights reserved.</span>
           <span className={styles.legal}>
             <a href="https://amsterdamlifehomes.com/cookies">Cookie Settings</a>
             <a href="https://amsterdamlifehomes.com/privacy">Privacy Policy</a>
