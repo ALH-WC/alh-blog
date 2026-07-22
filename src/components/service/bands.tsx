@@ -9,10 +9,11 @@ import styles from '../../app/renting/renting.module.css';
 // with the renting page's stylesheet so all pages share one implementation of
 // the Warm Paper parts.
 
-export function StatsBand() {
+export function StatsBand({ stats }: { stats?: [string, string][] } = {}) {
+  const rows = stats ?? [['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']];
   return (
     <div className={`${styles.cells} ${styles.c4}`}>
-      {[['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']].map(([n, l]) => (
+      {rows.map(([n, l]) => (
         <div className={styles.cell} key={l}><div className={styles.statN}>{n}</div><div className={styles.statL}>{l}</div></div>
       ))}
     </div>
@@ -152,7 +153,12 @@ export function GuideBand() {
   );
 }
 
-export function ContactBand({ defaultInterest }: { defaultInterest: string }) {
+export function ContactBand({ defaultInterest, title, intro, submitLabel }: {
+  defaultInterest: string;
+  title?: React.ReactNode;
+  intro?: string;
+  submitLabel?: string;
+}) {
   const [interest, setInterest] = useState(defaultInterest);
   const [checks, setChecks] = useState<[boolean, boolean]>([false, false]);
 
@@ -160,8 +166,8 @@ export function ContactBand({ defaultInterest }: { defaultInterest: string }) {
     <div className={styles.formwrap} id="contact">
       <div className={styles.panel}>
         <span className={styles.eyebrow}>Get in touch</span>
-        <h2 className={`${styles.secT} ${styles.formTitle}`}>Your home in Amsterdam<br />starts here</h2>
-        <p style={{ marginTop: 20, fontSize: 16, maxWidth: 400 }}>{FORM_INTRO}</p>
+        <h2 className={`${styles.secT} ${styles.formTitle}`}>{title ?? <>Your home in Amsterdam<br />starts here</>}</h2>
+        <p style={{ marginTop: 20, fontSize: 16, maxWidth: 400 }}>{intro ?? FORM_INTRO}</p>
         <div className={styles.panelContact}>
           <a href="mailto:home@amsterdamlifehomes.com">home@amsterdamlifehomes.com</a>
           <a href="tel:+31613749944">+31 6 1374 9944</a>
@@ -198,7 +204,7 @@ export function ContactBand({ defaultInterest }: { defaultInterest: string }) {
             <span className={`${styles.box}${checks[i] ? ` ${styles.boxOn}` : ''}`} />{t}
           </div>
         ))}
-        <button className={styles.submit} type="button">Submit form</button>
+        <button className={styles.submit} type="button">{submitLabel ?? 'Submit form'}</button>
       </div>
     </div>
   );
