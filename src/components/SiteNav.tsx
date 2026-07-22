@@ -85,7 +85,7 @@ export function SiteNav({ offset = 0, brandLifted = false }: { offset?: number; 
       aria-label="Primary"
     >
       <div className={styles.inner}>
-        <Link href="/blog" className={styles.logoWrap} aria-label="Amsterdam Life Homes home">
+        <Link href="/" className={styles.logoWrap} aria-label="Amsterdam Life Homes home">
           <span className={styles.logo}>Amsterdam Life Homes</span>
         </Link>
 

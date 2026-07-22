@@ -94,7 +94,7 @@ export default function RentingView() {
         className={`${styles.nav}${navHide ? ` ${styles.navHide}` : ''}${navSolid ? ` ${styles.navSolid}` : ''}`}
         aria-label="Primary"
       >
-        <Link href="/blog" className={styles.navLogo}>Amsterdam Life Homes</Link>
+        <Link href="/" className={styles.navLogo}>Amsterdam Life Homes</Link>
         <div className={styles.navLinks}>
           {NAV_LINKS.map((l) =>
             l.internal ? (
@@ -118,7 +118,7 @@ export default function RentingView() {
       {menuOpen ? (
         <div className={styles.mnav}>
           <div className={styles.mnavHead}>
-            <Link href="/blog" className={styles.mnavLogo} onClick={() => setMenuOpen(false)}>Amsterdam Life Homes</Link>
+            <Link href="/" className={styles.mnavLogo} onClick={() => setMenuOpen(false)}>Amsterdam Life Homes</Link>
             <button type="button" className={styles.mnavClose} aria-label="Close menu" onClick={() => setMenuOpen(false)}>
               <span /><span />
             </button>
