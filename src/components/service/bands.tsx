@@ -85,7 +85,7 @@ export function ReviewsBand() {
         <p>We believe that the true measure of our success lies in the satisfaction of our clients.<br />85% of our business comes from referrals.</p>
       </div>
       <div style={{ padding: '0 var(--gutter) 40px' }}>
-        <a className={styles.tlink} href="https://www.google.com/search?q=amsterdam+life+homes+reviews" target="_blank" rel="noreferrer">Read all Google reviews <span className={styles.ar}>&#8599;</span></a>
+        <Link className={styles.tlink} href="/reviews">Read all our reviews <span className={styles.ar}>&rarr;</span></Link>
       </div>
       <div className={styles.carwrap}>
         <div className={styles.carbtns}>

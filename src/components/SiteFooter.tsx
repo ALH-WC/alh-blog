@@ -48,8 +48,8 @@ export function SiteFooter() {
           {/* Company */}
           <div>
             <h4 className={styles.colhead}>Company</h4>
-            <a className={styles.flink} href="https://amsterdamlifehomes.com/#about-us">About us</a>
-            <a className={styles.flink} href="https://amsterdamlifehomes.com/#review">Reviews</a>
+            <Link className={styles.flink} href="/about">About us</Link>
+            <Link className={styles.flink} href="/reviews">Reviews</Link>
             <Link className={styles.flink} href="/blog">Our Amsterdam Guide</Link>
             <Link className={styles.flink} href="/contact">Contact</Link>
           </div>

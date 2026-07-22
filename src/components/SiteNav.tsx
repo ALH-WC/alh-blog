@@ -15,7 +15,7 @@ const LINKS = [
   { href: '/buying', label: 'Buying' },
   { href: '/letting', label: 'Letting' },
   { href: '/b2b', label: 'Corporate' },
-  { href: '/#about-us', label: 'About us' },
+  { href: '/about', label: 'About us' },
   { href: '/blog', label: 'Our Amsterdam guide', current: true },
 ];
 

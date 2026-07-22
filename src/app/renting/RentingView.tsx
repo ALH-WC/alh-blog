@@ -10,14 +10,12 @@ import {
 } from '../../lib/renting';
 import styles from './renting.module.css';
 
-// "About us" is still a section on the live Framer homepage; everything else
-// is served by this app.
 const NAV_LINKS = [
   { href: '/renting', label: 'Renting', current: true, internal: true },
   { href: '/buying', label: 'Buying', internal: true },
   { href: '/letting', label: 'Letting', internal: true },
   { href: '/b2b', label: 'Corporate', internal: true },
-  { href: '/#about-us', label: 'About us' },
+  { href: '/about', label: 'About us', internal: true },
   { href: '/blog', label: 'Our Amsterdam guide', internal: true },
 ];
 
@@ -229,6 +227,7 @@ export default function RentingView() {
           <span className={styles.eyebrow} style={{ marginBottom: 20 }}>This is us</span>
           <h2 className={`${styles.secT} ${styles.hl}`}>We have been in your shoes.<br />That is why we do this.</h2>
           <p style={{ marginTop: 20, fontSize: 16, maxWidth: '60ch' }}>{THIS_IS_US_TXT}</p>
+          <Link className={styles.tlink} href="/about" style={{ marginTop: 20 }}>More about us <span className={styles.ar}>&rarr;</span></Link>
         </div>
         <div className={styles.cell} style={{ padding: '76px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <p className={styles.thisusQuote}>Eight years and 250+ successful searches later, every client still works with us personally.</p>
@@ -242,7 +241,7 @@ export default function RentingView() {
         <p>We believe that the true measure of our success lies in the satisfaction of our clients.<br />85% of our business comes from referrals.</p>
       </div>
       <div style={{ padding: '0 var(--gutter) 40px' }}>
-        <a className={styles.tlink} href="https://www.google.com/search?q=amsterdam+life+homes+reviews" target="_blank" rel="noreferrer">Read all Google reviews <span className={styles.ar}>&#8599;</span></a>
+        <Link className={styles.tlink} href="/reviews">Read all our reviews <span className={styles.ar}>&rarr;</span></Link>
       </div>
       <div className={styles.carwrap}>
         <div className={styles.carbtns}>
