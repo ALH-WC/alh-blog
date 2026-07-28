@@ -5,11 +5,13 @@ import {
   CompareBand, FaqBand, HSteps, LogoBar, PillarBand, QuoteFormBand, ReviewTrio, RowTable,
 } from '../../components/service/studyBands';
 import styles from '../renting/renting.module.css';
+import { shareMeta } from '../../lib/og';
 
 // Rebuilt per the approved content brief on ALH-P2-0039 and the copy doc on
 // ALH-P2-0040: visually distinct from /renting (comparison table, pillars,
 // horizontal timeline, pricing table, dark corporate-quote band).
 export const metadata: Metadata = {
+  ...shareMeta('b2b'),
   title: 'Corporate Housing for Expat Employees | Amsterdam Life Homes',
   description:
     'We house your expat employees in Amsterdam. One point of contact, 3.5 weeks average placement, invoiced to the company. Request a corporate quote.',

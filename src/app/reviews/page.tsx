@@ -3,12 +3,14 @@ import { ServiceShell } from '../../components/service/ServiceShell';
 import { GuideBand } from '../../components/service/bands';
 import { REVIEWS } from '../../lib/renting';
 import styles from '../renting/renting.module.css';
+import { shareMeta } from '../../lib/og';
 
 // The full review wall. Every service page shows a carousel excerpt and links
 // here; this page links onward to Google, which is where the stars that show
 // up in search results actually live (self-serving review schema is ignored,
 // so we ship none).
 export const metadata: Metadata = {
+  ...shareMeta('reviews'),
   title: 'Client Reviews | Amsterdam Life Homes',
   description:
     'What our clients say about finding their Amsterdam home with us. 85% of our business comes from referrals.',

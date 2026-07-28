@@ -5,6 +5,7 @@ import { GuideBand, HeroStats } from '../components/service/bands';
 import { LogoBar } from '../components/service/studyBands';
 import { INTAKE_URL, REVIEWS } from '../lib/renting';
 import styles from './renting/renting.module.css';
+import { shareMeta } from '../lib/og';
 
 // The homepage, built to the approved structure on ALH-P2-0049 and the copy
 // doc on ALH-P2-0050, rendered in the Warm Paper system: human story above
@@ -13,6 +14,7 @@ import styles from './renting/renting.module.css';
 // (no form on the homepage; the form lives on /contact).
 // Stats use the verified set (250+/3.5wks/8+yrs/85%), not the studies' 300+.
 export const metadata: Metadata = {
+  ...shareMeta('home'),
   title: 'Expat Housing Amsterdam | Amsterdam Life Homes',
   description:
     'Fellow expats helping you rent, buy, or let your Amsterdam home. We have been in your shoes and treat every client like we would want to be treated.',

@@ -5,12 +5,14 @@ import { ContactBand, GuideBand, HeroStats, ServiceTiles } from '../../component
 import { AltRows, ChecklistBand, FaqBand, VSteps } from '../../components/service/studyBands';
 import { CHALLENGES, SERVICES } from '../../lib/letting';
 import styles from '../renting/renting.module.css';
+import { shareMeta } from '../../lib/og';
 
 // Rebuilt per the brief and copy doc on ALH-P2-0032/0033: landlord voice,
 // alternating service rows, the tenant-screening checklist as centerpiece,
 // a vertical process rail, and transparent fee framing. Visually distinct
 // from /renting and /b2b.
 export const metadata: Metadata = {
+  ...shareMeta('letting'),
   title: 'Letting Agent Amsterdam | Amsterdam Life Homes',
   description:
     'We let and manage your Amsterdam property: listings, viewings, full tenant screening, and the contract. One clear fee, quoted before anything starts.',

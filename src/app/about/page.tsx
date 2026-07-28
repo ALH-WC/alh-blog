@@ -3,11 +3,13 @@ import { ServiceShell } from '../../components/service/ServiceShell';
 import { StatsBand, GuideBand, ServiceTiles } from '../../components/service/bands';
 import { INTAKE_URL, THIS_IS_US_TXT } from '../../lib/renting';
 import styles from '../renting/renting.module.css';
+import { shareMeta } from '../../lib/og';
 
 // The About page: the full version of the "This is us" bands on the service
 // pages. Copy is the live site's about section verbatim, plus our shared
 // story text. E-E-A-T anchor for the whole domain.
 export const metadata: Metadata = {
+  ...shareMeta('about'),
   title: 'About Us | Amsterdam Life Homes',
   description:
     'Amsterdam Life Homes is a boutique housing agency run by local expats. Eight years and 250+ successful searches in Amsterdam, with every client working with us personally.',

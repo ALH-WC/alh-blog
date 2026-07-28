@@ -3,10 +3,12 @@ import { ServiceShell } from '../../components/service/ServiceShell';
 import { ContactBand, GuideBand } from '../../components/service/bands';
 import { INTAKE_URL } from '../../lib/renting';
 import styles from '../renting/renting.module.css';
+import { shareMeta } from '../../lib/og';
 
 // Rebuild of /contact per ALH-CRO-0210 (Ground Zero Report, Section Five,
 // finding v): a real H1, short supporting copy, and ContactPage schema.
 export const metadata: Metadata = {
+  ...shareMeta('contact'),
   title: 'Contact Amsterdam Life Homes',
   description:
     'Contact Amsterdam Life Homes. Tell us your budget, desired move date, and neighbourhoods, and we reply within 24 hours. Or book a free video intake call.',

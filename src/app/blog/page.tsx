@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { getArticleList } from '../../sanity/lib/queries';
 import { JsonLd } from '../../components/JsonLd';
 import BlogIndex from './BlogIndex';
+import { shareMeta } from '../../lib/og';
+
+const share = shareMeta('blog');
 
 export const metadata: Metadata = {
   title: 'The guide we wish someone had handed us',
@@ -9,12 +12,13 @@ export const metadata: Metadata = {
     'The Amsterdam Guide: a five-stage relocation guide for expats renting, letting, and buying in Amsterdam. Free, written by fellow expats.',
   alternates: { canonical: '/blog' },
   openGraph: {
+    ...share.openGraph,
     title: 'The Amsterdam Guide | Amsterdam Life Homes',
     description:
       'A five-stage relocation guide for expats moving to Amsterdam. Free, written by fellow expats.',
     url: '/blog',
-    type: 'website',
   },
+  twitter: share.twitter,
 };
 
 // Refresh from Sanity periodically once content is live.
