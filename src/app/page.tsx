@@ -74,10 +74,13 @@ export default function HomePage() {
     <ServiceShell current="/">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
 
-      {/* 1. HERO (H1 verbatim per the competitor study: best headline in the market) */}
+      {/* 1. HERO (H1 verbatim per the competitor study: best headline in the market).
+          Background is the brand hero video, muted and looping like the live site;
+          the photo stays as the poster for slow connections and reduced motion. */}
       <div className={styles.hero}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/home/hero.webp" alt="Sunlit Amsterdam canal houses" />
+        <video autoPlay muted loop playsInline poster="/home/hero.webp" aria-hidden="true">
+          <source src="/home/hero.mp4" type="video/mp4" />
+        </video>
         <div className={styles.heroIn}>
           <h1>We help fellow expats rent, let,<br />and buy their home<br />in Amsterdam</h1>
           <p>Amsterdam&apos;s housing market does not slow down for anyone. Least of all for someone who just arrived, or who is still trying to get here. We know this because we have been in that exact position. We are expats ourselves, and we built ALH to be the people we wished we had when we moved here.</p>
