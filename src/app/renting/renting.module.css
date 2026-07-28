@@ -245,7 +245,8 @@
   display: flex;
   align-items: flex-end;
 }
-.hero > img {
+.hero > img,
+.hero > video {
   position: absolute;
   inset: 0;
   width: 100%;
