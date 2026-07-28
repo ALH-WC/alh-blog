@@ -4,11 +4,13 @@ import { ContactBand, GuideBand, HeroStats, ServiceTiles } from '../../component
 import { Editorial, FaqBand, ReviewTrio, RowTable, StepGrid } from '../../components/service/studyBands';
 import { SERVICES } from '../../lib/buying';
 import styles from '../renting/renting.module.css';
+import { shareMeta } from '../../lib/og';
 
 // Rebuilt per the brief and copy doc on ALH-P2-0025/0026: calm expert voice,
 // an editorial why-a-buying-agent argument, a 2x3 numbered process grid, and
 // a factual costs table. Visually distinct from /renting, /letting, and /b2b.
 export const metadata: Metadata = {
+  ...shareMeta('buying'),
   title: 'Buying Agent Amsterdam for Expats | Amsterdam Life Homes',
   description:
     'Buying a home in Amsterdam as an expat? We search, value, and bid for you, and guide you through the contract and notary in plain English.',
