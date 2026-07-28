@@ -2102,3 +2102,60 @@
     font-size: 31px;
   }
 }
+
+/* Hero stats pile (approved B2): the data strip lives inside the photo,
+   stacked bottom-right, numbers in regular Mixta, labels lowercase Inter.
+   Replaces the separate stats band on every photo-hero page. */
+.heroStats {
+  position: absolute;
+  z-index: 2;
+  right: var(--gutter);
+  bottom: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+.heroStats .cellS {
+  padding: 10px 0;
+}
+.heroStats .cellS + .cellS {
+  border-top: 1px solid rgba(255, 255, 255, 0.26);
+}
+.hsN {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.15;
+  color: #fff;
+}
+.hsL {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: lowercase;
+  margin-top: 1px;
+}
+@media (max-width: 1100px) {
+  .heroStats {
+    right: 40px;
+  }
+}
+@media (max-width: 700px) {
+  .heroStats {
+    right: 22px;
+    bottom: 26px;
+  }
+  .heroStats .cellS {
+    padding: 7px 0;
+  }
+  .hsN {
+    font-size: 18px;
+  }
+  .hsL {
+    font-size: 11px;
+  }
+  /* hero text clears the pile on phones */
+  .hero:has(.heroStats) .heroIn {
+    padding-bottom: 262px;
+  }
+}

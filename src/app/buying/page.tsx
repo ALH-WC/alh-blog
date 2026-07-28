@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ServiceShell } from '../../components/service/ServiceShell';
-import { ContactBand, GuideBand, ServiceTiles, StatsBand } from '../../components/service/bands';
+import { ContactBand, GuideBand, HeroStats, ServiceTiles } from '../../components/service/bands';
 import { Editorial, FaqBand, ReviewTrio, RowTable, StepGrid } from '../../components/service/studyBands';
 import { SERVICES } from '../../lib/buying';
 import styles from '../renting/renting.module.css';
@@ -50,10 +50,10 @@ export default function BuyingPage() {
           <h1>Buying a home in Amsterdam?<br />We bid smarter.</h1>
           <p>We are foreigners ourselves and have helped expats<br />find their homes here for over eight years.<br />We know the ins and outs and guide you every step.</p>
         </div>
+        <HeroStats />
       </div>
 
-      <StatsBand />
-
+      
       <Editorial
         eyebrow="Why a buying agent"
         big={<>Every bid you make competes with someone who has local knowledge. We make that someone yours.</>}

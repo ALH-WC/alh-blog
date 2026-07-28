@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ServiceShell } from '../../components/service/ServiceShell';
-import { GuideBand, ServiceTiles, StatsBand } from '../../components/service/bands';
+import { GuideBand, HeroStats, ServiceTiles } from '../../components/service/bands';
 import {
   CompareBand, FaqBand, HSteps, LogoBar, PillarBand, QuoteFormBand, ReviewTrio, RowTable,
 } from '../../components/service/studyBands';
@@ -51,9 +51,8 @@ export default function B2bPage() {
           <h1>Housing your expat employees<br />in Amsterdam.<br />Sorted.</h1>
           <p>We search, view, negotiate, and settle your people<br />into their new homes. One point of contact,<br />3.5 weeks on average, zero time from your HR team.</p>
         </div>
+        <HeroStats stats={[['250+', 'Employees housed'], ['3.5 wks', 'Average placement'], ['8+ yrs', 'In the market'], ['1', 'Point of contact']]} />
       </div>
-
-      <StatsBand stats={[['250+', 'Employees housed'], ['3.5 wks', 'Average placement'], ['8+ yrs', 'In the market'], ['1', 'Point of contact']]} />
 
       <LogoBar label="Trusted by teams at" names={['Atlassian', 'Booking.com', 'Unilever', 'Adyen', 'TomTom']} />
 
