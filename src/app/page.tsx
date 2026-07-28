@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ServiceShell } from '../components/service/ServiceShell';
-import { GuideBand, StatsBand } from '../components/service/bands';
+import { GuideBand, HeroStats } from '../components/service/bands';
 import { LogoBar } from '../components/service/studyBands';
 import { INTAKE_URL, REVIEWS } from '../lib/renting';
 import styles from './renting/renting.module.css';
@@ -86,6 +86,7 @@ export default function HomePage() {
             <a className={styles.heroScroll} href="#services">See how we work &darr;</a>
           </div>
         </div>
+        <HeroStats />
       </div>
 
       {/* 2. THE HUMAN STORY (above services, per the approved structure) */}
@@ -100,9 +101,6 @@ export default function HomePage() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={styles.homeAboutImg} src="/home/about.webp" alt="The Amsterdam Life Homes founders on a bench in Amsterdam" />
       </div>
-
-      {/* 3. TRUST BAR (verified stats) */}
-      <StatsBand />
 
       {/* 4. SERVICES */}
       <span id="services" />

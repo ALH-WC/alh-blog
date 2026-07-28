@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { SiteFooter } from '../../components/SiteFooter';
+import { HeroStats } from '../../components/service/bands';
 import {
   ABROAD_TXT, HERE_TXT, THIS_IS_US_TXT,
   FEE_P1, FEE_P2, FEE_P3, DEP_TXT, BAL_TXT, NORES_TXT, FORM_INTRO,
@@ -149,13 +150,7 @@ export default function RentingView() {
           <h1>Looking for a rental home<br />in Amsterdam?<br />We will find it for you.</h1>
           <p>We help fellow expats<br />rent, let, and buy their home<br />in Amsterdam.</p>
         </div>
-      </div>
-
-      {/* STATS */}
-      <div className={`${styles.cells} ${styles.c4}`}>
-        {[['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']].map(([n, l]) => (
-          <div className={styles.cell} key={l}><div className={styles.statN}>{n}</div><div className={styles.statL}>{l}</div></div>
-        ))}
+        <HeroStats />
       </div>
 
       {/* TAG BAND */}

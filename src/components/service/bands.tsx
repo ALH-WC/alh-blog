@@ -9,6 +9,19 @@ import styles from '../../app/renting/renting.module.css';
 // with the renting page's stylesheet so all pages share one implementation of
 // the Warm Paper parts.
 
+// The approved in-hero data pile (bottom-right of the photo). Render inside
+// a .hero div. Photo-hero pages use this; heroless pages keep StatsBand.
+export function HeroStats({ stats }: { stats?: [string, string][] } = {}) {
+  const rows = stats ?? [['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']];
+  return (
+    <div className={styles.heroStats}>
+      {rows.map(([n, l]) => (
+        <div className={styles.cellS} key={l}><div className={styles.hsN}>{n}</div><div className={styles.hsL}>{l}</div></div>
+      ))}
+    </div>
+  );
+}
+
 export function StatsBand({ stats }: { stats?: [string, string][] } = {}) {
   const rows = stats ?? [['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']];
   return (

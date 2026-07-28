@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ServiceShell } from '../../components/service/ServiceShell';
-import { ContactBand, GuideBand, ServiceTiles, StatsBand } from '../../components/service/bands';
+import { ContactBand, GuideBand, HeroStats, ServiceTiles } from '../../components/service/bands';
 import { AltRows, ChecklistBand, FaqBand, VSteps } from '../../components/service/studyBands';
 import { CHALLENGES, SERVICES } from '../../lib/letting';
 import styles from '../renting/renting.module.css';
@@ -52,9 +52,8 @@ export default function LettingPage() {
           <h1>Your property in good hands.<br />And rented out.</h1>
           <p>We find the tenants, run the screening,<br />and manage your home like it is our own.<br />You collect the rent, we handle the rest.</p>
         </div>
+        <HeroStats stats={[['8+ yrs', 'In the market'], ['250+', 'Placements made'], ['3.5 wks', 'Average to match'], ['85%', 'From referrals']]} />
       </div>
-
-      <StatsBand stats={[['8+ yrs', 'In the market'], ['250+', 'Placements made'], ['3.5 wks', 'Average to match'], ['85%', 'From referrals']]} />
 
       <AltRows
         eyebrow="What we do for landlords"
