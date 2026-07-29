@@ -3,14 +3,13 @@ import { inter, mixta } from '../lib/fonts';
 import { TabAttention } from '../components/TabAttention';
 import './globals.css';
 
+// No sitewide title template: service pages own their full titles. The blog
+// segment adds its own "| The Amsterdam Guide" template in blog/layout.tsx.
 export const metadata: Metadata = {
   metadataBase: new URL('https://amsterdamlifehomes.com'),
-  title: {
-    default: 'The Amsterdam Guide | Amsterdam Life Homes',
-    template: '%s | The Amsterdam Guide',
-  },
+  title: 'Amsterdam Life Homes',
   description:
-    'The relocation guide we wish someone had handed us. Everything we tell our clients, free, written by fellow expats who help people rent, let, and buy in Amsterdam.',
+    'Fellow expats helping you rent, buy, or let your Amsterdam home. We have been in your shoes and treat every client like we would want to be treated.',
 };
 
 export default function RootLayout({
