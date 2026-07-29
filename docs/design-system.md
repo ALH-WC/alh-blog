@@ -4,6 +4,19 @@ Derived from the approved renting page mockup (the artifact iterated to final in
 
 ---
 
+## 0. Keeping this document alive (meta-rule)
+
+Documentation is part of every change, not a separate task. Whenever a change ships that adds, alters, or retires anything this document describes (a token, a component, a rule, a page recipe, a convention, an animation, an asset system), the SAME work session updates:
+1. **This document** at `Website/ALH-Design-System-v2.md` (the master), AND
+2. **its mirror** at `alh/docs/design-system.md` in the repo (copy the master over it, same commit as the code), AND
+3. **`alh/CLAUDE.md`** when the environment or working agreements changed, AND
+4. **the Asana task** (checkbox + Status column + completion comment), AND
+5. **Claude's project memory** when a standing decision was made.
+
+A change is not done until all of these are true. Never leave documentation "for later": that is how the July 2026 stale-gap audit happened (video hero and sharing system shipped without doc entries).
+
+---
+
 ## 1. The feel, in one paragraph
 
 Warm paper everywhere, never white. One display voice (Mixta, the logo's own face) for everything big; one working voice (Inter) for everything else. Sand highlight blocks mark section titles like a marker pen; little gold eyebrow lines sit above them. Content text is a warm sandy grey, never cold grey, never pure black. Depth comes from hairlines and sandy panels; the only dark surfaces are the espresso panels and controls, all in the same dark as the blog's pop-up. Motion is quiet and physical: things lift 2px, arrows glide, images breathe, text slides out of clipped windows the way the blog logo collapses.
