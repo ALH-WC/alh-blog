@@ -7,7 +7,9 @@ import { shareMeta } from '../../lib/og';
 const share = shareMeta('blog');
 
 export const metadata: Metadata = {
-  title: 'The guide we wish someone had handed us',
+  // Full title spelled out: the segment template only covers child routes
+  // (articles), not this page itself.
+  title: 'The guide we wish someone had handed us | The Amsterdam Guide',
   description:
     'The Amsterdam Guide: a five-stage relocation guide for expats renting, letting, and buying in Amsterdam. Free, written by fellow expats.',
   alternates: { canonical: '/blog' },
