@@ -2160,3 +2160,221 @@
     padding-bottom: 262px;
   }
 }
+
+/* ============================================================
+   THE QUIET SYSTEM (design option 2c, July 2026)
+   Applies ONLY between hero and footer. The nav, the heroes
+   (incl. the stats pile), the hamburger drawer, the CTA pop-up,
+   and the footer keep their approved designs. This layer wins
+   by cascade order; earlier rules above are the old Warm Paper
+   system kept for reference.
+   ============================================================ */
+
+.page {
+  background: #ffffff;
+  color: #5f5a54;
+  /* retire Warm Paper vars inside the body: bronze replaces gold,
+     the quiet hairline replaces the warm one, beige panels go white */
+  --gold: #8a7250;
+  --hairline: #eae7e1;
+  --beige: #ffffff;
+  --beigeR: #ffffff;
+  --body-text: #5f5a54;
+  --muted-text: #a39889;
+  --faint-text: #a39889;
+}
+
+/* --- type ------------------------------------------------- */
+.eyebrow {
+  color: #8a7250;
+  font-weight: 500;
+}
+.secT {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: #241d16;
+  max-width: 22ch;
+}
+.hl {
+  background: none;
+  padding: 0;
+  margin-left: 0;
+}
+.pageTitle {
+  text-transform: uppercase;
+}
+.tagband h2 {
+  text-transform: uppercase;
+  font-weight: 650;
+}
+.thisusQuote {
+  font-weight: 400;
+  font-size: 32px;
+}
+.shead {
+  padding-top: 150px;
+  padding-bottom: 64px;
+}
+
+/* --- lists lose their marks: plain lines, generous leading --- */
+.m,
+.mOnDark {
+  display: none;
+}
+.qrow,
+.svcList div {
+  gap: 0;
+}
+
+/* --- panels: white with hairlines instead of beige/sand ----- */
+.panel,
+.chkpanel {
+  background: #ffffff;
+  border: 1px solid #eae7e1;
+}
+.guideband {
+  background: #ffffff;
+  border-top: 1px solid #eae7e1;
+  border-bottom: 1px solid #eae7e1;
+}
+.guideband:hover {
+  background: #ffffff;
+}
+
+/* --- service cards / tiles --------------------------------- */
+.svcCard h3 {
+  font-weight: 400;
+  font-size: 34px;
+  text-transform: uppercase;
+}
+.svcCards .svcCard:nth-child(3n) {
+  background: #eae2d3;
+}
+.tile figcaption {
+  font-weight: 400;
+}
+
+/* --- review cells ------------------------------------------ */
+.rev {
+  border: 1px solid #eae7e1;
+  padding: 40px 34px;
+}
+.rev q {
+  background: none;
+  padding: 0;
+  margin: 0 0 13px;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.25;
+}
+.rtags {
+  order: -1;
+  padding-top: 0;
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: #8a7250;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+.rev .who b {
+  color: #a39889;
+  font-weight: 500;
+}
+.rev .who span {
+  color: #a39889;
+}
+.rgrid .rev:nth-child(3n + 2),
+.carwrap .rev:nth-child(3n + 2) {
+  background: #eae2d3;
+  border-color: #eae2d3;
+}
+.revCells .rev:nth-child(3n + 2) {
+  background: #eae2d3;
+  border-color: #eae2d3;
+}
+
+/* --- CTAs: no filled buttons below the hero ----------------- */
+.finalCtaBtn,
+.submit,
+.dsubmit {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #241d16;
+  font-weight: 600;
+  font-size: 17px;
+}
+.finalCtaBtn::after,
+.submit::after,
+.dsubmit::after {
+  content: ' \2192';
+  display: inline-block;
+  margin-left: 10px;
+  transition: transform 0.25s ease;
+}
+.finalCtaBtn:hover,
+.submit:hover,
+.dsubmit:hover {
+  transform: none;
+  background: none;
+  color: #241d16;
+}
+.finalCtaBtn:hover::after,
+.submit:hover::after,
+.dsubmit:hover::after {
+  transform: translateX(4px);
+}
+.dsubmit,
+.dsubmit:hover {
+  color: var(--on-dark);
+}
+.tlink:hover {
+  transform: none;
+}
+.tlink:hover .ar {
+  transform: translateX(4px);
+}
+.tlink .ar {
+  transition: transform 0.25s ease;
+}
+
+/* --- form options: hairline boxes, espresso when chosen ----- */
+.opt {
+  background: #ffffff;
+  border: 1px solid #eae7e1;
+  color: #5f5a54;
+}
+.optSel {
+  background: #ffffff;
+  border-color: #241d16;
+  color: #241d16;
+  font-weight: 600;
+}
+
+/* --- b2b dark band stays the one dark band per page --------- */
+.darkband {
+  background: var(--dark);
+}
+
+/* --- mobile adjustments for the quiet layer ----------------- */
+@media (max-width: 700px) {
+  .secT {
+    font-size: 29px;
+  }
+  .svcCard h3 {
+    font-size: 27px;
+  }
+  .rev q {
+    font-size: 21px;
+  }
+  .shead {
+    padding-top: 84px;
+    padding-bottom: 40px;
+  }
+  .thisusQuote {
+    font-size: 25px;
+  }
+}
