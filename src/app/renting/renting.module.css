@@ -2364,6 +2364,10 @@
   .secT {
     font-size: 29px;
   }
+  .formTitle {
+    white-space: normal;
+    font-size: 21px;
+  }
   .svcCard h3 {
     font-size: 27px;
   }
