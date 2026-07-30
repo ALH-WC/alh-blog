@@ -78,12 +78,12 @@ Inter never exceeds weight 600. Sentence case in all Inter copy; uppercase lives
 
 ### Space and grid
 - Page gutter 48px for text modules (max 1180-1440); tile grids, photo mosaics, and quote grids bleed full width, separated by hairlines instead of gaps.
-- Module rhythm: 170px above and below every text module, 190-200px around the closing invitation, 110px for the employers row. Full-bleed bands touch with zero space.
+- Module rhythm: 80px above and below every text module (the footer's own top padding; feedback round 1 cut it from 170), 100-110px around the closing invitation, 80px for the employers row. Full-bleed bands touch with zero space.
 - Column counts: four for services, three for reviews, two for the about split, three across for photo mosaics in 360px rows. Footer 1.6 / 1 / 1 / 1.2.
 - On phones the gutter token drops to 22px (globals.css) and modules tighten; see section 9.
 
 ### Motion (unchanged values, quieter application)
-- CTA hover: the ARROW moves `translateX(4px)`, 0.25s ease. Nothing else changes on text CTAs.
+- CTA hover: text CTAs lift `translateY(-2px)` AND the arrow glides `translateX(4px)`, 0.25s ease; tiles lift 2px too (feedback round 1 restored the old motion).
 - Photo tile zoom: `scale(1.06)`, 0.7s `cubic-bezier(0.16,1,0.3,1)`; caption fades, ↗ fades in.
 - **The signature reveal** (guide band, blog logo): clipped window + `translateX(-100%)` slide, 0.65s `cubic-bezier(0.45,0,0.15,1)`.
 - Nav hide/show `translateY(-100%)` 0.38s; pop-up entrance opacity + 18px rise, 0.55s; marquee ~26s linear, pauses on hover.
@@ -96,20 +96,20 @@ Inter never exceeds weight 600. Sentence case in all Inter copy; uppercase lives
 Shared code: `src/components/service/ServiceShell.tsx` (nav, drawer, pop-up, footer), `bands.tsx` + `studyBands.tsx` (all body bands), all styled from `renting.module.css` whose final "QUIET SYSTEM" layer restyles every band at once. Compose bands, never restyle them per page. Service-page copy is verbatim from the client's live pages; only obvious typos are corrected.
 
 ### Approved and unchanged (do not touch)
-- **4.1 Navigation**: grid logo/links/Contact-us text link; transparent paper items over photo heroes, hide-on-down, solid paper on scroll-up; current page underlined; the blog keeps its category-bar handoff and collapsing-logo animation.
-- **4.2 Hero**: full viewport photo or brand video (muted, looping, poster fallback), even dark wash, Mixta H1 bottom-left with the client's breaks, paper text, and the **stats pile** bottom-right: Mixta 400 22px white numbers (18px mobile), lowercase Inter 12.5px labels at 85% white, 1px separators at 26% white. The home hero carries the Cal.com filled button + "See how we work ↓".
+- **4.1 Navigation**: grid logo/links/Contact-us text link; transparent paper items over photo heroes, hide-on-down, solid paper on scroll-up; current page underlined; on the SOLID (paper) bar all items are thin (400) black with the current page bold 650 + underlined, and Contact us always bold. The blog keeps its category-bar handoff and collapsing-logo animation.
+- **4.2 Hero**: full viewport photo or brand video (muted, looping, poster fallback), even dark wash, Mixta H1 bottom-left with the client's breaks, paper text, and the **stats pile** bottom-right: Mixta 400 22px white numbers (18px mobile), lowercase Inter 12.5px labels at 85% white, 1px separators at 26% white. The home hero carries NO subtext, its H1 on the three fixed lines (We help fellow expats / rent, let, and buy their home / in Amsterdam), an OUTLINED paper Cal.com box (transparent, 1px paper border; fills paper with espresso text on hover; never a dark fill over the photo) + "See how we work ↓". Nothing over a photo is ever hard white #fff: hero text, captions, and the stats pile are paper #F5F0E6.
 - **4.3 Hamburger drawer** (all pages, the blog's design): paper panel, own top bar (logo + X, hairline), Inter 24px links, two squared bottom buttons (filled dark Contact us + outlined intake).
-- **4.4 CTA pop-up**: fixed bottom-right on `--dark` after 25% scroll; cream "Fill in the form" (with the 24-hours line inside) + outlined video-call button; field and confirm button always equal height (52px desktop / 54px phones).
+- **4.4 CTA pop-up**: fixed bottom-right on `--dark` after 25% scroll; cream "Fill in the form" (with the 24-hours line inside) + outlined video-call button; field and confirm button always equal height (52px desktop / 54px phones). The pop-up speaks each page's service (renting/buying: "Let's find your home.", letting: "Let's find your tenant.", corporate: "Let's house your team."); pages without their own form send the form button to /contact. The blog's vertical help tab uses the same espresso as its panel, including hover.
 - **4.5 Footer**: the sand `#EAE2D3` band, four columns, bronze caps labels, underline email + Subscribe text CTA, legal line. Layout identical on every page.
 
 ### The quiet parts (new)
 - **4.6 Section head**: bronze eyebrow + uppercase Mixta 46px title, no background, optional 17px dek. 150-170px air above.
 - **4.7 Service tile**: min-height 320px, padding 40px, bronze numeral top-left, Mixta 34px name + one-line promise pinned to the bottom, arrow right-aligned on the promise line. Fourth tile (or third in a three-row) on sand. Tile rows bleed full width with hairlines.
 - **4.8 Captioned photo**: full bleed, no border. White Mixta 24-26px caption 32px from left, 28px from bottom, LOCATION ONLY, never a sentence. One tile per mosaic may carry a bare ↗ instead of a caption. Never invent a location: caption only what is verifiably in the photo.
-- **4.9 Review cell**: 1px hairline border, padding 40px 34px, min-height 300px. Bronze uppercase context label on top (the placeholder keyword line until real per-client data arrives), Mixta 26px sentence-case quote, Inter 15px body, attribution pushed to the bottom edge in `#A39889` so cells align. Middle cell of each three on sand. The renting page keeps its endless carousel mechanics with these cells; other pages use three static cells. The funnel stays one-directional: cells link "Read all our reviews →" to /reviews; only /reviews links onward to Google.
+- **4.9 Review cell**: 1px hairline border, padding 40px 34px, min-height 300px. Bronze uppercase context label on top (the placeholder keyword line until real per-client data arrives), Mixta 26px sentence-case quote, Inter 15px body, attribution pushed to the bottom edge in `#A39889` so cells align. Review cells are ALWAYS white, never sand (feedback round 1). The renting page keeps its endless carousel mechanics with these cells; other pages use three static cells. The funnel stays one-directional: cells link "Read all our reviews →" to /reviews; only /reviews links onward to Google.
 - **4.10 Calls to action**: primary Inter 600 espresso 17px + arrow; secondary same shape in bronze; in-card 15px 500. Form submits are text CTAs too (espresso on white, cream on the dark band). The "Free. Takes 30 minutes. We respond within 24 hours." note in `#A39889` under the primary.
-- **4.11 Forms**: underline inputs (no boxes, no rings; underline darkens to espresso on focus), espresso labels, interest options as hairline boxes that turn espresso-bordered espresso-text when selected, espresso-filled checkboxes with cream check (a control, not a button), 16px inputs on phones.
-- **4.12 Qualification gate**: two hairline cells, bronze eyebrow vs muted eyebrow, PLAIN hairline-separated lines (the +/− marks are retired).
+- **4.11 Forms**: underline inputs (no boxes, no rings; underline darkens to espresso on focus), espresso labels, interest options as hairline boxes that turn espresso-bordered espresso-text when selected, espresso-filled checkboxes with cream check (a control, not a button), 16px inputs on phones. EVERY form is wired: it posts to /api/lead, which stores a `lead` document in Sanity (visible in the Studio, newest first; requires SANITY_API_WRITE_TOKEN in the Vercel env). The privacy checkbox gates submission; after sending, a confirmation line replaces the button ("Thank you. We will get back to you within 24 hours."). The blog guide capture posts to the same route.
+- **4.12 Qualification gate**: two WHITE hairline cells; the lead ("We can help you") cell stands out with a 1px espresso frame (outline, offset -1px), never sand. Rows are plain hairline-separated lines with the text vertically centered (padding both sides of each hairline). The +/− marks are retired.
 - **4.13 Guide band**: white with top/bottom hairlines, Mixta title + bronze ↗, the signature reveal kept. No sand fill.
 - **4.14 Wordmark rows**: "Our clients work at" + text wordmarks in `#A39889` (marquee on renting, static bar elsewhere; real logos still pending from Framer).
 - **4.15 Search (blog)**: filters live while typing; Enter only blurs the field (drops the phone keyboard). Never a submit or reload.
@@ -117,7 +117,7 @@ Shared code: `src/components/service/ServiceShell.tsx` (nav, drawer, pop-up, foo
 ---
 
 ## 5. Copy voice
-Short sentences, plain words, honest and warm. Say the hard thing kindly. Every process step ends in something concrete. Qualification framed as honest advice. Currency €80.000 / €2200 style. Sentence case everywhere in Inter. NEVER an em dash.
+Short sentences, plain words, honest and warm. Say the hard thing kindly. Every process step ends in something concrete. Qualification framed as honest advice. Currency €80.000 / €2200 style. Sentence case everywhere in Inter. NEVER an em dash. The fourth service is always "Corporate", never "B2B" (the URL stays /b2b).
 
 ## 6. Sharing and SEO layer
 - **Share cards**: every page passes `...shareMeta('<page>')` (src/lib/og.ts): branded 1200x630 card from `public/og/<page>.jpg` + twitter summary_large_image. `OG_BASE` flips to amsterdamlifehomes.com at cutover.
