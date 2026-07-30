@@ -37,7 +37,7 @@ const SCHEMA = {
 
 export default function AboutPage() {
   return (
-    <ServiceShell current="/about" heroless>
+    <ServiceShell current="/about" heroless ctaTitle="Let's talk." formHref="/contact#contact">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
 
       <div className={styles.shead} style={{ paddingTop: 150 }}>

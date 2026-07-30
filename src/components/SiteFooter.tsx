@@ -42,7 +42,7 @@ export function SiteFooter() {
             <Link className={styles.flink} href="/renting">Renting</Link>
             <Link className={styles.flink} href="/buying">Buying</Link>
             <Link className={styles.flink} href="/letting">Letting</Link>
-            <Link className={styles.flink} href="/b2b">B2B</Link>
+            <Link className={styles.flink} href="/b2b">Corporate</Link>
           </div>
 
           {/* Company */}

@@ -43,7 +43,7 @@ const FAQ_SCHEMA = {
 
 export default function LettingPage() {
   return (
-    <ServiceShell current="/letting">
+    <ServiceShell current="/letting" ctaTitle="Let's find your tenant.">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
 
       {/* HERO (system hero layout; copy doc headline) */}

@@ -913,6 +913,7 @@
 .nlpopForm input {
   flex: 1;
   height: 52px;
+  box-sizing: border-box;
   padding: 0 16px;
   border: 1px solid #4a3f34;
   border-right: 0;
@@ -931,6 +932,8 @@
 }
 .nlpopForm button {
   height: 52px;
+  box-sizing: border-box;
+  line-height: 1;
   padding: 0 22px;
   border: 0;
   background: var(--on-dark);
