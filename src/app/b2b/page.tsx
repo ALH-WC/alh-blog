@@ -42,7 +42,7 @@ const FAQ_SCHEMA = {
 
 export default function B2bPage() {
   return (
-    <ServiceShell current="/b2b">
+    <ServiceShell current="/b2b" ctaTitle="Let's house your team.">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
 
       {/* HERO (system hero layout; approved headline) */}

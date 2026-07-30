@@ -22,7 +22,7 @@ const GOOGLE_REVIEWS_URL = 'https://www.google.com/search?q=Amsterdam+Life+Homes
 
 export default function ReviewsPage() {
   return (
-    <ServiceShell current="/reviews" heroless>
+    <ServiceShell current="/reviews" heroless ctaTitle="Let's talk." formHref="/contact#contact">
       <div className={styles.shead} style={{ paddingTop: 150 }}>
         <span className={styles.eyebrow}>Google reviews</span>
         <h1 className={styles.pageTitle}>Don&apos;t just take our word for it</h1>

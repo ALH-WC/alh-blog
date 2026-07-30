@@ -62,11 +62,11 @@
   justify-content: center;
   gap: 14px;
   padding: 18px 0;
-  box-shadow: -6px 0 22px rgba(20, 14, 8, 0.16);
+  box-shadow: none;
   transition: background 0.2s ease;
 }
 .tab:hover {
-  background: #150f0a;
+  background: #2e261d;
 }
 .tabText {
   writing-mode: vertical-rl;

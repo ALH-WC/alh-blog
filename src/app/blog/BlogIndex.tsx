@@ -266,7 +266,7 @@ export default function BlogIndex({ articles }: { articles: ArticleListItem[] })
             up to "ALH" once the bar docks: the A never moves, L and then H
             slide left against it. Full logo everywhere above 1895px. */}
         <Link
-          href="/blog"
+          href="/"
           className={`${navStyles.logoWrap}${mini ? ` ${styles.logoMini}` : ''}`}
           aria-label="Amsterdam Life Homes home"
         >

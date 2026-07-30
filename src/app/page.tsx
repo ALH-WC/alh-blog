@@ -82,7 +82,7 @@ export default function HomePage() {
     .filter((r): r is (typeof REVIEWS)[number] => Boolean(r));
 
   return (
-    <ServiceShell current="/">
+    <ServiceShell current="/" ctaTitle="Let's talk." formHref="/contact#contact">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
 
       {/* HERO (approved, untouched): brand video, H1 bottom-left, stats pile */}
@@ -90,9 +90,10 @@ export default function HomePage() {
         <video autoPlay muted loop playsInline poster="/home/hero.webp" aria-hidden="true">
           <source src="/home/hero.mp4" type="video/mp4" />
         </video>
+        {/* No subtext (feedback 1); the three fixed lines (feedback 2); the
+            outlined paper CTA (feedback 11) */}
         <div className={styles.heroIn}>
-          <h1>We help fellow expats rent, let,<br />and buy their home<br />in Amsterdam</h1>
-          <p>Amsterdam&apos;s housing market does not slow down for anyone. Least of all for someone who just arrived, or who is still trying to get here. We know this because we have been in that exact position. We are expats ourselves, and we built ALH to be the people we wished we had when we moved here.</p>
+          <h1>We help fellow expats<br />rent, let, and buy their home<br />in Amsterdam</h1>
           <div className={styles.heroBtns}>
             <a className={styles.heroBtn} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call</a>
             <a className={styles.heroScroll} href="#services">See how we work &darr;</a>
@@ -178,9 +179,10 @@ export default function HomePage() {
 
       {/* CLOSING INVITATION: left-aligned, two text CTAs */}
       <div className={styles.qClose}>
+        {/* Covers all four services, not only the home search (feedback 7) */}
         <span className={styles.eyebrow}>Ready to start?</span>
-        <h2 className={styles.qCloseT}>Let&apos;s find your place in Amsterdam.</h2>
-        <p>Book a free 30 minute video call with us. We will ask a few questions to understand exactly where you are in the process and tell you honestly how we can help. No commitment, no sales pitch, just a conversation.</p>
+        <h2 className={styles.qCloseT}>It starts with a conversation.</h2>
+        <p>Book a free 30 minute video call with us. Whether you are searching for a home, letting your property, buying, or relocating a team, we will ask a few questions to understand your situation and tell you honestly how we can help. No commitment, no sales pitch, just a conversation.</p>
         <div className={styles.qCloseRow}>
           <a className={styles.qLink} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call <span className={styles.ar}>&rarr;</span></a>
           <Link className={`${styles.qLink} ${styles.qLinkSec}`} href="/blog">Read our Amsterdam guide <span className={styles.ar}>&rarr;</span></Link>

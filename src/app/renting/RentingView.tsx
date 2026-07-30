@@ -9,6 +9,7 @@ import {
   INTAKE_URL, STEPS, REVIEWS, FAQS,
 } from '../../lib/renting';
 import styles from './renting.module.css';
+import { useLeadSubmit } from '../../components/service/leadForm';
 
 // "About us" is still a section on the live Framer homepage; everything else
 // is served by this app.
@@ -37,6 +38,7 @@ export default function RentingView() {
   const [popDismissed, setPopDismissed] = useState(false);
   const [interest, setInterest] = useState('Renting');
   const [checks, setChecks] = useState<[boolean, boolean]>([false, false]);
+  const { status: leadStatus, submit: submitLead } = useLeadSubmit();
   const lastY = useRef(0);
 
   // Nav: hide on scroll down, glide back solid on scroll up; pop-up appears
@@ -154,7 +156,8 @@ export default function RentingView() {
         <p className={styles.qDek}>We take a limited number of clients at a time so we can give everyone our full attention. If the below fits, we would love to hear from you.</p>
       </div>
       <div className={styles.qCells2}>
-        <div className={styles.qCell}>
+        {/* Both cells white; the left one leads with an espresso frame (feedback 6) */}
+        <div className={`${styles.qCell} ${styles.qGateLead}`}>
           <span className={styles.qNum} style={{ textTransform: 'uppercase' }}>We can help you</span>
           <h3 className={styles.qCellT}>A focused search, with our full attention</h3>
           <div>
@@ -163,7 +166,7 @@ export default function RentingView() {
             ))}
           </div>
         </div>
-        <div className={`${styles.qCell} ${styles.qCellSand}`}>
+        <div className={styles.qCell}>
           <span className={styles.qNum} style={{ textTransform: 'uppercase' }}>Outside our scope</span>
           <h3 className={styles.qCellT}>Where we are not the right agency</h3>
           <div>
@@ -300,10 +303,18 @@ export default function RentingView() {
           </div>
         </div>
         <div className={styles.qConR}>
-          <div className={styles.frm} style={{ padding: 0 }}>
+          <form
+            className={styles.frm}
+            style={{ padding: 0 }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!checks[1]) return;
+              void submitLead(e.currentTarget, { interest, newsletter: checks[0] });
+            }}
+          >
             <label>I am interested in</label>
             <div className={styles.opts}>
-              {['Renting', 'Buying', 'Letting', 'B2B'].map((o) => (
+              {['Renting', 'Buying', 'Letting', 'Corporate'].map((o) => (
                 <button
                   type="button"
                   key={o}
@@ -313,25 +324,35 @@ export default function RentingView() {
               ))}
             </div>
             <div className={styles.frow}>
-              <div><label>Full name</label><input className={styles.in} placeholder="Your first name" /></div>
-              <div><label>Last name</label><input className={styles.in} placeholder="Your last name" /></div>
+              <div><label>Full name</label><input className={styles.in} name="firstName" required placeholder="Your first name" /></div>
+              <div><label>Last name</label><input className={styles.in} name="lastName" placeholder="Your last name" /></div>
             </div>
             <div className={styles.frow}>
-              <div><label>Email</label><input className={styles.in} type="email" placeholder="you@email.com" /></div>
-              <div><label>Phone number</label><input className={styles.in} placeholder="+1 ..." /></div>
+              <div><label>Email</label><input className={styles.in} name="email" type="email" required placeholder="you@email.com" /></div>
+              <div><label>Phone number</label><input className={styles.in} name="phone" placeholder="+1 ..." /></div>
             </div>
             <label>Maximum monthly rent I can pay</label>
-            <input className={styles.in} placeholder="€2200 or more" />
+            <input className={styles.in} name="budget" placeholder="€2200 or more" />
             <div className={styles.help}>We can only help with rental budgets starting at €2200. <a href="#gate">See our requirements</a></div>
             <label>A bit about yourself and what you are looking for</label>
-            <input className={styles.in} placeholder="Tell us about your move" />
+            <input className={styles.in} name="message" placeholder="Tell us about your move" />
             {['Subscribe to our Amsterdam newsletter', 'I agree to the privacy policy'].map((t, i) => (
               <div className={styles.chk} key={t} onClick={() => setChecks((c) => (i === 0 ? [!c[0], c[1]] : [c[0], !c[1]]))}>
                 <span className={`${styles.box}${checks[i] ? ` ${styles.boxOn}` : ''}`} />{t}
               </div>
             ))}
-            <button className={styles.submit} type="button">Submit form</button>
-          </div>
+            {leadStatus === 'sent' ? (
+              <p className={styles.sentNote}>Thank you. We will get back to you within 24 hours.</p>
+            ) : (
+              <>
+                <button className={styles.submit} type="submit" disabled={leadStatus === 'sending'}>
+                  {leadStatus === 'sending' ? 'Sending...' : 'Submit form'}
+                </button>
+                {!checks[1] ? <p className={styles.frmHint}>Please agree to the privacy policy to send the form.</p> : null}
+                {leadStatus === 'error' ? <p className={styles.frmHint}>Something went wrong. Please try again, or email us directly.</p> : null}
+              </>
+            )}
+          </form>
         </div>
       </div>
 

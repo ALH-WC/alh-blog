@@ -1,26 +1,58 @@
 import { NextResponse } from 'next/server';
+import { createClient } from 'next-sanity';
+import { apiVersion, dataset, projectId, isSanityConfigured } from '../../../sanity/env';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Lead magnet: capture an email in exchange for the full guide PDF.
-// TODO: wire to a real ESP and trigger the guide PDF being emailed.
-// TODO: persist the lead (audience-aware: general vs family guide).
+// Every site form lands here: the contact forms, the corporate quote form,
+// and the blog's guide capture. Leads are stored as Sanity documents,
+// visible in the Studio next to the articles. The write token is
+// server-only; the route never echoes it.
+const token = process.env.SANITY_API_WRITE_TOKEN;
+
+const write = isSanityConfigured && token
+  ? createClient({ projectId, dataset, apiVersion, token, useCdn: false })
+  : null;
+
 export async function POST(request: Request) {
-  let email = '';
-  let audience = 'singles_couples';
+  let body: Record<string, unknown>;
   try {
-    const body = await request.json();
-    email = String(body?.email ?? '').trim();
-    audience = String(body?.audience ?? 'singles_couples');
+    body = await request.json();
   } catch {
     return NextResponse.json({ ok: false, error: 'Invalid request body.' }, { status: 400 });
   }
 
+  const s = (v: unknown) => (typeof v === 'string' ? v.trim().slice(0, 2000) : '');
+  const email = s(body.email);
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json({ ok: false, error: 'Please enter a valid email address.' }, { status: 422 });
   }
 
-  // Stub: pretend the send succeeded. No email is actually sent yet.
-  console.info('[lead] captured', { email, audience });
-  return NextResponse.json({ ok: true });
+  // The blog guide capture sends {email, audience}; the site forms send the
+  // full field set with an interest.
+  const isGuide = 'audience' in body && !('interest' in body);
+  const doc = {
+    _type: 'lead',
+    interest: isGuide ? 'Guide PDF' : s(body.interest) || 'Unknown',
+    firstName: s(body.firstName),
+    lastName: s(body.lastName),
+    email,
+    phone: s(body.phone),
+    budget: s(body.budget),
+    message: s(body.message),
+    company: s(body.company),
+    audience: s(body.audience),
+    newsletter: Boolean(body.newsletter),
+    page: s(body.page),
+    submittedAt: new Date().toISOString(),
+  };
+
+  if (!write) {
+    // Local/dev without a token: accept but only log, as the old stub did.
+    console.info('[lead] captured (no store configured)', { email: doc.email, interest: doc.interest });
+    return NextResponse.json({ ok: true, stored: false });
+  }
+
+  await write.create(doc);
+  return NextResponse.json({ ok: true, stored: true });
 }

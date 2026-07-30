@@ -22,7 +22,16 @@ const NAV_LINKS = [
 
 // `heroless` renders the solid nav from the start: pages without a photo hero
 // have no dark ground for the transparent paper items to sit on.
-export function ServiceShell({ current, heroless = false, children }: { current: string; heroless?: boolean; children: React.ReactNode }) {
+// `ctaTitle`/`formHref` let each page match the pop-up to its own service
+// (feedback 10): the letting page invites landlords, the corporate page
+// invites companies, and pages without their own form send to /contact.
+export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '#contact', children }: {
+  current: string;
+  heroless?: boolean;
+  ctaTitle?: string;
+  formHref?: string;
+  children: React.ReactNode;
+}) {
   const [navHide, setNavHide] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [navSolid, setNavSolid] = useState(false);
@@ -115,9 +124,9 @@ export function ServiceShell({ current, heroless = false, children }: { current:
       {!popDismissed ? (
         <div className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}`} aria-hidden={!popShown}>
           <button className={styles.x} type="button" aria-label="Close" onClick={() => setPopDismissed(true)}>&times;</button>
-          <h4>Let&apos;s find your home.</h4>
+          <h4>{ctaTitle ?? "Let's find your home."}</h4>
           <p>Tell us what you are looking for,<br />or talk to us directly.</p>
-          <a className={styles.pbtn} href="#contact">Fill in the form<span className={styles.pnote}>We reply within 24 hours</span></a>
+          <a className={styles.pbtn} href={formHref}>Fill in the form<span className={styles.pnote}>We reply within 24 hours</span></a>
           <a className={`${styles.pbtn} ${styles.pbtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call</a>
         </div>
       ) : null}

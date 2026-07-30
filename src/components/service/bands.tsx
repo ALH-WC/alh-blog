@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { FORM_INTRO, INTAKE_URL, REVIEWS } from '../../lib/renting';
 import styles from '../../app/renting/renting.module.css';
+import { useLeadSubmit } from './leadForm';
 
 // The reusable service-page bands from the design system. Every band renders
 // with the renting page's stylesheet so all pages share one implementation of
@@ -174,6 +175,7 @@ export function ContactBand({ defaultInterest, title, intro, submitLabel }: {
 }) {
   const [interest, setInterest] = useState(defaultInterest);
   const [checks, setChecks] = useState<[boolean, boolean]>([false, false]);
+  const { status, submit } = useLeadSubmit();
 
   return (
     <div className={styles.formwrap} id="contact">
@@ -187,10 +189,17 @@ export function ContactBand({ defaultInterest, title, intro, submitLabel }: {
           <p>Mon - Fri: 9 AM - 5 PM CEST</p>
         </div>
       </div>
-      <div className={styles.frm}>
+      <form
+        className={styles.frm}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!checks[1]) return;
+          void submit(e.currentTarget, { interest, newsletter: checks[0] });
+        }}
+      >
         <label>I am interested in</label>
         <div className={styles.opts}>
-          {['Renting', 'Buying', 'Letting', 'B2B'].map((o) => (
+          {['Renting', 'Buying', 'Letting', 'Corporate'].map((o) => (
             <button
               type="button"
               key={o}
@@ -200,25 +209,35 @@ export function ContactBand({ defaultInterest, title, intro, submitLabel }: {
           ))}
         </div>
         <div className={styles.frow}>
-          <div><label>Full name</label><input className={styles.in} placeholder="Your first name" /></div>
-          <div><label>Last name</label><input className={styles.in} placeholder="Your last name" /></div>
+          <div><label>Full name</label><input className={styles.in} name="firstName" required placeholder="Your first name" /></div>
+          <div><label>Last name</label><input className={styles.in} name="lastName" placeholder="Your last name" /></div>
         </div>
         <div className={styles.frow}>
-          <div><label>Email</label><input className={styles.in} type="email" placeholder="you@email.com" /></div>
-          <div><label>Phone number</label><input className={styles.in} placeholder="+1 ..." /></div>
+          <div><label>Email</label><input className={styles.in} name="email" type="email" required placeholder="you@email.com" /></div>
+          <div><label>Phone number</label><input className={styles.in} name="phone" placeholder="+1 ..." /></div>
         </div>
         <label>Maximum monthly rent I can pay</label>
-        <input className={styles.in} placeholder="€2200 or more" />
+        <input className={styles.in} name="budget" placeholder="€2200 or more" />
         <div className={styles.help}>We can only help with rental budgets starting at €2200. <Link href="/renting#gate">See our requirements</Link></div>
         <label>A bit about yourself and what you are looking for</label>
-        <input className={styles.in} placeholder="Tell us about your move" />
+        <input className={styles.in} name="message" placeholder="Tell us about your move" />
         {['Subscribe to our Amsterdam newsletter', 'I agree to the privacy policy'].map((t, i) => (
           <div className={styles.chk} key={t} onClick={() => setChecks((c) => (i === 0 ? [!c[0], c[1]] : [c[0], !c[1]]))}>
             <span className={`${styles.box}${checks[i] ? ` ${styles.boxOn}` : ''}`} />{t}
           </div>
         ))}
-        <button className={styles.submit} type="button">{submitLabel ?? 'Submit form'}</button>
-      </div>
+        {status === 'sent' ? (
+          <p className={styles.sentNote}>Thank you. We will get back to you within 24 hours.</p>
+        ) : (
+          <>
+            <button className={styles.submit} type="submit" disabled={status === 'sending'}>
+              {status === 'sending' ? 'Sending...' : (submitLabel ?? 'Submit form')}
+            </button>
+            {!checks[1] ? <p className={styles.frmHint}>Please agree to the privacy policy to send the form.</p> : null}
+            {status === 'error' ? <p className={styles.frmHint}>Something went wrong. Please try again, or email us directly.</p> : null}
+          </>
+        )}
+      </form>
     </div>
   );
 }
