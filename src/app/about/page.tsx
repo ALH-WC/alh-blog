@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ServiceShell } from '../../components/service/ServiceShell';
-import { StatsBand, GuideBand, ServiceTiles } from '../../components/service/bands';
+import { GuideBand, ServiceTiles } from '../../components/service/bands';
 import { INTAKE_URL, THIS_IS_US_TXT } from '../../lib/renting';
 import styles from '../renting/renting.module.css';
 import { shareMeta } from '../../lib/og';
@@ -52,7 +52,6 @@ export default function AboutPage() {
         </a>
       </div>
 
-      <StatsBand />
 
       {/* FOREIGNERS OURSELVES (live about section, verbatim) */}
       <div className={`${styles.cells} ${styles.c2} ${styles.thisus}`}>
