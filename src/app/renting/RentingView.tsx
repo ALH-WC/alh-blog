@@ -3,14 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { SiteFooter } from '../../components/SiteFooter';
-import { HeroStats } from '../../components/service/bands';
 import {
-  ABROAD_TXT, HERE_TXT, THIS_IS_US_TXT,
+  ABROAD_TXT, HERE_TXT,
   FEE_P1, FEE_P2, FEE_P3, DEP_TXT, BAL_TXT, NORES_TXT, FORM_INTRO,
   INTAKE_URL, STEPS, REVIEWS, FAQS,
 } from '../../lib/renting';
 import styles from './renting.module.css';
 
+// "About us" is still a section on the live Framer homepage; everything else
+// is served by this app.
 const NAV_LINKS = [
   { href: '/renting', label: 'Renting', current: true, internal: true },
   { href: '/buying', label: 'Buying', internal: true },
@@ -20,6 +21,14 @@ const NAV_LINKS = [
   { href: '/blog', label: 'Our Amsterdam guide', internal: true },
 ];
 
+// The three review cells from the approved "ALH Renting 2c" mockup.
+const RENTING_REVIEWS = ['Stephanie', 'Chad', 'Bene'];
+
+// The page body follows the approved page mockup one-to-one: positioning,
+// gate (right cell on sand), photo band, abroad/here, process rows, fee
+// narrative + three cards, three review cells, FAQ rows (one on sand),
+// contact split, other services. The nav, hero, stats pile, drawer,
+// pop-up, and footer are the approved designs and stay untouched.
 export default function RentingView() {
   const [navHide, setNavHide] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,17 +38,12 @@ export default function RentingView() {
   const [interest, setInterest] = useState('Renting');
   const [checks, setChecks] = useState<[boolean, boolean]>([false, false]);
   const lastY = useRef(0);
-  const carRef = useRef<HTMLDivElement>(null);
 
   // Nav: hide on scroll down, glide back solid on scroll up; pop-up appears
   // after a quarter of the page.
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      // From the top, scrolling down simply hides the transparent nav; the
-      // solid (light bg, dark items) design appears only when the nav is
-      // revealed by scrolling up, and the top restores the transparent
-      // original.
       if (y <= 80) {
         setNavSolid(false);
         setNavHide(false);
@@ -62,32 +66,9 @@ export default function RentingView() {
     };
   }, []);
 
-  // Endless review carousel: doubled track, wrap inside the middle band.
-  useEffect(() => {
-    const car = carRef.current;
-    if (!car) return;
-    const wrap = () => {
-      const half = car.scrollWidth / 2;
-      if (!half) return;
-      if (car.scrollLeft > half * 1.5) car.scrollLeft -= half;
-      else if (car.scrollLeft < half * 0.5) car.scrollLeft += half;
-    };
-    const raf = requestAnimationFrame(() => { car.scrollLeft = car.scrollWidth / 2; });
-    car.addEventListener('scroll', wrap, { passive: true });
-    const iv = setInterval(wrap, 500);
-    return () => { cancelAnimationFrame(raf); car.removeEventListener('scroll', wrap); clearInterval(iv); };
-  }, []);
-
-  const spin = (dir: number) => carRef.current?.scrollBy({ left: 452 * dir, behavior: 'smooth' });
-
-  const revCards = [...REVIEWS, ...REVIEWS].map((r, i) => (
-    <div className={styles.rev} key={i} aria-hidden={i >= REVIEWS.length}>
-      <q>{r.quote}</q>
-      <p>{r.body}</p>
-      <div className={styles.rtags}>{r.tags.map((t) => <span key={t}>{t}</span>)}</div>
-      <div className={styles.who}><b>{r.who}</b><span>{r.date}</span></div>
-    </div>
-  ));
+  const cells = RENTING_REVIEWS
+    .map((n) => REVIEWS.find((r) => r.who.includes(n)))
+    .filter((r): r is (typeof REVIEWS)[number] => Boolean(r));
 
   return (
     <div className={styles.page}>
@@ -142,7 +123,7 @@ export default function RentingView() {
         </div>
       ) : null}
 
-      {/* HERO */}
+      {/* HERO (approved, untouched) */}
       <div className={styles.hero}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/renting/hero-canal.jpg" alt="Canal houses in Amsterdam daylight" />
@@ -150,136 +131,218 @@ export default function RentingView() {
           <h1>Looking for a rental home<br />in Amsterdam?<br />We will find it for you.</h1>
           <p>We help fellow expats<br />rent, let, and buy their home<br />in Amsterdam.</p>
         </div>
-        <HeroStats />
+        <div className={styles.heroStats}>
+          {[['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']].map(([n, l]) => (
+            <div className={styles.cellS} key={l}><div className={styles.hsN}>{n}</div><div className={styles.hsL}>{l}</div></div>
+          ))}
+        </div>
       </div>
 
-      {/* TAG BAND */}
-      <div className={styles.tagband}>
-        <h2>Amsterdam&apos;s boutique housing agency,<br />run by local expats.</h2>
-        <p>We have been in your shoes, know what you are looking for,<br />{' '}and simply treat you the way we want to be treated.</p>
-        <a className={styles.tlink} href={INTAKE_URL} target="_blank" rel="noreferrer">
-          Schedule a free video intake call <span className={styles.ar}>&rarr;</span>
-        </a>
+      {/* POSITIONING */}
+      <div className={styles.qIntro} style={{ paddingBottom: 170 }}>
+        <span className={styles.eyebrow}>Renting in Amsterdam</span>
+        <h2 className={`${styles.qT} ${styles.qTBig}`}>Amsterdam&apos;s boutique housing agency, run by local expats.</h2>
+        <p className={styles.qDek} style={{ maxWidth: '52ch', fontSize: 17 }}>We have been in your shoes, we know what you are looking for, and we simply treat you the way we want to be treated. We search, view, and negotiate for you, until the keys are in your hand.</p>
+        <a className={styles.qLink} href={INTAKE_URL} target="_blank" rel="noreferrer" style={{ marginTop: 20 }}>Schedule a free video call <span className={styles.ar}>&rarr;</span></a>
       </div>
 
       {/* GATE */}
       <span id="gate" />
-      <div className={`${styles.shead} ${styles.sheadWide}`}>
+      <div className={styles.qIntro} style={{ borderTop: '1px solid #EAE7E1', paddingTop: 100 }}>
         <span className={styles.eyebrow}>Are you in the right place?</span>
-        <h2 className={`${styles.secT} ${styles.hl}`}>Here is who we work with</h2>
-        <p>We take a limited number of clients at a time so we can give everyone our full attention.<br />If the below fits, we would love to hear from you.</p>
+        <h2 className={styles.qT}>Here is who we work with</h2>
+        <p className={styles.qDek}>We take a limited number of clients at a time so we can give everyone our full attention. If the below fits, we would love to hear from you.</p>
       </div>
-      <div className={`${styles.cells} ${styles.c2}`} style={{ borderTop: '1px solid var(--hairline)' }}>
-        <div className={styles.cell}>
-          <span className={styles.eyebrow} style={{ marginBottom: 20 }}>We can help you</span>
-          {['Household income €80.000 and up', 'Rental budget €2200 and up', 'Singles, couples, and families', 'Rentals for 12+ months'].map((t) => (
-            <div className={styles.qrow} key={t}><span className={styles.m}>+</span>{t}</div>
-          ))}
+      <div className={styles.qCells2}>
+        <div className={styles.qCell}>
+          <span className={styles.qNum} style={{ textTransform: 'uppercase' }}>We can help you</span>
+          <h3 className={styles.qCellT}>A focused search, with our full attention</h3>
+          <div>
+            {['Household income €80.000 and up', 'Rental budget €2200 and up', 'Singles, couples, and families', 'Rentals for 12 months or longer'].map((t) => (
+              <div className={styles.qLine} key={t}>{t}</div>
+            ))}
+          </div>
         </div>
-        <div className={styles.cell}>
-          <span className={styles.eyebrow} style={{ marginBottom: 20, color: '#B0A899' }}>Outside our scope</span>
-          {['Household income below €80.000', 'Rental budget below €2200', 'Students & guarantors', 'Short term rentals'].map((t) => (
-            <div className={styles.qrow} key={t}><span className={styles.m}>&minus;</span>{t}</div>
-          ))}
+        <div className={`${styles.qCell} ${styles.qCellSand}`}>
+          <span className={styles.qNum} style={{ textTransform: 'uppercase' }}>Outside our scope</span>
+          <h3 className={styles.qCellT}>Where we are not the right agency</h3>
+          <div>
+            {['Household income below €80.000', 'Rental budget below €2200', 'Students and guarantors', 'Short term rentals'].map((t) => (
+              <div className={styles.qLine} key={t}>{t}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* PHOTO BAND */}
+      <div className={styles.qBand} style={{ gridTemplateColumns: '1.4fr 1fr', gridAutoRows: '460px' }}>
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/renting/hero-canal.jpg" alt="Canal houses in Amsterdam daylight" />
+          <div className={styles.qCap}>Canal houses in daylight</div>
+        </div>
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/buying/hero.webp" alt="A warm Amsterdam apartment living room" />
+          <div className={styles.qCap}>A warm Amsterdam living room</div>
         </div>
       </div>
 
       {/* ABROAD OR HERE */}
-      <div className={styles.shead}>
+      <div className={styles.qIntro}>
         <span className={styles.eyebrow}>Abroad or already here</span>
-        <h2 className={`${styles.secT} ${styles.hl}`}>We can help you, regardless of where you are</h2>
+        <h2 className={styles.qT}>We can help you, wherever you are right now</h2>
       </div>
-      <div className={`${styles.cells} ${styles.c2}`} style={{ borderTop: '1px solid var(--hairline)' }}>
-        <div className={styles.cell}><h3 className={styles.abroadH}>You are still abroad</h3><p className={styles.abroadP}>{ABROAD_TXT}</p></div>
-        <div className={styles.cell}><h3 className={styles.abroadH}>You are already here</h3><p className={styles.abroadP}>{HERE_TXT}</p></div>
+      <div className={styles.qCells2}>
+        <div className={styles.qCell}>
+          <span className={styles.qNum} style={{ textTransform: 'uppercase' }}>Still abroad</span>
+          <h3 className={styles.qCellT}>You are still in another country</h3>
+          <p>{ABROAD_TXT}</p>
+          <div className={styles.qNoteBr}>No Dutch bank account, BSN, or local documents needed to start.</div>
+        </div>
+        <div className={styles.qCell}>
+          <span className={styles.qNum} style={{ textTransform: 'uppercase' }}>Already here</span>
+          <h3 className={styles.qCellT}>You are already in Amsterdam</h3>
+          <p>{HERE_TXT}</p>
+          <div className={styles.qNoteBr}>We attend in person, or by video if your schedule does not allow it.</div>
+        </div>
       </div>
 
       {/* PROCESS */}
-      <div className={styles.two} id="how" style={{ marginTop: 104 }}>
-        <div className={styles.panel}>
+      <div className={styles.qProcess} id="how" style={{ borderTop: 0 }}>
+        <div className={styles.qProcIntro}>
           <span className={styles.eyebrow}>How it works</span>
-          <h2 className={styles.secT}>What you can expect</h2>
-          <p>We are honest about the market, realistic about timelines. No utopias. Every step ends in something concrete.</p>
+          <h2 className={styles.qT}>What you can expect</h2>
+          <p>We are honest about the market and realistic about timelines. No utopias. Every step ends in something concrete.</p>
         </div>
         <div>
           {STEPS.map((s) => (
-            <div className={styles.prow} key={s.n}>
-              <span className={styles.num}>{s.n}</span>
-              <div>
-                <h3>{s.title}</h3>
+            <div className={styles.qStep} key={s.n}>
+              <span className={styles.qStepN}>{s.n}</span>
+              <div className={styles.qStepIn}>
+                <span className={styles.qStepT}>{s.title}</span>
                 <p>{s.body}</p>
-                {s.note ? <span className={styles.note}>{s.note}</span> : null}
-                {s.formLink ? <a className={styles.tlink} href="#contact">Go to the form <span className={styles.ar}>&rarr;</span></a> : null}
+                {s.formLink ? <a className={`${styles.qLink} ${styles.qLinkSm}`} href="#contact" style={{ marginTop: 4 }}>Go to the form <span className={styles.ar}>&rarr;</span></a> : null}
+                {s.note ? <span className={styles.qStepNote}>{s.note}</span> : null}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* THIS IS US */}
-      <div className={`${styles.cells} ${styles.c2} ${styles.thisus}`}>
-        <div className={styles.cell} style={{ padding: '76px 56px' }}>
-          <span className={styles.eyebrow} style={{ marginBottom: 20 }}>This is us</span>
-          <h2 className={`${styles.secT} ${styles.hl}`}>We have been in your shoes.<br />That is why we do this.</h2>
-          <p style={{ marginTop: 20, fontSize: 16, maxWidth: '60ch' }}>{THIS_IS_US_TXT}</p>
-          <Link className={styles.tlink} href="/about" style={{ marginTop: 20 }}>More about us <span className={styles.ar}>&rarr;</span></Link>
-        </div>
-        <div className={styles.cell} style={{ padding: '76px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <p className={styles.thisusQuote}>Eight years and 250+ successful searches later, every client still works with us personally.</p>
-        </div>
-      </div>
-
-      {/* REVIEWS */}
-      <div className={`${styles.shead} ${styles.sheadWide}`} id="reviews">
-        <span className={styles.eyebrow}>Google reviews</span>
-        <h2 className={`${styles.secT} ${styles.hl}`}>Don&apos;t just take our word for it</h2>
-        <p>We believe that the true measure of our success lies in the satisfaction of our clients.<br />85% of our business comes from referrals.</p>
-      </div>
-      <div style={{ padding: '0 var(--gutter) 40px' }}>
-        <Link className={styles.tlink} href="/reviews">Read all our reviews <span className={styles.ar}>&rarr;</span></Link>
-      </div>
-      <div className={styles.carwrap}>
-        <div className={styles.carbtns}>
-          <button type="button" onClick={() => spin(-1)} aria-label="Previous reviews">&larr;</button>
-          <button type="button" onClick={() => spin(1)} aria-label="Next reviews">&rarr;</button>
-        </div>
-        <div className={styles.revCells} ref={carRef}>{revCards}</div>
-      </div>
-
-      {/* CLIENT LOGOS */}
-      <div className={styles.logoband}>
-        <span className={styles.lb}>Our clients work at</span>
-        <div className={styles.marq}><div className={styles.mtrack}>
-          {Array.from({ length: 12 }).map((_, i) => <div className={styles.ph} key={i}>Logo</div>)}
-        </div></div>
-      </div>
-
       {/* FEE */}
-      <div className={styles.feewrap}>
-        <div className={styles.feeleft}>
+      <div className={styles.qFee}>
+        <div className={styles.qFeeL}>
           <span className={styles.eyebrow}>What you pay</span>
-          <h2>Our fee</h2>
-          <div className={styles.feeAmount}>One month&apos;s rent + 21% VAT</div>
+          <h2 className={styles.qFeeTitle}>Our fee</h2>
+          <div className={styles.qFeePrice}>One month&apos;s rent + 21% VAT</div>
           <p>{FEE_P1}</p>
-          <p style={{ marginTop: 10 }}>{FEE_P2}</p>
-          <div className={styles.feeRule} />
-          <p className={styles.fitalic}>{FEE_P3}</p>
+          <p>{FEE_P2}</p>
+          <p className={styles.qFeeQuote}>{FEE_P3}</p>
         </div>
-        <div className={styles.feeright}>
-          {[['To get started', 'Deposit', DEP_TXT], ['When you sign', 'Remaining balance', BAL_TXT], ['No home found?', 'No further payment', NORES_TXT]].map(([e, t, b]) => (
-            <div className={styles.feecell} key={t}><span className={styles.eyebrow}>{e}</span><h3>{t}</h3><p>{b}</p></div>
+        <div className={styles.qFeeR}>
+          {[['To get started', 'Deposit', DEP_TXT, false], ['When you sign', 'Remaining balance', BAL_TXT, true], ['No home found?', 'No further payment', NORES_TXT, false]].map(([e, t, b, sand]) => (
+            <div className={`${styles.qCard}${sand ? ` ${styles.qCardSand}` : ''}`} key={t as string}>
+              <span className={styles.qNum} style={{ textTransform: 'uppercase' }}>{e}</span>
+              <h3 className={styles.qCardT}>{t}</h3>
+              <p>{b}</p>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* OTHER SERVICES */}
-      <div className={styles.shead}>
-        <span className={styles.eyebrow}>Services</span>
-        <h2 className={`${styles.secT} ${styles.hl}`}>Explore our other services</h2>
+      {/* REVIEWS */}
+      <div className={styles.qIntroRow} id="reviews">
+        <div className={styles.qIntroTxt}>
+          <span className={styles.eyebrow}>Google reviews</span>
+          <h2 className={styles.qT}>Do not just take our word for it</h2>
+          <p className={styles.qDek}>The true measure of our work is what our clients say afterwards.<br />85% of our business comes from referrals.</p>
+        </div>
+        <Link className={`${styles.qLink} ${styles.qLinkSm}`} href="/reviews">Read all our reviews <span className={styles.ar}>&rarr;</span></Link>
       </div>
-      <div className={styles.tiles}>
+      <div className={styles.rgrid} style={{ borderTop: '1px solid #EAE7E1', borderBottom: '1px solid #EAE7E1' }}>
+        {cells.map((r) => (
+          <div className={styles.rev} key={r.who} style={{ border: 0, borderRight: '1px solid #EAE7E1' }}>
+            <q>{r.quote}</q>
+            <p>{r.body}</p>
+            <div className={styles.rtags}>{r.tags.map((t) => <span key={t}>{t}</span>)}</div>
+            <div className={styles.who}><b>{r.who}</b><span>{r.date}</span></div>
+          </div>
+        ))}
+      </div>
+
+      {/* FAQ */}
+      <div className={styles.qIntro}>
+        <span className={styles.eyebrow}>FAQ</span>
+        <h2 className={styles.qT}>Frequently asked questions</h2>
+      </div>
+      <div className={styles.qFaq}>
+        {FAQS.map((f) => (
+          <div className={`${styles.qFaqRow}${f.q.includes('still abroad') ? ` ${styles.qFaqRowSand}` : ''}`} key={f.q}>
+            <h3 className={styles.qFaqQ}>{f.q}</h3>
+            {f.todo
+              ? <p className={styles.todo}>Note for ALH: the live site shows placeholder template text here. This answer needs real copy before launch.</p>
+              : <p>{f.a}</p>}
+          </div>
+        ))}
+      </div>
+
+      {/* CONTACT */}
+      <div className={styles.qContact} id="contact" style={{ borderTop: 0 }}>
+        <div className={styles.qConL}>
+          <span className={styles.eyebrow}>Get in touch</span>
+          <h2 className={styles.qT}>Your home in Amsterdam<br />starts here</h2>
+          <p>{FORM_INTRO}</p>
+          <div className={styles.qConLines}>
+            <a href="mailto:home@amsterdamlifehomes.com">home@amsterdamlifehomes.com</a>
+            <a href="tel:+31613749944">+31 6 1374 9944</a>
+            Mon to Fri, 9 to 5 CEST
+          </div>
+        </div>
+        <div className={styles.qConR}>
+          <div className={styles.frm} style={{ padding: 0 }}>
+            <label>I am interested in</label>
+            <div className={styles.opts}>
+              {['Renting', 'Buying', 'Letting', 'B2B'].map((o) => (
+                <button
+                  type="button"
+                  key={o}
+                  className={`${styles.opt}${interest === o ? ` ${styles.optSel}` : ''}`}
+                  onClick={() => setInterest(o)}
+                >{o}</button>
+              ))}
+            </div>
+            <div className={styles.frow}>
+              <div><label>Full name</label><input className={styles.in} placeholder="Your first name" /></div>
+              <div><label>Last name</label><input className={styles.in} placeholder="Your last name" /></div>
+            </div>
+            <div className={styles.frow}>
+              <div><label>Email</label><input className={styles.in} type="email" placeholder="you@email.com" /></div>
+              <div><label>Phone number</label><input className={styles.in} placeholder="+1 ..." /></div>
+            </div>
+            <label>Maximum monthly rent I can pay</label>
+            <input className={styles.in} placeholder="€2200 or more" />
+            <div className={styles.help}>We can only help with rental budgets starting at €2200. <a href="#gate">See our requirements</a></div>
+            <label>A bit about yourself and what you are looking for</label>
+            <input className={styles.in} placeholder="Tell us about your move" />
+            {['Subscribe to our Amsterdam newsletter', 'I agree to the privacy policy'].map((t, i) => (
+              <div className={styles.chk} key={t} onClick={() => setChecks((c) => (i === 0 ? [!c[0], c[1]] : [c[0], !c[1]]))}>
+                <span className={`${styles.box}${checks[i] ? ` ${styles.boxOn}` : ''}`} />{t}
+              </div>
+            ))}
+            <button className={styles.submit} type="button">Submit form</button>
+          </div>
+        </div>
+      </div>
+
+      {/* OTHER SERVICES */}
+      <div className={styles.qIntro}>
+        <span className={styles.eyebrow}>Services</span>
+        <h2 className={styles.qT}>Explore our other services</h2>
+      </div>
+      <div className={styles.tiles} style={{ marginBottom: 150 }}>
         {[
-          ['/renting/hero-canal.jpg', 'Canal houses in Amsterdam', 'Thinking about buying instead?', '/buying'],
+          ['/buying/hero.webp', 'A warm Amsterdam apartment living room', 'Thinking about buying instead?', '/buying'],
           ['/renting/tile-letting.jpg', 'Bicycles on a canal bridge', 'Looking to let your property?', '/letting'],
           ['/renting/tile-corporate.jpg', 'A leafy Amsterdam lane', 'Relocating employees to Amsterdam?', '/b2b'],
         ].map(([img, alt, cap, href]) => (
@@ -291,83 +354,9 @@ export default function RentingView() {
         ))}
       </div>
 
-      {/* GUIDE BAND */}
-      <Link className={styles.guideband} href="/blog">
-        <span className={styles.eyebrow} style={{ marginBottom: 12 }}>Learn about</span>
-        <h3>Our Amsterdam guide&nbsp;<span className={styles.gar}>&#8599;</span></h3>
-        <p>Anything you need to know when moving here&nbsp;<span className={`${styles.gar} ${styles.garSub}`}>&#8599;</span></p>
-        <span className={styles.gcats}>
-          <span className={styles.glabel}>Read about:</span>
-          <span className={styles.gwin}><span className={styles.gin2}>Immigration &middot; Housing &middot; Neighborhoods &middot; Food &amp; Drinks &middot; Finance &amp; Work &middot; Life &amp; Culture</span></span>
-        </span>
-      </Link>
-
-      {/* FAQ */}
-      <div className={styles.shead}>
-        <span className={styles.eyebrow}>FAQ</span>
-        <h2 className={`${styles.secT} ${styles.hl}`}>Frequently asked questions</h2>
-      </div>
-      <div className={styles.faqwrap} style={{ borderTop: '1px solid var(--hairline)' }}>
-        {FAQS.map((f) => (
-          <div className={styles.faqrow} key={f.q}>
-            <h3>{f.q}</h3>
-            {f.todo
-              ? <p className={styles.todo}>Note for ALH: the live site shows placeholder template text here. This answer needs real copy before launch.</p>
-              : <p>{f.a}</p>}
-          </div>
-        ))}
-      </div>
-      <div className={styles.faqClose} />
-
-      {/* CONTACT FORM */}
-      <div className={styles.formwrap} id="contact">
-        <div className={styles.panel}>
-          <span className={styles.eyebrow}>Get in touch</span>
-          <h2 className={`${styles.secT} ${styles.formTitle}`}>Your home in Amsterdam<br />starts here</h2>
-          <p style={{ marginTop: 20, fontSize: 16, maxWidth: 400 }}>{FORM_INTRO}</p>
-          <div className={styles.panelContact}>
-            <a href="mailto:home@amsterdamlifehomes.com">home@amsterdamlifehomes.com</a>
-            <a href="tel:+31613749944">+31 6 1374 9944</a>
-            <p>Mon - Fri: 9 AM - 5 PM CEST</p>
-          </div>
-        </div>
-        <div className={styles.frm}>
-          <label>I am interested in</label>
-          <div className={styles.opts}>
-            {['Renting', 'Buying', 'Letting', 'B2B'].map((o) => (
-              <button
-                type="button"
-                key={o}
-                className={`${styles.opt}${interest === o ? ` ${styles.optSel}` : ''}`}
-                onClick={() => setInterest(o)}
-              >{o}</button>
-            ))}
-          </div>
-          <div className={styles.frow}>
-            <div><label>Full name</label><input className={styles.in} placeholder="Your first name" /></div>
-            <div><label>Last name</label><input className={styles.in} placeholder="Your last name" /></div>
-          </div>
-          <div className={styles.frow}>
-            <div><label>Email</label><input className={styles.in} type="email" placeholder="you@email.com" /></div>
-            <div><label>Phone number</label><input className={styles.in} placeholder="+1 ..." /></div>
-          </div>
-          <label>Maximum monthly rent I can pay</label>
-          <input className={styles.in} placeholder="€2200 or more" />
-          <div className={styles.help}>We can only help with rental budgets starting at €2200. <a href="#gate">See our requirements</a></div>
-          <label>A bit about yourself and what you are looking for</label>
-          <input className={styles.in} placeholder="Tell us about your move" />
-          {['Subscribe to our Amsterdam newsletter', 'I agree to the privacy policy'].map((t, i) => (
-            <div className={styles.chk} key={t} onClick={() => setChecks((c) => (i === 0 ? [!c[0], c[1]] : [c[0], !c[1]]))}>
-              <span className={`${styles.box}${checks[i] ? ` ${styles.boxOn}` : ''}`} />{t}
-            </div>
-          ))}
-          <button className={styles.submit} type="button">Submit form</button>
-        </div>
-      </div>
-
       <SiteFooter />
 
-      {/* CTA POP-UP */}
+      {/* CTA POP-UP (approved, untouched) */}
       {!popDismissed ? (
         <div className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}`} aria-hidden={!popShown}>
           <button className={styles.x} type="button" aria-label="Close" onClick={() => setPopDismissed(true)}>&times;</button>
