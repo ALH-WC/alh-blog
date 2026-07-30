@@ -2382,3 +2382,670 @@
     font-size: 25px;
   }
 }
+
+/* ============================================================
+   QUIET STRUCTURE — the page anatomy from the approved mockups
+   "ALH Homepage 2c" and "ALH Renting 2c". Module air 170px,
+   full-bleed grids joined by hairlines, 48px text gutter.
+   ============================================================ */
+
+.qIntro {
+  padding: 170px 48px 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.qIntroRow {
+  padding: 170px 48px 52px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 60px;
+}
+.qIntroTxt {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 56ch;
+}
+.qT {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1.1;
+  color: #241d16;
+  text-transform: uppercase;
+  max-width: 30ch;
+}
+.qDek {
+  font-size: 16.5px;
+  line-height: 1.8;
+  max-width: 56ch;
+}
+.qTBig {
+  font-size: 56px;
+  max-width: 26ch;
+}
+.qLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #241d16;
+  width: fit-content;
+  white-space: nowrap;
+}
+.qLink .ar {
+  color: #8a7250;
+  font-size: 19px;
+  transition: transform 0.25s ease;
+}
+.qLink:hover .ar {
+  transform: translateX(4px);
+}
+.qLinkSec {
+  color: #8a7250;
+  font-weight: 400;
+}
+.qLinkSm {
+  font-size: 15.5px;
+  font-weight: 500;
+}
+
+/* about split: text left, full-bleed photo right */
+.qSplit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.qSplitTxt {
+  padding: 170px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.qSplitTxt p {
+  font-size: 17px;
+  line-height: 1.8;
+  max-width: 44ch;
+  margin: 0;
+}
+.qSplitTitle {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 1.05;
+  color: #241d16;
+  text-transform: uppercase;
+}
+.qPhoto {
+  position: relative;
+  min-height: 720px;
+  overflow: hidden;
+}
+.qPhoto img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.qCap {
+  position: absolute;
+  left: 32px;
+  bottom: 28px;
+  right: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--display);
+  font-size: 24px;
+  color: #ffffff;
+  text-shadow: 0 1px 14px rgba(20, 14, 8, 0.45);
+}
+
+/* numbered service tiles, fourth on sand */
+.qTiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid #eae7e1;
+  border-bottom: 1px solid #eae7e1;
+}
+.qTile {
+  padding: 40px 40px 34px;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #eae7e1;
+}
+.qTile:last-child {
+  border-right: 0;
+}
+.qTileSand {
+  background: #eae2d3;
+}
+.qNum {
+  font-size: 12.5px;
+  letter-spacing: 0.2em;
+  color: #8a7250;
+}
+.qTileBtm {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.qTileName {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.1;
+  color: #241d16;
+}
+.qTileP {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.qTileGo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 500;
+  color: #241d16;
+}
+.qTileGo .ar {
+  font-size: 18px;
+  transition: transform 0.25s ease;
+}
+.qTile:hover .qTileGo .ar {
+  transform: translateX(4px);
+}
+
+/* full-bleed photo bands */
+.qBand {
+  display: grid;
+  grid-auto-rows: 420px;
+}
+.qBand > * {
+  position: relative;
+  overflow: hidden;
+}
+.qBand img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* two-cell comparison rows (gate, abroad/here) */
+.qCells2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid #eae7e1;
+  border-bottom: 1px solid #eae7e1;
+}
+.qCell {
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  border-right: 1px solid #eae7e1;
+}
+.qCell:last-child {
+  border-right: 0;
+}
+.qCellSand {
+  background: #eae2d3;
+}
+.qCellT {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.15;
+  color: #241d16;
+}
+.qCell p {
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0;
+}
+.qLine {
+  border-top: 1px solid #eae7e1;
+  padding-top: 14px;
+  font-size: 16px;
+  color: #4a443d;
+}
+.qCellSand .qLine {
+  border-top-color: #d9cfba;
+  color: #6e6552;
+}
+.qNoteBr {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #8a7250;
+}
+
+/* process: intro panel left, numbered rows right */
+.qProcess {
+  display: grid;
+  grid-template-columns: 1fr 1.9fr;
+  border-top: 1px solid #eae7e1;
+  border-bottom: 1px solid #eae7e1;
+}
+.qProcIntro {
+  border-right: 1px solid #eae7e1;
+  padding: 88px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.qProcIntro .qT {
+  font-size: 42px;
+}
+.qProcIntro p {
+  font-size: 15.5px;
+  line-height: 1.8;
+  margin: 0;
+}
+.qStep {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 24px;
+  padding: 40px 48px 40px 40px;
+  border-bottom: 1px solid #eae7e1;
+}
+.qStep:last-child {
+  border-bottom: 0;
+}
+.qStepN {
+  font-family: var(--display);
+  font-size: 22px;
+  color: #8a7250;
+}
+.qStepIn {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.qStepT {
+  font-size: 19px;
+  font-weight: 600;
+  color: #241d16;
+}
+.qStepIn p {
+  font-size: 15.5px;
+  line-height: 1.8;
+  margin: 0;
+}
+.qStepNote {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a7250;
+  margin-top: 4px;
+}
+
+/* fee: narrative left, three cards right */
+.qFee {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  border-bottom: 1px solid #eae7e1;
+}
+.qFeeL {
+  padding: 170px 64px 170px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.qFeeL p {
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0;
+}
+.qFeeTitle {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 1.05;
+  color: #241d16;
+}
+.qFeePrice {
+  font-family: var(--display);
+  font-size: 30px;
+  color: #8a7250;
+}
+.qFeeQuote {
+  border-top: 1px solid #eae7e1;
+  padding-top: 26px;
+  font-style: italic;
+  color: #a39889;
+}
+.qFeeR {
+  padding: 170px 48px 170px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.qCard {
+  border: 1px solid #eae7e1;
+  padding: 34px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.qCardSand {
+  background: #eae2d3;
+  border-color: #e0d5bf;
+}
+.qCardSand p {
+  color: #6e6552;
+}
+.qCardT {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 28px;
+  color: #241d16;
+}
+.qCard p {
+  font-size: 15.5px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* FAQ rows: question left, answer right, one row on sand */
+.qFaq {
+  border-top: 1px solid #eae7e1;
+}
+.qFaqRow {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 64px;
+  padding: 40px 48px;
+  border-bottom: 1px solid #eae7e1;
+}
+.qFaqRowSand {
+  background: #eae2d3;
+}
+.qFaqRowSand p {
+  color: #6e6552;
+}
+.qFaqQ {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.25;
+  color: #241d16;
+}
+.qFaqRow p {
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* contact: intro left, form right */
+.qContact {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  border-top: 1px solid #eae7e1;
+  border-bottom: 1px solid #eae7e1;
+}
+.qConL {
+  border-right: 1px solid #eae7e1;
+  padding: 120px 64px 120px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.qConL .qT {
+  font-size: 48px;
+}
+.qConL p {
+  font-size: 16.5px;
+  line-height: 1.8;
+  margin: 0;
+}
+.qConLines {
+  font-size: 16px;
+  line-height: 1.9;
+  color: #4a443d;
+  margin-top: 14px;
+}
+.qConLines a {
+  display: block;
+  width: fit-content;
+  color: #4a443d;
+}
+.qConLines a:hover {
+  color: #241d16;
+}
+.qConR {
+  padding: 120px 48px 120px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+/* employers row */
+.qEmployers {
+  padding: 110px 48px;
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+.qEmployers .qWords {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+  font-size: 19px;
+  color: #4a443d;
+  flex-wrap: wrap;
+}
+
+/* closing invitation: left-aligned, two text CTAs */
+.qClose {
+  border-top: 1px solid #eae7e1;
+  padding: 190px 48px 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.qCloseT {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 62px;
+  line-height: 1.05;
+  color: #241d16;
+  text-transform: uppercase;
+  max-width: 20ch;
+}
+.qClose p {
+  font-size: 17px;
+  line-height: 1.8;
+  max-width: 52ch;
+  margin: 0;
+}
+.qCloseRow {
+  display: flex;
+  align-items: center;
+  gap: 44px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.qFine {
+  font-size: 13.5px;
+  color: #a39889;
+}
+
+@media (max-width: 1100px) {
+  .qIntro,
+  .qIntroRow {
+    padding: 110px 40px 44px;
+  }
+  .qTiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .qTile:nth-child(2n) {
+    border-right: 0;
+  }
+  .qTile:nth-child(-n + 2) {
+    border-bottom: 1px solid #eae7e1;
+  }
+  .qSplitTxt {
+    padding: 110px 40px;
+  }
+  .qFee,
+  .qContact,
+  .qProcess {
+    grid-template-columns: 1fr;
+  }
+  .qProcIntro,
+  .qConL {
+    border-right: 0;
+    border-bottom: 1px solid #eae7e1;
+  }
+  .qFeeL {
+    padding: 110px 40px 60px;
+  }
+  .qFeeR {
+    padding: 0 40px 110px;
+  }
+  .qConL {
+    padding: 90px 40px 60px;
+  }
+  .qConR {
+    padding: 60px 40px 90px;
+  }
+}
+@media (max-width: 700px) {
+  .qTBig {
+    font-size: 31px;
+  }
+  .qIntro,
+  .qIntroRow {
+    padding: 84px 22px 34px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+  .qT {
+    font-size: 29px;
+  }
+  .qSplit {
+    grid-template-columns: 1fr;
+  }
+  .qSplitTxt {
+    padding: 64px 22px;
+  }
+  .qSplitTitle {
+    font-size: 31px;
+  }
+  .qPhoto {
+    min-height: 360px;
+  }
+  .qCap {
+    font-size: 19px;
+    left: 22px;
+    bottom: 20px;
+    right: 22px;
+  }
+  .qTiles {
+    grid-template-columns: 1fr;
+  }
+  .qTile {
+    border-right: 0;
+    border-bottom: 1px solid #eae7e1;
+    min-height: 0;
+    padding: 30px 22px 28px;
+    gap: 22px;
+  }
+  .qTile:nth-child(-n + 2) {
+    border-bottom: 1px solid #eae7e1;
+  }
+  .qTile:last-child {
+    border-bottom: 0;
+  }
+  .qTileBtm {
+    gap: 16px;
+  }
+  .qTileName {
+    font-size: 27px;
+  }
+  .qBand {
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: 260px;
+  }
+  .qCells2 {
+    grid-template-columns: 1fr;
+  }
+  .qCell {
+    border-right: 0;
+    border-bottom: 1px solid #eae7e1;
+    padding: 34px 22px;
+  }
+  .qCell:last-child {
+    border-bottom: 0;
+  }
+  .qStep {
+    grid-template-columns: 44px 1fr;
+    padding: 28px 22px;
+    gap: 14px;
+  }
+  .qProcIntro {
+    padding: 50px 22px;
+  }
+  .qProcIntro .qT {
+    font-size: 27px;
+  }
+  .qFeeL {
+    padding: 64px 22px 40px;
+  }
+  .qFeeR {
+    padding: 0 22px 64px;
+  }
+  .qFeeTitle {
+    font-size: 36px;
+  }
+  .qFaqRow {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 28px 22px;
+  }
+  .qFaqQ {
+    font-size: 21px;
+  }
+  .qConL {
+    padding: 56px 22px 40px;
+  }
+  .qConR {
+    padding: 40px 22px 64px;
+  }
+  .qConL .qT {
+    font-size: 29px;
+  }
+  .qEmployers {
+    padding: 64px 22px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+  }
+  .qEmployers .qWords {
+    font-size: 16px;
+    gap: 14px 24px;
+    justify-content: flex-start;
+  }
+  .qClose {
+    padding: 90px 22px 100px;
+  }
+  .qCloseT {
+    font-size: 33px;
+  }
+  .qCloseRow {
+    gap: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
