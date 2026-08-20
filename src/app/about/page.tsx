@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   ...shareMeta('about'),
   title: 'About Us | Amsterdam Life Homes',
   description:
-    'Amsterdam Life Homes is a boutique housing agency run by local expats. Eight years and 250+ successful searches in Amsterdam, with every client working with us personally.',
+    'Amsterdam Life Homes is a boutique housing agency run by local expats. Nine years and 250+ successful searches in Amsterdam, with every client working with us personally.',
   // The Framer site stays canonical until the domain cutover.
   robots: { index: false, follow: true },
 };
@@ -77,7 +77,7 @@ export default function AboutPage() {
       {/* OUR STORY */}
       <div className={`${styles.cells} ${styles.c2} ${styles.thisus}`}>
         <div className={styles.cell} style={{ padding: '76px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <p className={styles.thisusQuote}>Eight years and 250+ successful searches later, every client still works with us personally.</p>
+          <p className={styles.thisusQuote}>Nine years and 250+ successful searches later, every client still works with us personally.</p>
         </div>
         <div className={styles.cell} style={{ padding: '76px 56px' }}>
           <span className={styles.eyebrow} style={{ marginBottom: 20 }}>Our story</span>

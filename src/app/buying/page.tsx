@@ -50,7 +50,7 @@ export default function BuyingPage() {
         <img src="/buying/hero.webp" alt="A warm Amsterdam apartment living room" />
         <div className={styles.heroIn}>
           <h1>Buying a home in Amsterdam?<br />We bid smarter.</h1>
-          <p>We are foreigners ourselves and have helped expats<br />find their homes here for over eight years.<br />We know the ins and outs and guide you every step.</p>
+          <p>We are foreigners ourselves and have helped expats<br />find their homes here for over nine years.<br />We know the ins and outs and guide you every step.</p>
         </div>
         <HeroStats />
       </div>

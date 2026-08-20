@@ -1,7 +1,7 @@
 // /buying page content, verbatim from the live Framer page (July 2026).
 // Obvious typos fixed: "county" -> "country" in the challenges dek and
 // "assistence" -> "assistance" in the second service card. Note for ALH: the
-// hero sub still says "over 7 years" while the verified stat is 8+ years.
+// hero sub still says "over 7 years" while the verified stat is 9+ years.
 
 export const HERO_SUB =
   "We know. The Amsterdam housing market is harsh. Very harsh. Especially when you're moving from another country and don't know where to start. But don't worry, you're not alone. We are foreigners ourselves and have been helping expats find their new home for over 7 years. We know the ins and outs and will guide you every step of the way. Our goal is to take away your stress and turn this into a fun and rewarding journey. We can't wait to start!";
