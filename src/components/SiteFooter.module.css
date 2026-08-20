@@ -124,7 +124,7 @@
 .subscribe .ar {
   display: inline-block;
   margin-left: 8px;
-  color: var(--gold);
+  color: #241d16;
   transition: transform 0.25s ease;
 }
 .subscribe:hover .ar {

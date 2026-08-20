@@ -69,7 +69,7 @@ const SCHEMA = {
 const TILES: [string, string, string, string][] = [
   ['01', 'Renting in Amsterdam', 'Properties go within hours. We get ahead of the market for you, whether you are still abroad or already here.', '/renting'],
   ['02', 'Letting your property', 'We match the right tenant to the right property from the start, and protect your investment while they live there.', '/letting'],
-  ['03', 'Buying in Amsterdam', 'An independent buying agent representing only you, through the bidding culture and the Dutch legal process.', '/buying'],
+  ['03', 'Buying in Amsterdam', 'Buying as an expat is complex. We represent only you, never the seller. We guide you through every step.', '/buying'],
   ['04', 'Relocating employees', 'We handle expat housing at scale for companies and relocation managers, with the same personal approach.', '/b2b'],
 ];
 
