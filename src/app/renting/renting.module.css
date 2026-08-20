@@ -1012,8 +1012,15 @@
 }
 .ctapop .x {
   position: absolute;
-  top: 10px;
+  top: 14px;
   right: 14px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
   background: none;
   border: 0;
   color: var(--on-dark-muted);
@@ -2455,11 +2462,12 @@
 }
 .qLinkSm {
   font-size: 15.5px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* about split: text left, full-bleed photo right */
 .qSplit {
+  border-top: 1px solid #eae7e1;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -2566,12 +2574,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 15.5px;
+  font-weight: 600;
   color: #241d16;
 }
 .qTileGo .ar {
   font-size: 18px;
+  color: #8a7250;
   transition: transform 0.25s ease;
 }
 .qTile:hover .qTileGo .ar {
@@ -3136,5 +3145,18 @@
   }
   .qGuideRow {
     gap: 18px;
+  }
+}
+
+/* the boutique statement title: line one never breaks on desktop */
+.qStmtT {
+  max-width: none;
+}
+@media (max-width: 900px) {
+  .qStmtT br {
+    display: none;
+  }
+  .qStmtT {
+    max-width: 22ch;
   }
 }
