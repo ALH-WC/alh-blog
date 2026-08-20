@@ -41,7 +41,7 @@ export default function ReviewsPage() {
           <div className={styles.rev} key={`${r.who}-${r.date}`}>
             <q>{r.quote}</q>
             <p>{r.body}</p>
-            <div className={styles.who}><b>{r.who}</b><span>{r.date}</span></div>
+            <div className={styles.who}><b>{r.who}</b></div>
           </div>
         ))}
       </div>

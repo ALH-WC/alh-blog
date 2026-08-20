@@ -306,7 +306,7 @@ export function ReviewTrio({ indices = [0, 1, 2] }: { indices?: number[] }) {
             <div className={styles.rev} key={r.who}>
               <q>{r.quote}</q>
               <p>{r.body}</p>
-              <div className={styles.who}><b>{r.who}</b><span>{r.date}</span></div>
+              <div className={styles.who}><b>{r.who}</b></div>
             </div>
           );
         })}
