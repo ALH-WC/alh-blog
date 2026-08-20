@@ -168,8 +168,8 @@ export default function HomePage() {
           <div className={styles.rev} key={r.who} style={{ border: 0, borderRight: '1px solid #EAE7E1' }}>
             <q>{r.quote}</q>
             <p>{r.body}</p>
-            <div className={styles.rtags}>{r.tags.map((t) => <span key={t}>{t}</span>)}</div>
             <div className={styles.who}><b>{r.who}</b></div>
+            <div className={styles.rtags}>{r.tags.map((t) => <span key={t}>{t}</span>)}</div>
           </div>
         ))}
       </div>

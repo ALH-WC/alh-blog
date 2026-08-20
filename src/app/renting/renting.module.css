@@ -2287,13 +2287,15 @@
   line-height: 1.25;
 }
 .rtags {
-  order: -1;
-  padding-top: 0;
+  padding-top: 6px;
   margin-top: 0;
-  margin-bottom: 18px;
   color: #8a7250;
   font-weight: 500;
   letter-spacing: 0.2em;
+}
+.rev .who {
+  margin-top: auto;
+  padding-top: 24px;
 }
 .rev .who b {
   color: #a39889;

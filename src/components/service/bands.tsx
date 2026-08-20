@@ -112,8 +112,8 @@ export function ReviewsBand() {
             <div className={styles.rev} key={i} aria-hidden={i >= REVIEWS.length}>
               <q>{r.quote}</q>
               <p>{r.body}</p>
-              <div className={styles.rtags}>{r.tags.map((t) => <span key={t}>{t}</span>)}</div>
               <div className={styles.who}><b>{r.who}</b></div>
+              <div className={styles.rtags}>{r.tags.map((t) => <span key={t}>{t}</span>)}</div>
             </div>
           ))}
         </div>
