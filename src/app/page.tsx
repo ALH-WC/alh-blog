@@ -74,7 +74,7 @@ const TILES: [string, string, string, string][] = [
 
 // The three lead reviews named in the approved copy doc. Context labels
 // stay the placeholder keyword line until real per-client data arrives.
-const LEAD_REVIEWS = ['Elora', 'Melissa', 'Sally'];
+const LEAD_REVIEWS = ['Melissa', 'Elora', 'Sally'];
 
 export default function HomePage() {
   const leads = LEAD_REVIEWS
@@ -169,7 +169,7 @@ export default function HomePage() {
             <q>{r.quote}</q>
             <p>{r.body}</p>
             <div className={styles.rtags}>{r.tags.map((t) => <span key={t}>{t}</span>)}</div>
-            <div className={styles.who}><b>{r.who}</b><span>{r.date}</span></div>
+            <div className={styles.who}><b>{r.who}</b></div>
           </div>
         ))}
       </div>
