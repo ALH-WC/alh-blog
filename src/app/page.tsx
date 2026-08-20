@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ServiceShell } from '../components/service/ServiceShell';
 import { HeroStats } from '../components/service/bands';
 import { INTAKE_URL, REVIEWS } from '../lib/renting';
+import { getArticleList } from '../sanity/lib/queries';
 import styles from './renting/renting.module.css';
 import { shareMeta } from '../lib/og';
 
@@ -76,10 +77,12 @@ const TILES: [string, string, string, string][] = [
 // stay the placeholder keyword line until real per-client data arrives.
 const LEAD_REVIEWS = ['Stephanie', 'Olejsa', 'Bene'];
 
-export default function HomePage() {
+export default async function HomePage() {
   const leads = LEAD_REVIEWS
     .map((n) => REVIEWS.find((r) => r.who.includes(n)))
     .filter((r): r is (typeof REVIEWS)[number] => Boolean(r));
+  // The three newest guides for the guide module (feedback round 2).
+  const guides = (await getArticleList()).slice(0, 3);
 
   return (
     <ServiceShell current="/" ctaTitle="Let's talk." formHref="/contact#contact">
@@ -90,16 +93,20 @@ export default function HomePage() {
         <video autoPlay muted loop playsInline poster="/home/hero.webp" aria-hidden="true">
           <source src="/home/hero.mp4" type="video/mp4" />
         </video>
-        {/* No subtext (feedback 1); the three fixed lines (feedback 2); the
-            outlined paper CTA (feedback 11) */}
+        {/* One CTA only (round 2); the home pile carries three stats */}
         <div className={styles.heroIn}>
           <h1>We help fellow expats<br />rent, let, and buy their home<br />in Amsterdam</h1>
           <div className={styles.heroBtns}>
             <a className={styles.heroBtn} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call</a>
-            <a className={styles.heroScroll} href="#services">See how we work &darr;</a>
           </div>
         </div>
-        <HeroStats />
+        <HeroStats stats={[['250+', 'Expats housed'], ['9+ yrs', 'Of experience'], ['85%', 'From referrals']]} />
+      </div>
+
+      {/* THE BOUTIQUE STATEMENT: the breath between hero and photo (round 2) */}
+      <div className={styles.qIntro} style={{ paddingBottom: 150 }}>
+        <h2 className={`${styles.qT} ${styles.qTBig}`}>Amsterdam&apos;s boutique housing agency, run by local expats.</h2>
+        <p className={styles.qDek} style={{ maxWidth: '52ch', fontSize: 17 }}>We have been in your shoes, know what you are looking for, and simply treat you the way we want to be treated.</p>
       </div>
 
       {/* ABOUT SPLIT: text left, full-bleed team photo right */}
@@ -107,7 +114,7 @@ export default function HomePage() {
         <div className={styles.qSplitTxt}>
           <span className={styles.eyebrow}>About us</span>
           <h2 className={styles.qSplitTitle}>Foreigners ourselves.</h2>
-          <p>We get it. New country, new rules, new everything. When we moved to Amsterdam, finding a home felt like a full time job we were not qualified for. Eight years on, we have helped over 250 people through the same process. Not because we learned it from a textbook, but because we lived it.</p>
+          <p>We get it. New country, new rules, new everything. When we moved to Amsterdam, finding a home felt like a full time job we were not qualified for. Nine years on, we have helped over 250 people through the same process. Not because we learned it from a textbook, but because we lived it.</p>
           <p>We are a boutique agency and that is intentional. Every client works directly with us. We know Amsterdam&apos;s neighbourhoods, its landlords, its contracts, and the unwritten rules that make all the difference. We handle everything so you can focus on the move itself.</p>
           <Link className={`${styles.qLink} ${styles.qLinkSm}`} href="/about" style={{ marginTop: 18 }}>More about us <span className={styles.ar}>&rarr;</span></Link>
         </div>
@@ -117,11 +124,10 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* SERVICES: four numbered tiles, fourth on sand */}
-      <span id="services" />
+      {/* SERVICES: four numbered tiles, all white, sand on hover (round 2) */}
       <div className={styles.qTiles}>
         {TILES.map(([n, name, promise, href]) => (
-          <Link key={n} href={href} className={`${styles.qTile}${n === '04' ? ` ${styles.qTileSand}` : ''}`}>
+          <Link key={n} href={href} className={styles.qTile}>
             <span className={styles.qNum}>{n}</span>
             <span className={styles.qTileBtm}>
               <span className={styles.qTileName}>{name}</span>
@@ -171,21 +177,43 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* EMPLOYERS ROW */}
+      {/* EMPLOYERS: rotating wordmark marquee (round 2) */}
       <div className={styles.qEmployers}>
-        <span className={styles.eyebrow}>Our clients work at</span>
-        <div className={styles.qWords}><span>Atlassian</span><span>Booking.com</span><span>Deliverect</span><span>Unilever</span><span>Bloomreach</span></div>
+        <span className={styles.eyebrow}>Our clients work at companies like</span>
+        <div className={styles.marq}>
+          <div className={styles.mtrack}>
+            {[0, 1].map((half) => (
+              <div className={styles.qMarqWords} key={half} aria-hidden={half === 1}>
+                <span>Atlassian</span><span>Booking.com</span><span>Deliverect</span><span>Unilever</span><span>Bloomreach</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* CLOSING INVITATION: left-aligned, two text CTAs */}
-      <div className={styles.qClose}>
-        {/* Covers all four services, not only the home search (feedback 7) */}
+      {/* THE AMSTERDAM GUIDE: its own module with the three newest guides (round 2) */}
+      <div className={styles.qIntro} style={{ borderTop: '1px solid #EAE7E1', paddingBottom: 100 }}>
+        <span className={styles.eyebrow}>The Amsterdam Guide</span>
+        <h2 className={styles.qT}>The guide we wish someone had handed us.</h2>
+        <p className={styles.qDek}>Everything we know about moving to and living in Amsterdam, written the way we would explain it to a friend.</p>
+        <div className={styles.qGuideRows}>
+          {guides.map((g) => (
+            <Link key={g.slug} href={`/blog/${g.slug}`} className={styles.qGuideRow}>
+              <span className={styles.qGuideRowT}>{g.title}</span>
+              <span className={styles.qGuideRowM}>{g.readMinutes} min read</span>
+            </Link>
+          ))}
+        </div>
+        <Link className={styles.qLink} href="/blog">Read our Amsterdam guide <span className={styles.ar}>&rarr;</span></Link>
+      </div>
+
+      {/* CLOSING INVITATION */}
+      <div className={styles.qClose} style={{ borderTop: '1px solid #EAE7E1' }}>
         <span className={styles.eyebrow}>Ready to start?</span>
-        <h2 className={styles.qCloseT}>It starts with a conversation.</h2>
-        <p>Book a free 30 minute video call with us. Whether you are searching for a home, letting your property, buying, or relocating a team, we will ask a few questions to understand your situation and tell you honestly how we can help. No commitment, no sales pitch, just a conversation.</p>
+        <h2 className={styles.qCloseT}>It starts<br />with a video call</h2>
+        <p>Book a free 30 minute video call with us. Whether you are searching for a home, letting your property, buying, or relocating a team: you tell us what you need, and we tell you how everything works and what you can expect. No commitment, no sales pitch, just a conversation.</p>
         <div className={styles.qCloseRow}>
           <a className={styles.qLink} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call <span className={styles.ar}>&rarr;</span></a>
-          <Link className={`${styles.qLink} ${styles.qLinkSec}`} href="/blog">Read our Amsterdam guide <span className={styles.ar}>&rarr;</span></Link>
         </div>
         <div className={styles.qFine}>Free. Takes 30 minutes. We respond within 24 hours.</div>
       </div>

@@ -54,7 +54,7 @@ export default function LettingPage() {
           <h1>Your property in good hands.<br />And rented out.</h1>
           <p>We find the tenants, run the screening,<br />and manage your home like it is our own.<br />You collect the rent, we handle the rest.</p>
         </div>
-        <HeroStats stats={[['8+ yrs', 'In the market'], ['250+', 'Placements made'], ['3.5 wks', 'Average to match'], ['85%', 'From referrals']]} />
+        <HeroStats stats={[['9+ yrs', 'In the market'], ['250+', 'Placements made'], ['3.5 wks', 'Average to match'], ['85%', 'From referrals']]} />
       </div>
 
       <AltRows

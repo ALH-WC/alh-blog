@@ -53,7 +53,7 @@ export default function B2bPage() {
           <h1>Housing your expat employees<br />in Amsterdam.<br />Sorted.</h1>
           <p>We search, view, negotiate, and settle your people<br />into their new homes. One point of contact,<br />3.5 weeks on average, zero time from your HR team.</p>
         </div>
-        <HeroStats stats={[['250+', 'Employees housed'], ['3.5 wks', 'Average placement'], ['8+ yrs', 'In the market'], ['1', 'Point of contact']]} />
+        <HeroStats stats={[['250+', 'Employees housed'], ['3.5 wks', 'Average placement'], ['9+ yrs', 'In the market'], ['1', 'Point of contact']]} />
       </div>
 
       <LogoBar label="Trusted by teams at" names={['Atlassian', 'Booking.com', 'Unilever', 'Adyen', 'TomTom']} />
@@ -99,7 +99,7 @@ export default function B2bPage() {
       {/* TRUST BAND */}
       <div className={styles.tagband}>
         <h2>Boutique service.<br />Enterprise reliability.</h2>
-        <p>We are a small team by design, expats ourselves, with eight years in this market.<br />{' '}Your employees get a person, not a portal.</p>
+        <p>We are a small team by design, expats ourselves, with nine years in this market.<br />{' '}Your employees get a person, not a portal.</p>
       </div>
 
       <RowTable

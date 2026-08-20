@@ -13,7 +13,7 @@ import { useLeadSubmit } from './leadForm';
 // The approved in-hero data pile (bottom-right of the photo). Render inside
 // a .hero div. Photo-hero pages use this; heroless pages keep StatsBand.
 export function HeroStats({ stats }: { stats?: [string, string][] } = {}) {
-  const rows = stats ?? [['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']];
+  const rows = stats ?? [['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['9+ yrs', 'Of experience'], ['85%', 'From referrals']];
   return (
     <div className={styles.heroStats}>
       {rows.map(([n, l]) => (
@@ -24,7 +24,7 @@ export function HeroStats({ stats }: { stats?: [string, string][] } = {}) {
 }
 
 export function StatsBand({ stats }: { stats?: [string, string][] } = {}) {
-  const rows = stats ?? [['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']];
+  const rows = stats ?? [['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['9+ yrs', 'Of experience'], ['85%', 'From referrals']];
   return (
     <div className={`${styles.cells} ${styles.c4}`}>
       {rows.map(([n, l]) => (

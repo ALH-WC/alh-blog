@@ -134,7 +134,7 @@ export default function RentingView() {
           <p>We help fellow expats<br />rent, let, and buy their home<br />in Amsterdam.</p>
         </div>
         <div className={styles.heroStats}>
-          {[['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['8+ yrs', 'Of experience'], ['85%', 'From referrals']].map(([n, l]) => (
+          {[['250+', 'Expats housed'], ['3.5 wks', 'Average search'], ['9+ yrs', 'Of experience'], ['85%', 'From referrals']].map(([n, l]) => (
             <div className={styles.cellS} key={l}><div className={styles.hsN}>{n}</div><div className={styles.hsL}>{l}</div></div>
           ))}
         </div>
