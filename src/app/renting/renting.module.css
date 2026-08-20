@@ -3179,8 +3179,8 @@
 .logoImg {
   width: auto;
   display: block;
-  filter: grayscale(1) brightness(0.52);
-  opacity: 0.72;
+  filter: grayscale(1) brightness(0.28);
+  opacity: 0.78;
 }
 @media (max-width: 700px) {
   .logoImg {
