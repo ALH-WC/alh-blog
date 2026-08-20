@@ -56,7 +56,7 @@ export default function B2bPage() {
         <HeroStats stats={[['250+', 'Employees housed'], ['3.5 wks', 'Average placement'], ['9+ yrs', 'In the market'], ['1', 'Point of contact']]} />
       </div>
 
-      <LogoBar label="Trusted by teams at" names={['Atlassian', 'Booking.com', 'Unilever', 'Adyen', 'TomTom']} />
+      <LogoBar label="Trusted by teams at" names={['Atlassian', 'Booking.com', 'Unilever', 'Adyen', 'Uber']} />
 
       <CompareBand
         title="What a placement costs your team"

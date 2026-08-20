@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ServiceShell } from '../components/service/ServiceShell';
 import { GuideBand, HeroStats } from '../components/service/bands';
 import { INTAKE_URL, REVIEWS } from '../lib/renting';
+import { EMPLOYER_LOGOS } from '../lib/logos';
 import styles from './renting/renting.module.css';
 import { shareMeta } from '../lib/og';
 
@@ -181,7 +182,8 @@ export default function HomePage() {
           <div className={styles.mtrack}>
             {[0, 1].map((half) => (
               <div className={styles.qMarqWords} key={half} aria-hidden={half === 1}>
-                <span>Atlassian</span><span>Booking.com</span><span>Deliverect</span><span>Unilever</span><span>Bloomreach</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {EMPLOYER_LOGOS.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} key={l.name} />)}
               </div>
             ))}
           </div>

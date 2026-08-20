@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { REVIEWS } from '../../lib/renting';
 import styles from '../../app/renting/renting.module.css';
+import { EMPLOYER_LOGOS } from '../../lib/logos';
 
 // Page-specific bands from the Asana content studies (July 2026). Each service
 // page keeps the system hero and shell but gets its own body layout:
@@ -9,11 +10,15 @@ import styles from '../../app/renting/renting.module.css';
 // /buying: editorial argument, numbered step grid, costs table
 
 export function LogoBar({ label, names }: { label: string; names: string[] }) {
+  const logos = names
+    .map((n) => EMPLOYER_LOGOS.find((l) => l.name === n))
+    .filter((l): l is (typeof EMPLOYER_LOGOS)[number] => Boolean(l));
   return (
     <div className={styles.logobar2}>
       <span className={styles.lb}>{label}</span>
       <div className={styles.wordmarks}>
-        {names.map((n) => <span key={n}>{n}</span>)}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {logos.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} key={l.name} />)}
       </div>
     </div>
   );
