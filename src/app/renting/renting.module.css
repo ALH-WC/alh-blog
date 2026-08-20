@@ -3174,3 +3174,20 @@
   -webkit-line-clamp: unset;
   overflow: visible;
 }
+
+/* employer logos: one quiet tint, uniform height */
+.logoImg {
+  height: 26px;
+  width: auto;
+  display: block;
+  filter: brightness(0);
+  opacity: 0.55;
+}
+.wordmarks .logoImg {
+  height: 24px;
+}
+@media (max-width: 700px) {
+  .logoImg {
+    height: 20px;
+  }
+}
