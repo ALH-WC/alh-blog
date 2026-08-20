@@ -3159,3 +3159,16 @@
     max-width: 22ch;
   }
 }
+
+/* review grids (the wall and the home trio): nothing is ever cut off */
+.rgrid .rev q {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  min-height: 0;
+}
+.rgrid .rev p {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}

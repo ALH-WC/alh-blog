@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ServiceShell } from '../components/service/ServiceShell';
-import { HeroStats } from '../components/service/bands';
+import { GuideBand, HeroStats } from '../components/service/bands';
 import { INTAKE_URL, REVIEWS } from '../lib/renting';
 import { getArticleList } from '../sanity/lib/queries';
 import styles from './renting/renting.module.css';
@@ -204,7 +204,6 @@ export default async function HomePage() {
             </Link>
           ))}
         </div>
-        <Link className={styles.qLink} href="/blog">Read our Amsterdam guide <span className={styles.ar}>&rarr;</span></Link>
       </div>
 
       {/* CLOSING INVITATION */}
@@ -217,6 +216,9 @@ export default async function HomePage() {
         </div>
         <div className={styles.qFine}>Free. Takes 30 minutes. And will give you all the clarity you were looking for.</div>
       </div>
+
+      {/* The site-wide guide band: identical on every company page */}
+      <GuideBand />
     </ServiceShell>
   );
 }
