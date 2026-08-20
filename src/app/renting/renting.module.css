@@ -43,7 +43,7 @@
 .tlink .ar {
   display: inline-block;
   margin-left: 10px;
-  color: var(--gold);
+  color: #241d16;
   transition: transform 0.25s ease;
 }
 .tlink:hover .ar {
@@ -2446,7 +2446,7 @@
   white-space: nowrap;
 }
 .qLink .ar {
-  color: #8a7250;
+  color: #241d16;
   font-size: 19px;
   transition: transform 0.25s ease;
 }
@@ -2580,7 +2580,7 @@
 }
 .qTileGo .ar {
   font-size: 18px;
-  color: #8a7250;
+  color: #241d16;
   transition: transform 0.25s ease;
 }
 .qTile:hover .qTileGo .ar {
