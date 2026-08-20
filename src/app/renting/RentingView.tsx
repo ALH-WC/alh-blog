@@ -24,7 +24,7 @@ const NAV_LINKS = [
 ];
 
 // The three review cells from the approved "ALH Renting 2c" mockup.
-const RENTING_REVIEWS = ['Stephanie', 'Chad', 'Bene'];
+const RENTING_REVIEWS = ['Sally', 'Chad', 'Bene'];
 
 // The page body follows the approved page mockup one-to-one: positioning,
 // gate (right cell on sand), photo band, abroad/here, process rows, fee

@@ -75,7 +75,7 @@ const TILES: [string, string, string, string][] = [
 
 // The three lead reviews named in the approved copy doc. Context labels
 // stay the placeholder keyword line until real per-client data arrives.
-const LEAD_REVIEWS = ['Elora', 'Melissa', 'Stephanie'];
+const LEAD_REVIEWS = ['Elora', 'Melissa', 'Sally'];
 
 export default async function HomePage() {
   const leads = LEAD_REVIEWS
