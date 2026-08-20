@@ -1,24 +1,27 @@
-// The client-employer logos (client-supplied SVGs, Aug 2026), rendered as a
-// single quiet tint via CSS (brightness(0) + opacity), never in brand colors.
-export interface EmployerLogo { file: string; name: string }
+// The client-employer logos (client-supplied SVGs, Aug 2026), rendered in one
+// quiet tint via CSS grayscale + darkening (keeps white knockout details
+// inside dark marks visible, unlike a flat brightness(0)). `h` is the optical
+// height in px: wordmark-only logos need more height than icon-plus-text
+// logos to LOOK the same size.
+export interface EmployerLogo { file: string; name: string; h: number }
 
 export const EMPLOYER_LOGOS: EmployerLogo[] = [
-  { file: '/logos/google.svg', name: 'Google' },
-  { file: '/logos/booking.com.webp', name: 'Booking.com' },
-  { file: '/logos/uber.svg', name: 'Uber' },
-  { file: '/logos/atlassian.svg', name: 'Atlassian' },
-  { file: '/logos/unilever.svg', name: 'Unilever' },
-  { file: '/logos/ing.svg', name: 'ING' },
-  { file: '/logos/adyen.svg', name: 'Adyen' },
-  { file: '/logos/3m.svg', name: '3M' },
-  { file: '/logos/cartier.svg', name: 'Cartier' },
-  { file: '/logos/hubspot.svg', name: 'HubSpot' },
-  { file: '/logos/deliverect.svg', name: 'Deliverect' },
-  { file: '/logos/dyson.svg', name: 'Dyson' },
-  { file: '/logos/miro.svg', name: 'Miro' },
-  { file: '/logos/mollie.svg', name: 'Mollie' },
-  { file: '/logos/reddit.svg', name: 'Reddit' },
-  { file: '/logos/abn-amro.svg', name: 'ABN AMRO' },
-  { file: '/logos/united-nations.svg', name: 'United Nations' },
-  { file: '/logos/yandex.svg', name: 'Yandex' },
+  { file: '/logos/google.svg', name: 'Google', h: 32 },
+  { file: '/logos/booking.com.webp', name: 'Booking.com', h: 36 },
+  { file: '/logos/uber.svg', name: 'Uber', h: 30 },
+  { file: '/logos/atlassian.svg', name: 'Atlassian', h: 26 },
+  { file: '/logos/unilever.svg', name: 'Unilever', h: 28 },
+  { file: '/logos/ing.svg', name: 'ING', h: 26 },
+  { file: '/logos/adyen.svg', name: 'Adyen', h: 26 },
+  { file: '/logos/3m.svg', name: '3M', h: 24 },
+  { file: '/logos/cartier.svg', name: 'Cartier', h: 30 },
+  { file: '/logos/hubspot.svg', name: 'HubSpot', h: 30 },
+  { file: '/logos/deliverect.svg', name: 'Deliverect', h: 30 },
+  { file: '/logos/dyson.svg', name: 'Dyson', h: 28 },
+  { file: '/logos/miro.svg', name: 'Miro', h: 28 },
+  { file: '/logos/mollie.svg', name: 'Mollie', h: 30 },
+  { file: '/logos/reddit.svg', name: 'Reddit', h: 28 },
+  { file: '/logos/abn-amro.svg', name: 'ABN AMRO', h: 30 },
+  { file: '/logos/united-nations.svg', name: 'United Nations', h: 30 },
+  { file: '/logos/yandex.svg', name: 'Yandex', h: 30 },
 ];
