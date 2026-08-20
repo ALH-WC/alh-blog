@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { ServiceShell } from '../components/service/ServiceShell';
 import { GuideBand, HeroStats } from '../components/service/bands';
 import { INTAKE_URL, REVIEWS } from '../lib/renting';
-import { getArticleList } from '../sanity/lib/queries';
 import styles from './renting/renting.module.css';
 import { shareMeta } from '../lib/og';
 
@@ -77,12 +76,10 @@ const TILES: [string, string, string, string][] = [
 // stay the placeholder keyword line until real per-client data arrives.
 const LEAD_REVIEWS = ['Elora', 'Melissa', 'Sally'];
 
-export default async function HomePage() {
+export default function HomePage() {
   const leads = LEAD_REVIEWS
     .map((n) => REVIEWS.find((r) => r.who.includes(n)))
     .filter((r): r is (typeof REVIEWS)[number] => Boolean(r));
-  // The three newest guides for the guide module (feedback round 2).
-  const guides = (await getArticleList()).slice(0, 3);
 
   return (
     <ServiceShell current="/" ctaTitle="Let's talk." formHref="/contact#contact">
@@ -188,21 +185,6 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* THE AMSTERDAM GUIDE: its own module with the three newest guides (round 2) */}
-      <div className={styles.qIntro} style={{ borderTop: '1px solid #EAE7E1', paddingBottom: 100 }}>
-        <span className={styles.eyebrow}>The Amsterdam Guide</span>
-        <h2 className={styles.qT}>The guide we wish<br />someone had handed us.</h2>
-        <p className={styles.qDek} style={{ maxWidth: 'none' }}>Everything we know about moving to and living in Amsterdam,<br />written the way we would explain it to a friend.</p>
-        <div className={styles.qGuideRows}>
-          {guides.map((g) => (
-            <Link key={g.slug} href={`/blog/${g.slug}`} className={styles.qGuideRow}>
-              <span className={styles.qGuideRowT}>{g.title}</span>
-              <span className={styles.qGuideRowM}>{g.readMinutes} min read</span>
-            </Link>
-          ))}
         </div>
       </div>
 
