@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { SiteFooter } from '../../components/SiteFooter';
+import { GuideBand } from '../../components/service/bands';
 import {
   ABROAD_TXT, HERE_TXT,
   FEE_P1, FEE_P2, FEE_P3, DEP_TXT, BAL_TXT, NORES_TXT, FORM_INTRO,
@@ -374,6 +375,8 @@ export default function RentingView() {
           </a>
         ))}
       </div>
+
+      <GuideBand />
 
       <SiteFooter />
 
