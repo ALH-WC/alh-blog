@@ -183,7 +183,7 @@ export default function HomePage() {
             {[0, 1].map((half) => (
               <div className={styles.qMarqWords} key={half} aria-hidden={half === 1}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {EMPLOYER_LOGOS.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} key={l.name} />)}
+                {EMPLOYER_LOGOS.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} style={{ height: l.h }} key={l.name} />)}
               </div>
             ))}
           </div>
