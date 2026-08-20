@@ -16,5 +16,5 @@ Next.js 15 + Sanity site serving the full ALH website: /, /renting, /buying, /le
 ## Working agreements
 - Asana project "ALH - Website 2.0" (+ "ALH - Blog" for content) drives the work: READ the task's notes, subtasks, and study documents before building; parent status never ahead of subtasks; completing a task means the checkbox AND the Status column (plus Owner/Tool if stale); leave a completion comment with what shipped and any judgment calls.
 - Facts never invented: copy comes verbatim from the client's live pages or approved Asana studies; unverifiable claims get flagged, not published.
-- Review keyword tags are placeholders ("Three weeks · €6500 budget · Family") until real per-client data arrives.
+- Review meta: Elora & Garrett, Melissa & Chad, and Stephanie & Tomas carry REAL client data ("Budget: €4500 · Found in: 16 days" form, client-supplied Aug 2026); the remaining reviews keep placeholder tags until their real data arrives.
 - Shared service-page parts live in `src/components/service/` (ServiceShell, bands, studyBands); compose them, never restyle them per page.

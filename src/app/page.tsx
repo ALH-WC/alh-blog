@@ -69,13 +69,13 @@ const SCHEMA = {
 const TILES: [string, string, string, string][] = [
   ['01', 'Renting in Amsterdam', 'Properties go within hours. We get ahead of the market for you, whether you are still abroad or already here.', '/renting'],
   ['02', 'Letting your property', 'We match the right tenant to the right property from the start, and protect your investment while they live there.', '/letting'],
-  ['03', 'Buying in Amsterdam', 'Buying as an expat is complex. We represent only you, never the seller. We guide you through every step.', '/buying'],
+  ['03', 'Buying in Amsterdam', 'Buying as an expat is complex. We represent only you, never the seller, and we guide you through every step.', '/buying'],
   ['04', 'Relocating employees', 'We handle expat housing at scale for companies and relocation managers, with the same personal approach.', '/b2b'],
 ];
 
 // The three lead reviews named in the approved copy doc. Context labels
 // stay the placeholder keyword line until real per-client data arrives.
-const LEAD_REVIEWS = ['Stephanie', 'Olejsa', 'Bene'];
+const LEAD_REVIEWS = ['Elora', 'Melissa', 'Stephanie'];
 
 export default async function HomePage() {
   const leads = LEAD_REVIEWS
@@ -106,7 +106,7 @@ export default async function HomePage() {
       {/* THE BOUTIQUE STATEMENT: the breath between hero and photo (round 2) */}
       <div className={styles.qIntro} style={{ paddingTop: 100, paddingBottom: 100 }}>
         <h2 className={`${styles.qT} ${styles.qTBig} ${styles.qStmtT}`}>Amsterdam&apos;s boutique housing agency,<br />run by local expats.</h2>
-        <p className={styles.qDek} style={{ maxWidth: '52ch', fontSize: 17 }}>We have been in your shoes, know what you are looking for, and simply treat you the way we want to be treated.</p>
+        <p className={styles.qDek} style={{ maxWidth: 'none', fontSize: 17 }}>We have been in your shoes, know what you are looking for,<br />and simply treat you the way we want to be treated.</p>
       </div>
 
       {/* ABOUT SPLIT: text left, full-bleed team photo right */}
@@ -211,7 +211,7 @@ export default async function HomePage() {
       <div className={styles.qClose} style={{ borderTop: '1px solid #EAE7E1' }}>
         <span className={styles.eyebrow}>Ready to start?</span>
         <h2 className={styles.qCloseT}>It starts<br />with a video call</h2>
-        <p>Book a free 30 minute video call with us. Whether you are searching for a home, letting your property, buying, or relocating a team: you tell us what you need, and we tell you how everything works and what you can expect. No commitment, no sales pitch, just a conversation.</p>
+        <p>Book a free 30 minute video call with us. Whether you are searching for a home, letting your property, buying, or relocating a team: you tell us what you need, we tell you how everything works and what you can expect. No commitment, no sales pitch, just a conversation.</p>
         <div className={styles.qCloseRow}>
           <a className={styles.qLink} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call <span className={styles.ar}>&rarr;</span></a>
         </div>
