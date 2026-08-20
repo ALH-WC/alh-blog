@@ -6,22 +6,22 @@
 export interface EmployerLogo { file: string; name: string; h: number }
 
 export const EMPLOYER_LOGOS: EmployerLogo[] = [
-  { file: '/logos/google.svg', name: 'Google', h: 32 },
-  { file: '/logos/booking.com.webp', name: 'Booking.com', h: 36 },
+  { file: '/logos/google.svg', name: 'Google', h: 54 },
+  { file: '/logos/booking.com.webp', name: 'Booking.com', h: 37 },
   { file: '/logos/uber.svg', name: 'Uber', h: 30 },
   { file: '/logos/atlassian.svg', name: 'Atlassian', h: 26 },
   { file: '/logos/unilever.svg', name: 'Unilever', h: 28 },
   { file: '/logos/ing.svg', name: 'ING', h: 26 },
   { file: '/logos/adyen.svg', name: 'Adyen', h: 26 },
   { file: '/logos/3m.svg', name: '3M', h: 24 },
-  { file: '/logos/cartier.svg', name: 'Cartier', h: 30 },
-  { file: '/logos/hubspot.svg', name: 'HubSpot', h: 30 },
-  { file: '/logos/deliverect.svg', name: 'Deliverect', h: 30 },
+  { file: '/logos/cartier.svg', name: 'Cartier', h: 32 },
+  { file: '/logos/hubspot.svg', name: 'HubSpot', h: 31 },
+  { file: '/logos/deliverect.svg', name: 'Deliverect', h: 60 },
   { file: '/logos/dyson.svg', name: 'Dyson', h: 28 },
   { file: '/logos/miro.svg', name: 'Miro', h: 28 },
   { file: '/logos/mollie.svg', name: 'Mollie', h: 30 },
   { file: '/logos/reddit.svg', name: 'Reddit', h: 28 },
-  { file: '/logos/abn-amro.svg', name: 'ABN AMRO', h: 30 },
+  { file: '/logos/abn-amro.svg', name: 'ABN AMRO', h: 32 },
   { file: '/logos/united-nations.svg', name: 'United Nations', h: 30 },
   { file: '/logos/yandex.svg', name: 'Yandex', h: 30 },
 ];
