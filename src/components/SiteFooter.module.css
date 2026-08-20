@@ -15,12 +15,12 @@
 .inner {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: 72px var(--gutter) 44px;
+  padding: 48px var(--gutter) 30px;
 }
 .grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr 1fr 1.3fr;
-  gap: 56px;
+  gap: 44px;
 }
 .logo {
   display: inline-block;
@@ -29,12 +29,12 @@
   font-size: 31px;
   letter-spacing: -0.5px;
   color: var(--ink);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   text-decoration: none;
 }
 .tagline {
   line-height: 1.7;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   color: #57493a;
 }
 .cline {
@@ -45,13 +45,13 @@
   line-height: 2.0;
 }
 .hours {
-  margin-top: 14px;
+  margin-top: 10px;
   color: #57493a;
 }
 .social {
   display: flex;
   gap: 18px;
-  margin-top: 20px;
+  margin-top: 16px;
   color: var(--ink);
 }
 .social a {
@@ -131,8 +131,8 @@
   transform: translateX(4px);
 }
 .bottom {
-  margin-top: 56px;
-  padding-top: 22px;
+  margin-top: 34px;
+  padding-top: 16px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
@@ -155,7 +155,7 @@
 
 @media (max-width: 1100px) {
   .inner {
-    padding: 60px 40px 36px;
+    padding: 42px 40px 26px;
   }
   .grid {
     grid-template-columns: 1fr 1fr;
@@ -164,7 +164,7 @@
 }
 @media (max-width: 700px) {
   .inner {
-    padding: 48px 22px 30px;
+    padding: 36px 22px 22px;
   }
   .grid {
     grid-template-columns: 1fr;

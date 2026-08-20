@@ -104,8 +104,8 @@ export default async function HomePage() {
       </div>
 
       {/* THE BOUTIQUE STATEMENT: the breath between hero and photo (round 2) */}
-      <div className={styles.qIntro} style={{ paddingBottom: 150 }}>
-        <h2 className={`${styles.qT} ${styles.qTBig}`}>Amsterdam&apos;s boutique housing agency, run by local expats.</h2>
+      <div className={styles.qIntro} style={{ paddingTop: 100, paddingBottom: 100 }}>
+        <h2 className={`${styles.qT} ${styles.qTBig} ${styles.qStmtT}`}>Amsterdam&apos;s boutique housing agency,<br />run by local expats.</h2>
         <p className={styles.qDek} style={{ maxWidth: '52ch', fontSize: 17 }}>We have been in your shoes, know what you are looking for, and simply treat you the way we want to be treated.</p>
       </div>
 
@@ -194,8 +194,8 @@ export default async function HomePage() {
       {/* THE AMSTERDAM GUIDE: its own module with the three newest guides (round 2) */}
       <div className={styles.qIntro} style={{ borderTop: '1px solid #EAE7E1', paddingBottom: 100 }}>
         <span className={styles.eyebrow}>The Amsterdam Guide</span>
-        <h2 className={styles.qT}>The guide we wish someone had handed us.</h2>
-        <p className={styles.qDek}>Everything we know about moving to and living in Amsterdam, written the way we would explain it to a friend.</p>
+        <h2 className={styles.qT}>The guide we wish<br />someone had handed us.</h2>
+        <p className={styles.qDek} style={{ maxWidth: 'none' }}>Everything we know about moving to and living in Amsterdam,<br />written the way we would explain it to a friend.</p>
         <div className={styles.qGuideRows}>
           {guides.map((g) => (
             <Link key={g.slug} href={`/blog/${g.slug}`} className={styles.qGuideRow}>
@@ -215,7 +215,7 @@ export default async function HomePage() {
         <div className={styles.qCloseRow}>
           <a className={styles.qLink} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call <span className={styles.ar}>&rarr;</span></a>
         </div>
-        <div className={styles.qFine}>Free. Takes 30 minutes. We respond within 24 hours.</div>
+        <div className={styles.qFine}>Free. Takes 30 minutes. And will give you all the clarity you were looking for.</div>
       </div>
     </ServiceShell>
   );

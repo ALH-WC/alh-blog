@@ -143,7 +143,7 @@ export default function RentingView() {
       {/* POSITIONING */}
       <div className={styles.qIntro} style={{ paddingBottom: 170 }}>
         <span className={styles.eyebrow}>Renting in Amsterdam</span>
-        <h2 className={`${styles.qT} ${styles.qTBig}`}>Amsterdam&apos;s boutique housing agency, run by local expats.</h2>
+        <h2 className={`${styles.qT} ${styles.qTBig} ${styles.qStmtT}`}>Amsterdam&apos;s boutique housing agency,<br />run by local expats.</h2>
         <p className={styles.qDek} style={{ maxWidth: '52ch', fontSize: 17 }}>We have been in your shoes, we know what you are looking for, and we simply treat you the way we want to be treated. We search, view, and negotiate for you, until the keys are in your hand.</p>
         <a className={styles.qLink} href={INTAKE_URL} target="_blank" rel="noreferrer" style={{ marginTop: 20 }}>Schedule a free video call <span className={styles.ar}>&rarr;</span></a>
       </div>
