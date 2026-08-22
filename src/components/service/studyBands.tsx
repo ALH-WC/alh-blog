@@ -18,7 +18,7 @@ export function LogoBar({ label, names }: { label: string; names: string[] }) {
       <span className={styles.lb}>{label}</span>
       <div className={styles.wordmarks}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {logos.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} style={{ height: l.h }} key={l.name} />)}
+        {logos.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} style={{ height: l.h, filter: l.raw ? 'none' : undefined }} key={l.name} />)}
       </div>
     </div>
   );

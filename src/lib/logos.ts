@@ -3,7 +3,7 @@
 // inside dark marks visible, unlike a flat brightness(0)). `h` is the optical
 // height in px: wordmark-only logos need more height than icon-plus-text
 // logos to LOOK the same size.
-export interface EmployerLogo { file: string; name: string; h: number }
+export interface EmployerLogo { file: string; name: string; h: number; raw?: boolean }
 
 export const EMPLOYER_LOGOS: EmployerLogo[] = [
   { file: '/logos/google.svg', name: 'Google', h: 28 },
@@ -20,7 +20,7 @@ export const EMPLOYER_LOGOS: EmployerLogo[] = [
   { file: '/logos/dyson.svg', name: 'Dyson', h: 26 },
   { file: '/logos/miro.svg', name: 'Miro', h: 26 },
   { file: '/logos/mollie.svg', name: 'Mollie', h: 26 },
-  { file: '/logos/reddit.svg', name: 'Reddit', h: 26 },
+  { file: '/logos/reddit.svg', name: 'Reddit', h: 32, raw: true },
   { file: '/logos/abn-amro.svg', name: 'ABN AMRO', h: 26 },
   { file: '/logos/united-nations.svg', name: 'United Nations', h: 30 },
   { file: '/logos/yandex.svg', name: 'Yandex', h: 28 },
