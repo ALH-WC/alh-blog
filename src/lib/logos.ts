@@ -6,7 +6,7 @@
 export interface EmployerLogo { file: string; name: string; h: number; raw?: boolean }
 
 export const EMPLOYER_LOGOS: EmployerLogo[] = [
-  { file: '/logos/google.svg', name: 'Google', h: 28 },
+  { file: '/logos/google.svg', name: 'Google', h: 33 },
   { file: '/logos/booking.com.webp', name: 'Booking.com', h: 26 },
   { file: '/logos/uber.svg', name: 'Uber', h: 26 },
   { file: '/logos/atlassian.svg', name: 'Atlassian', h: 24 },
