@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { ServiceShell } from '../components/service/ServiceShell';
 import { GuideBand, HeroStats } from '../components/service/bands';
 import { INTAKE_URL, REVIEWS } from '../lib/renting';
-import { EMPLOYER_LOGOS } from '../lib/logos';
 import styles from './renting/renting.module.css';
 import { shareMeta } from '../lib/og';
+import { LogoMarquee } from '../components/service/studyBands';
 
 // The homepage, rebuilt one-to-one to the approved page mockup
 // "ALH Homepage 2c" (the Quiet System): about split with a full-bleed
@@ -175,20 +175,7 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* EMPLOYERS: rotating wordmark marquee (round 2) */}
-      <div className={styles.qEmployers}>
-        <span className={styles.eyebrow}>Our clients work at companies like</span>
-        <div className={styles.marq}>
-          <div className={styles.mtrack}>
-            {[0, 1].map((half) => (
-              <div className={styles.qMarqWords} key={half} aria-hidden={half === 1}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {EMPLOYER_LOGOS.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} style={{ height: l.h, filter: l.raw ? 'none' : undefined }} key={l.name} />)}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <LogoMarquee label="Our clients work at companies like" />
 
       {/* CLOSING INVITATION */}
       <div className={styles.qClose} style={{ borderTop: '1px solid #EAE7E1' }}>

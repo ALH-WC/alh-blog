@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ServiceShell } from '../../components/service/ServiceShell';
 import { GuideBand, HeroStats, ServiceTiles } from '../../components/service/bands';
 import {
-  CompareBand, FaqBand, HSteps, LogoBar, PillarBand, QuoteFormBand, ReviewTrio, RowTable,
+  CompareBand, FaqBand, HSteps, LogoMarquee, PillarBand, QuoteFormBand, ReviewTrio, RowTable,
 } from '../../components/service/studyBands';
 import styles from '../renting/renting.module.css';
 import { shareMeta } from '../../lib/og';
@@ -56,7 +56,7 @@ export default function B2bPage() {
         <HeroStats stats={[['250+', 'Employees housed'], ['3.5 wks', 'Average placement'], ['9+ yrs', 'In the market'], ['1', 'Point of contact']]} />
       </div>
 
-      <LogoBar label="Trusted by teams at" names={['Atlassian', 'Booking.com', 'Unilever', 'Adyen', 'Uber']} />
+      <LogoMarquee label="Trusted by teams at" />
 
       <CompareBand
         title="What a placement costs your team"

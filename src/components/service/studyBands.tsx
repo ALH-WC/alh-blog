@@ -9,16 +9,21 @@ import { EMPLOYER_LOGOS } from '../../lib/logos';
 // /letting: alternating rows, screening checklist, vertical step rail
 // /buying: editorial argument, numbered step grid, costs table
 
-export function LogoBar({ label, names }: { label: string; names: string[] }) {
-  const logos = names
-    .map((n) => EMPLOYER_LOGOS.find((l) => l.name === n))
-    .filter((l): l is (typeof EMPLOYER_LOGOS)[number] => Boolean(l));
+// The one employers band: the calibrated rotating logo marquee, identical on
+// every page that shows client employers.
+export function LogoMarquee({ label }: { label: string }) {
   return (
-    <div className={styles.logobar2}>
-      <span className={styles.lb}>{label}</span>
-      <div className={styles.wordmarks}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        {logos.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} style={{ height: l.h, filter: l.raw ? 'none' : undefined }} key={l.name} />)}
+    <div className={styles.qEmployers}>
+      <span className={styles.eyebrow}>{label}</span>
+      <div className={styles.marq}>
+        <div className={styles.mtrack}>
+          {[0, 1].map((half) => (
+            <div className={styles.qMarqWords} key={half} aria-hidden={half === 1}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {EMPLOYER_LOGOS.map((l) => <img className={styles.logoImg} src={l.file} alt={l.name} style={{ height: l.h, filter: l.raw ? 'none' : undefined }} key={l.name} />)}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
