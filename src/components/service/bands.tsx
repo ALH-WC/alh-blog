@@ -122,16 +122,6 @@ export function ReviewsBand() {
   );
 }
 
-export function LogoBand() {
-  return (
-    <div className={styles.logoband}>
-      <span className={styles.lb}>Our clients work at</span>
-      <div className={styles.marq}><div className={styles.mtrack}>
-        {Array.from({ length: 12 }).map((_, i) => <div className={styles.ph} key={i}>Logo</div>)}
-      </div></div>
-    </div>
-  );
-}
 
 export function ServiceTiles({ tiles }: { tiles: [string, string, string, string][] }) {
   return (
