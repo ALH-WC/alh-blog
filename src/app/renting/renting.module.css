@@ -3135,10 +3135,10 @@
 .qMarqWords {
   display: flex;
   align-items: center;
-  gap: 64px;
+  gap: 76px;
   font-size: 19px;
   color: #4a443d;
-  padding-right: 64px;
+  padding-right: 76px;
 }
 @media (max-width: 700px) {
   .qGuideRowT {
