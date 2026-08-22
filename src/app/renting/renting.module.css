@@ -604,7 +604,7 @@
 }
 .mtrack {
   display: flex;
-  gap: 44px;
+  gap: 0;
   width: max-content;
   animation: marq 26s linear infinite;
 }

@@ -21,7 +21,7 @@ export const EMPLOYER_LOGOS: EmployerLogo[] = [
   { file: '/logos/miro.svg', name: 'Miro', h: 26 },
   { file: '/logos/mollie.svg', name: 'Mollie', h: 26 },
   { file: '/logos/reddit.svg', name: 'Reddit', h: 26 },
-  { file: '/logos/abn-amro.svg', name: 'ABN AMRO', h: 22 },
+  { file: '/logos/abn-amro.svg', name: 'ABN AMRO', h: 26 },
   { file: '/logos/united-nations.svg', name: 'United Nations', h: 30 },
   { file: '/logos/yandex.svg', name: 'Yandex', h: 28 },
 ];
