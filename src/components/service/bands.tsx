@@ -164,7 +164,7 @@ export function GuideBand({ tile }: { tile?: boolean } = {}) {
   }, [tile]);
   return (
     <Link ref={ref} className={`${styles.guideband}${tile ? ` ${styles.qGuideCell}` : ''}${open ? ` ${styles.gopen}` : ''}`} href="/blog">
-      <span className={styles.eyebrow} style={{ marginBottom: 12 }}>Learn about</span>
+      {!tile ? <span className={styles.eyebrow} style={{ marginBottom: 12 }}>Learn about</span> : null}
       <h3>Our Amsterdam guide&nbsp;<span className={styles.gar}>&#8599;</span></h3>
       <p>Anything you need to know when moving here&nbsp;<span className={`${styles.gar} ${styles.garSub}`}>&#8599;</span></p>
       <span className={styles.gcats}>
