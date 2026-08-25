@@ -84,7 +84,7 @@
   color: var(--ink);
 }
 .newsdek {
-  font-size: 14.5px;
+  font-size: 15px;
   color: #57493a;
 }
 .email {
@@ -138,7 +138,7 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--muted-text);
 }
 .legal {
