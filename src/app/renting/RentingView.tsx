@@ -58,7 +58,9 @@ export default function RentingView() {
       }
       lastY.current = y;
       const q = (document.documentElement.scrollHeight - window.innerHeight) * 0.25;
-      setPopShown(y > q);
+      const footer = document.querySelector('footer');
+      const nearFooter = !!footer && footer.getBoundingClientRect().top < window.innerHeight - 60;
+      setPopShown(y > q && !nearFooter);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
