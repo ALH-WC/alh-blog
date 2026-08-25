@@ -2264,7 +2264,7 @@
    same reveal, elevated placement instead of the buried bottom band */
 .qGuideCell {
   border-top: 0;
-  border-bottom: 0;
+  border-bottom: 1px solid #eae7e1;
   border-left: 1px solid #eae7e1;
   padding: 40px 40px 34px;
   display: flex;
@@ -2278,17 +2278,27 @@
   font-size: 15.5px;
 }
 .qGuideCell .gcats {
-  margin-top: 18px;
+  margin-top: 22px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 .qGuideCell .gin2 {
+  display: block;
   white-space: normal;
   font-size: 13px;
+  line-height: 1.7;
+  width: min(430px, 100%);
 }
 .qGuideCell .gwin {
   max-width: 0;
 }
+.qGuideCell.gopen .gwin,
 .qGuideCell:hover .gwin {
   max-width: 520px;
+}
+.qGuideCell.gopen .gin2 {
+  transform: none;
 }
 
 /* --- service cards / tiles --------------------------------- */
