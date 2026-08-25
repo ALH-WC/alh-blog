@@ -83,7 +83,7 @@ export default function HomePage() {
     .filter((r): r is (typeof REVIEWS)[number] => Boolean(r));
 
   return (
-    <ServiceShell current="/" ctaTitle="Let's talk." formHref="/contact#contact" popOnGuide>
+    <ServiceShell current="/" ctaTitle="Let's talk." formHref="/contact#contact" popAnchor="pop-anchor">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
 
       {/* HERO (approved, untouched): brand video, H1 bottom-left, stats pile */}
@@ -137,7 +137,7 @@ export default function HomePage() {
       </div>
 
       {/* PHOTO BAND: three captioned full-bleed photos (verified captions only) */}
-      <div className={styles.qBand} style={{ gridTemplateColumns: '1.2fr 1fr 1.4fr' }}>
+      <div className={styles.qBand} id="pop-anchor" style={{ gridTemplateColumns: '1.2fr 1fr 1.4fr' }}>
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/renting/tile-corporate.jpg" alt="A leafy Amsterdam lane" />

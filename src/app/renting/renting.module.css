@@ -2260,6 +2260,12 @@
   background: #ffffff;
 }
 
+/* scroll-linked pop-up: the scroll position drives the transform, so the
+   pop-up itself never animates its position (opacity only) */
+.ctapopLinked {
+  transition: opacity 0.25s ease;
+}
+
 /* the guide as a cell inside the homepage photo band: same content,
    same reveal, elevated placement instead of the buried bottom band */
 .qGuideCell {

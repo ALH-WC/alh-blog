@@ -25,11 +25,11 @@ const NAV_LINKS = [
 // `ctaTitle`/`formHref` let each page match the pop-up to its own service
 // (feedback 10): the letting page invites landlords, the corporate page
 // invites companies, and pages without their own form send to /contact.
-export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '#contact', popAt = 0.25, popOnGuide = false, children }: {
+export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '#contact', popAt = 0.25, popAnchor, children }: {
   current: string;
   heroless?: boolean;
   popAt?: number;
-  popOnGuide?: boolean;
+  popAnchor?: string;
   ctaTitle?: string;
   formHref?: string;
   children: React.ReactNode;
@@ -40,6 +40,7 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
   const [popShown, setPopShown] = useState(false);
   const [popDismissed, setPopDismissed] = useState(false);
   const lastY = useRef(0);
+  const popRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -54,23 +55,32 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
         setNavSolid(true);
       }
       lastY.current = y;
-      if (!popOnGuide) {
+      if (popAnchor) {
+        // Scroll-linked, like the blog handoff: the pop-up's top edge peeks
+        // when the anchor band's bottom enters the viewport, slides fully in
+        // over the next 350px of scroll (1px scroll = 1px movement), then
+        // stays fixed and rides along.
+        const el = document.getElementById(popAnchor);
+        const pop = popRef.current;
+        if (el && pop) {
+          const r = el.getBoundingClientRect();
+          const prog = Math.min(1, Math.max(0, (window.innerHeight - r.bottom + 40) / 350));
+          pop.style.transform = `translateY(${Math.round((1 - prog) * (pop.offsetHeight + 24))}px)`;
+          setPopShown(prog > 0.02);
+        }
+      } else {
         const q = (document.documentElement.scrollHeight - window.innerHeight) * popAt;
         setPopShown(y > q);
       }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
-    // the homepage pop-up appears the moment the guide tile finishes fading in
-    const onGuide = () => setPopShown(true);
-    if (popOnGuide) window.addEventListener('alh:guide-open', onGuide);
     onScroll();
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
-      if (popOnGuide) window.removeEventListener('alh:guide-open', onGuide);
     };
-  }, [popAt, popOnGuide]);
+  }, [popAt, popAnchor]);
 
   return (
     <div className={styles.page}>
@@ -130,7 +140,11 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
       <SiteFooter />
 
       {!popDismissed ? (
-        <div className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}`} aria-hidden={!popShown}>
+        <div
+          ref={popRef}
+          className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}${popAnchor ? ` ${styles.ctapopLinked}` : ''}`}
+          aria-hidden={!popShown}
+        >
           <button className={styles.x} type="button" aria-label="Close" onClick={() => setPopDismissed(true)}>&times;</button>
           <h4>{ctaTitle ?? "Let's find your home."}</h4>
           <p>Tell us what you are looking for,<br />or talk to us directly.</p>
