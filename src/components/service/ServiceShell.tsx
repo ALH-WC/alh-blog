@@ -25,9 +25,10 @@ const NAV_LINKS = [
 // `ctaTitle`/`formHref` let each page match the pop-up to its own service
 // (feedback 10): the letting page invites landlords, the corporate page
 // invites companies, and pages without their own form send to /contact.
-export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '#contact', children }: {
+export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '#contact', popAt = 0.25, children }: {
   current: string;
   heroless?: boolean;
+  popAt?: number;
   ctaTitle?: string;
   formHref?: string;
   children: React.ReactNode;
@@ -52,7 +53,7 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
         setNavSolid(true);
       }
       lastY.current = y;
-      const q = (document.documentElement.scrollHeight - window.innerHeight) * 0.25;
+      const q = (document.documentElement.scrollHeight - window.innerHeight) * popAt;
       setPopShown(y > q);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -62,7 +63,7 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
-  }, []);
+  }, [popAt]);
 
   return (
     <div className={styles.page}>

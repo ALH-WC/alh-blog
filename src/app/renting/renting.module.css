@@ -2277,28 +2277,38 @@
 .qGuideCell p {
   font-size: 15.5px;
 }
+.qGuideCell h3 {
+  font-weight: 400;
+}
 .qGuideCell .gcats {
   margin-top: 22px;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s;
+}
+.qGuideCell.gopen .gcats {
+  opacity: 1;
+  transform: none;
+}
+.qGuideCell .glabel {
+  font-weight: 400;
 }
 .qGuideCell .gin2 {
   display: block;
   white-space: normal;
   font-size: 13px;
+  font-weight: 400;
   line-height: 1.7;
   width: min(430px, 100%);
+  transform: none;
+  transition: none;
 }
 .qGuideCell .gwin {
-  max-width: 0;
-}
-.qGuideCell.gopen .gwin,
-.qGuideCell:hover .gwin {
-  max-width: 520px;
-}
-.qGuideCell.gopen .gin2 {
-  transform: none;
+  max-width: none;
+  overflow: visible;
 }
 
 /* --- service cards / tiles --------------------------------- */

@@ -83,7 +83,7 @@ export default function HomePage() {
     .filter((r): r is (typeof REVIEWS)[number] => Boolean(r));
 
   return (
-    <ServiceShell current="/" ctaTitle="Let's talk." formHref="/contact#contact">
+    <ServiceShell current="/" ctaTitle="Let's talk." formHref="/contact#contact" popAt={0.55}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }} />
 
       {/* HERO (approved, untouched): brand video, H1 bottom-left, stats pile */}
