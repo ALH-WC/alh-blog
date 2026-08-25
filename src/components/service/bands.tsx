@@ -190,7 +190,7 @@ export function ContactBand({ defaultInterest, title, intro, submitLabel }: {
       <div className={styles.panel}>
         <span className={styles.eyebrow}>Get in touch</span>
         <h2 className={`${styles.secT} ${styles.formTitle}`}>{title ?? <>Your home in Amsterdam<br />starts here</>}</h2>
-        <p style={{ marginTop: 20, fontSize: 16, maxWidth: 400 }}>{intro ?? FORM_INTRO}</p>
+        <p style={{ marginTop: 20, fontSize: 17, maxWidth: 400 }}>{intro ?? FORM_INTRO}</p>
         <div className={styles.panelContact}>
           <a href="mailto:home@amsterdamlifehomes.com">home@amsterdamlifehomes.com</a>
           <a href="tel:+31613749944">+31 6 1374 9944</a>

@@ -58,12 +58,12 @@ export default function AboutPage() {
         <div className={styles.cell} style={{ padding: '76px 56px' }}>
           <span className={styles.eyebrow} style={{ marginBottom: 20 }}>Foreigners ourselves</span>
           <h2 className={`${styles.secT} ${styles.hl}`}>New country, new language,<br />new everything.</h2>
-          <p style={{ marginTop: 20, fontSize: 16, maxWidth: '60ch' }}>
+          <p style={{ marginTop: 20, fontSize: 17, maxWidth: '60ch' }}>
             We get it. It is a lot, and we have been there. We are foreigners ourselves, and together with our team
             we call Amsterdam home. We speak your language and believe clear communication, trust, and proper
             expectation management are crucial for a great house hunt experience.
           </p>
-          <p style={{ marginTop: 14, fontSize: 16, maxWidth: '60ch' }}>
+          <p style={{ marginTop: 14, fontSize: 17, maxWidth: '60ch' }}>
             With over 8 years of experience, we understand the challenges of moving to a new country. We help you
             navigate not just the housing market, but also Dutch customs and rules. We go the extra mile to ensure
             a smooth, stress-free experience.
@@ -82,7 +82,7 @@ export default function AboutPage() {
         <div className={styles.cell} style={{ padding: '76px 56px' }}>
           <span className={styles.eyebrow} style={{ marginBottom: 20 }}>Our story</span>
           <h2 className={`${styles.secT} ${styles.hl}`}>We have been in your shoes.<br />That is why we do this.</h2>
-          <p style={{ marginTop: 20, fontSize: 16, maxWidth: '60ch' }}>{THIS_IS_US_TXT}</p>
+          <p style={{ marginTop: 20, fontSize: 17, maxWidth: '60ch' }}>{THIS_IS_US_TXT}</p>
         </div>
       </div>
 

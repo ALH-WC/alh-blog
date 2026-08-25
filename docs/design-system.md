@@ -74,6 +74,8 @@ Attributions, placeholders, and the legal line: `#A39889` (on sand tiles `#8C857
 | Text CTA | Inter 600 | 17px espresso (primary) / bronze (secondary), trailing arrow; in-card links 15px 500 |
 | Form labels | Inter 600 | 11.5px, ls .18em, uppercase, espresso |
 
+**THE SCALE IS CLOSED (Aug 2026, after the size-drift audit).** Inter exists at exactly FOUR sizes: 17px (all running text: deks, bodies, promises, intros), 15px (UI: links, buttons, inputs, footer links), 14px (meta: attributions, notes, fine print, legal), 12px (eyebrows and letterspaced labels). Mixta exists at exactly: 46px section titles (30px phones, every section, NO per-section exceptions: the mockup's 52/56/62 variants are retired), 34 tile names, 30 cell subtitles, 28 review quotes, 24 photo captions (21 for long article-title captions), 22 stat numbers and step numerals, plus the hero H1 and the wordmark. Arrow glyphs (18-19px) are the only exception. Any other px value in a font-size is a bug.
+
 Inter never exceeds weight 600. Sentence case in all Inter copy; uppercase lives only in Mixta display lines, eyebrows, labels, and the wordmark.
 
 ### Space and grid
