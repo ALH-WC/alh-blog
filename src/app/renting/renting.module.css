@@ -2260,6 +2260,37 @@
   background: #ffffff;
 }
 
+/* the guide as a cell inside the homepage photo band: same content,
+   same reveal, elevated placement instead of the buried bottom band */
+.qGuideCell {
+  border-top: 0;
+  border-bottom: 0;
+  border-left: 1px solid #eae7e1;
+  padding: 40px 40px 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.qGuideCell h3 {
+  font-size: 34px;
+}
+.qGuideCell p {
+  font-size: 15.5px;
+}
+.qGuideCell .gcats {
+  margin-top: 18px;
+}
+.qGuideCell .gin2 {
+  white-space: normal;
+  font-size: 13px;
+}
+.qGuideCell .gwin {
+  max-width: 0;
+}
+.qGuideCell:hover .gwin {
+  max-width: 520px;
+}
+
 /* --- service cards / tiles --------------------------------- */
 .svcCard h3 {
   font-weight: 400;
