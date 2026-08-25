@@ -143,9 +143,9 @@ export function ServiceTiles({ tiles }: { tiles: [string, string, string, string
   );
 }
 
-export function GuideBand() {
+export function GuideBand({ tile }: { tile?: boolean } = {}) {
   return (
-    <Link className={styles.guideband} href="/blog">
+    <Link className={`${styles.guideband}${tile ? ` ${styles.qGuideCell}` : ''}`} href="/blog">
       <span className={styles.eyebrow} style={{ marginBottom: 12 }}>Learn about</span>
       <h3>Our Amsterdam guide&nbsp;<span className={styles.gar}>&#8599;</span></h3>
       <p>Anything you need to know when moving here&nbsp;<span className={`${styles.gar} ${styles.garSub}`}>&#8599;</span></p>

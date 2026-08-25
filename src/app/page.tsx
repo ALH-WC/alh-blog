@@ -148,11 +148,7 @@ export default function HomePage() {
           <img src="/renting/tile-letting.jpg" alt="Bicycles on a canal bridge" />
           <div className={styles.qCap}>Bicycles on a canal bridge</div>
         </div>
-        <div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/renting/hero-canal.jpg" alt="Canal houses in daylight" />
-          <div className={styles.qCap}>Canal houses in daylight</div>
-        </div>
+        <GuideBand tile />
       </div>
 
       {/* REVIEWS: intro row + three cells, middle on sand */}
@@ -188,8 +184,6 @@ export default function HomePage() {
         <div className={styles.qFine}>Free. Takes 30 minutes. And will give you all the clarity you were looking for.</div>
       </div>
 
-      {/* The site-wide guide band: identical on every company page */}
-      <GuideBand />
     </ServiceShell>
   );
 }
