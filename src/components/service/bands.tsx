@@ -144,8 +144,26 @@ export function ServiceTiles({ tiles }: { tiles: [string, string, string, string
 }
 
 export function GuideBand({ tile }: { tile?: boolean } = {}) {
+  // As a tile the reveal plays once when the tile scrolls into view,
+  // instead of waiting for a hover nobody gives it.
+  const ref = useRef<HTMLAnchorElement>(null);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!tile || !ref.current) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setOpen(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.45 },
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [tile]);
   return (
-    <Link className={`${styles.guideband}${tile ? ` ${styles.qGuideCell}` : ''}`} href="/blog">
+    <Link ref={ref} className={`${styles.guideband}${tile ? ` ${styles.qGuideCell}` : ''}${open ? ` ${styles.gopen}` : ''}`} href="/blog">
       <span className={styles.eyebrow} style={{ marginBottom: 12 }}>Learn about</span>
       <h3>Our Amsterdam guide&nbsp;<span className={styles.gar}>&#8599;</span></h3>
       <p>Anything you need to know when moving here&nbsp;<span className={`${styles.gar} ${styles.garSub}`}>&#8599;</span></p>
