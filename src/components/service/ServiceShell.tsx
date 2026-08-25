@@ -25,10 +25,11 @@ const NAV_LINKS = [
 // `ctaTitle`/`formHref` let each page match the pop-up to its own service
 // (feedback 10): the letting page invites landlords, the corporate page
 // invites companies, and pages without their own form send to /contact.
-export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '#contact', popAt = 0.25, children }: {
+export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '#contact', popAt = 0.25, popOnGuide = false, children }: {
   current: string;
   heroless?: boolean;
   popAt?: number;
+  popOnGuide?: boolean;
   ctaTitle?: string;
   formHref?: string;
   children: React.ReactNode;
@@ -53,17 +54,23 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
         setNavSolid(true);
       }
       lastY.current = y;
-      const q = (document.documentElement.scrollHeight - window.innerHeight) * popAt;
-      setPopShown(y > q);
+      if (!popOnGuide) {
+        const q = (document.documentElement.scrollHeight - window.innerHeight) * popAt;
+        setPopShown(y > q);
+      }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    // the homepage pop-up appears the moment the guide tile finishes fading in
+    const onGuide = () => setPopShown(true);
+    if (popOnGuide) window.addEventListener('alh:guide-open', onGuide);
     onScroll();
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      if (popOnGuide) window.removeEventListener('alh:guide-open', onGuide);
     };
-  }, [popAt]);
+  }, [popAt, popOnGuide]);
 
   return (
     <div className={styles.page}>
