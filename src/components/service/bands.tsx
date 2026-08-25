@@ -155,9 +155,11 @@ export function GuideBand({ tile }: { tile?: boolean } = {}) {
         if (entries.some((e) => e.isIntersecting)) {
           setOpen(true);
           io.disconnect();
+          // the pop-up waits for this moment: announce when the fade-up ends
+          window.setTimeout(() => window.dispatchEvent(new CustomEvent('alh:guide-open')), 850);
         }
       },
-      { threshold: 0.45 },
+      { threshold: 0.9 },
     );
     io.observe(ref.current);
     return () => io.disconnect();
