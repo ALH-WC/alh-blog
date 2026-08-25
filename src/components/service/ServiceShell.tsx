@@ -38,7 +38,6 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
   const [menuOpen, setMenuOpen] = useState(false);
   const [navSolid, setNavSolid] = useState(false);
   const [popShown, setPopShown] = useState(false);
-  const [popDismissed, setPopDismissed] = useState(false);
   const lastY = useRef(0);
 
   useEffect(() => {
@@ -128,19 +127,16 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
 
       <SiteFooter />
 
-      {!popDismissed ? (
-        <div
-          className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}`}
-          aria-hidden={!popShown}
-        >
-          <button className={styles.x} type="button" aria-label="Close" onClick={() => setPopDismissed(true)}>&times;</button>
-          <div className={styles.ctapopRow}>
-            <a className={styles.pbtn} href={formHref}>Fill in our form</a>
-            <a className={`${styles.pbtn} ${styles.pbtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video intake call</a>
-          </div>
-          <div className={styles.ctapopNote}>We respond within 4 hours.</div>
+      <div
+        className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}`}
+        aria-hidden={!popShown}
+      >
+        <div className={styles.ctapopNote}>Let&apos;s talk! We respond within 4 hours.</div>
+        <div className={styles.ctapopRow}>
+          <a className={styles.pbtn} href={formHref}>Fill in our form</a>
+          <a className={`${styles.pbtn} ${styles.pbtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video intake call</a>
         </div>
-      ) : null}
+      </div>
     </div>
   );
 }
