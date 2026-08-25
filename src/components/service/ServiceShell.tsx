@@ -40,7 +40,7 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
   const [popShown, setPopShown] = useState(false);
   const [popDismissed, setPopDismissed] = useState(false);
   const lastY = useRef(0);
-  const popRef = useRef<HTMLDivElement>(null);
+  const [popMini, setPopMini] = useState(true);
 
   useEffect(() => {
     const onScroll = () => {
@@ -55,22 +55,21 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
         setNavSolid(true);
       }
       lastY.current = y;
+      // The pop-up: appears as a low "Let's talk." bar right after the hero,
+      // expands for good once the anchor block (the guide) has passed, and
+      // collapses again while the footer is in view so the newsletter stays
+      // reachable. Hovering the low bar expands it temporarily (CSS).
+      const footer = document.querySelector('footer');
+      const nearFooter = !!footer && footer.getBoundingClientRect().top < window.innerHeight - 60;
       if (popAnchor) {
-        // Scroll-linked, 1px = 1px: the pop-up's top edge stays a fixed 28px
-        // below the band's bottom hairline while it slides in, so it never
-        // overlaps the band; once fully in, it rides fixed.
         const el = document.getElementById(popAnchor);
-        const pop = popRef.current;
-        if (el && pop) {
-          const r = el.getBoundingClientRect();
-          const total = pop.offsetHeight + 24;
-          const visible = Math.min(total, Math.max(0, window.innerHeight - r.bottom - 28));
-          pop.style.transform = `translateY(${Math.round(total - visible)}px)`;
-          setPopShown(visible > 2);
-        }
+        const passed = !!el && el.getBoundingClientRect().bottom < window.innerHeight - 120;
+        setPopShown(y > window.innerHeight * 0.85);
+        setPopMini(!passed || nearFooter);
       } else {
         const q = (document.documentElement.scrollHeight - window.innerHeight) * popAt;
         setPopShown(y > q);
+        setPopMini(nearFooter);
       }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -141,15 +140,16 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
 
       {!popDismissed ? (
         <div
-          ref={popRef}
-          className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}${popAnchor ? ` ${styles.ctapopLinked}` : ''}`}
+          className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}${popMini ? ` ${styles.ctapopMini}` : ''}`}
           aria-hidden={!popShown}
         >
           <button className={styles.x} type="button" aria-label="Close" onClick={() => setPopDismissed(true)}>&times;</button>
           <h4>{ctaTitle ?? "Let's find your home."}</h4>
-          <p>Tell us what you are looking for,<br />or talk to us directly.</p>
-          <a className={styles.pbtn} href={formHref}>Fill in the form<span className={styles.pnote}>We reply within 24 hours</span></a>
-          <a className={`${styles.pbtn} ${styles.pbtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call</a>
+          <div className={styles.ctapopBody}>
+            <p>Tell us what you are looking for,<br />or talk to us directly.</p>
+            <a className={styles.pbtn} href={formHref}>Fill in the form<span className={styles.pnote}>We reply within 24 hours</span></a>
+            <a className={`${styles.pbtn} ${styles.pbtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call</a>
+          </div>
         </div>
       ) : null}
     </div>

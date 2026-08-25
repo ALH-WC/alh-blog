@@ -608,9 +608,6 @@
   width: max-content;
   animation: marq 26s linear infinite;
 }
-.marq:hover .mtrack {
-  animation-play-state: paused;
-}
 @keyframes marq {
   to {
     transform: translateX(-50%);
@@ -2260,10 +2257,58 @@
   background: #ffffff;
 }
 
-/* scroll-linked pop-up: the scroll position drives the transform, so the
-   pop-up itself never animates its position (opacity only) */
-.ctapopLinked {
-  transition: opacity 0.25s ease;
+/* every white block tints sand on hover, like the service tiles */
+.rev,
+.qGuideCell,
+.qFaqRow,
+.qMapCell {
+  transition: background 0.3s ease;
+}
+.rev:hover,
+.qGuideCell:hover,
+.qFaqRow:hover,
+.qMapCell:hover {
+  background: #eae2d3;
+}
+
+/* the pop-up's collapsible body: mini shows only "Let's talk.", hovering
+   expands it, and it expands for good once the guide block has passed
+   (collapsing again when the footer is in view, so the newsletter is
+   never covered) */
+.ctapopBody {
+  overflow: hidden;
+  max-height: 400px;
+  opacity: 1;
+  transition: max-height 0.45s ease, opacity 0.35s ease;
+}
+.ctapopMini .ctapopBody {
+  max-height: 0;
+  opacity: 0;
+}
+.ctapopMini:hover .ctapopBody {
+  max-height: 400px;
+  opacity: 1;
+}
+
+/* the neighborhoods-map cell in the homepage photo band */
+.qMapCell {
+  background: #ffffff;
+  border-bottom: 1px solid #eae7e1;
+  padding: 30px 34px 78px;
+}
+.qMapCell img {
+  position: static;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.qCapInk {
+  color: #241d16;
+}
+.qCapSm {
+  font-size: 21px;
+  line-height: 1.3;
+  right: 32px;
 }
 
 /* the guide as a cell inside the homepage photo band: same content,
