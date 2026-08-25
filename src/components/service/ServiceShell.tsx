@@ -56,17 +56,17 @@ export function ServiceShell({ current, heroless = false, ctaTitle, formHref = '
       }
       lastY.current = y;
       if (popAnchor) {
-        // Scroll-linked, like the blog handoff: the pop-up's top edge peeks
-        // when the anchor band's bottom enters the viewport, slides fully in
-        // over the next 350px of scroll (1px scroll = 1px movement), then
-        // stays fixed and rides along.
+        // Scroll-linked, 1px = 1px: the pop-up's top edge stays a fixed 28px
+        // below the band's bottom hairline while it slides in, so it never
+        // overlaps the band; once fully in, it rides fixed.
         const el = document.getElementById(popAnchor);
         const pop = popRef.current;
         if (el && pop) {
           const r = el.getBoundingClientRect();
-          const prog = Math.min(1, Math.max(0, (window.innerHeight - r.bottom + 40) / 350));
-          pop.style.transform = `translateY(${Math.round((1 - prog) * (pop.offsetHeight + 24))}px)`;
-          setPopShown(prog > 0.02);
+          const total = pop.offsetHeight + 24;
+          const visible = Math.min(total, Math.max(0, window.innerHeight - r.bottom - 28));
+          pop.style.transform = `translateY(${Math.round(total - visible)}px)`;
+          setPopShown(visible > 2);
         }
       } else {
         const q = (document.documentElement.scrollHeight - window.innerHeight) * popAt;
