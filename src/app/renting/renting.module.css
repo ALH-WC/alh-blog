@@ -992,15 +992,24 @@
   position: fixed;
   right: 26px;
   bottom: 26px;
-  width: 330px;
   background: var(--dark);
   color: var(--on-dark);
-  padding: 26px 26px 24px;
+  padding: 16px 42px 13px 18px;
   z-index: 60;
   opacity: 0;
   transform: translateY(18px);
   pointer-events: none;
   transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.ctapopRow {
+  display: flex;
+  gap: 10px;
+}
+.ctapopNote {
+  margin-top: 9px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--on-dark-muted);
 }
 .ctapopShow {
   opacity: 1;
@@ -1037,12 +1046,11 @@
 }
 .pbtn {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-top: 12px;
-  padding: 11px 16px;
+  white-space: nowrap;
+  padding: 12px 18px;
   font-weight: 600;
   font-size: 14px;
   line-height: 1.25;
@@ -1310,7 +1318,14 @@
     left: 16px;
     right: 16px;
     width: auto;
-    padding: 20px 18px 18px;
+    padding: 16px 18px 13px;
+  }
+  .ctapopRow {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ctapopRow .pbtn {
+    width: 100%;
   }
   .ctapop h4 {
     font-size: 21px;
@@ -2269,25 +2284,6 @@
 .qFaqRow:hover,
 .qMapCell:hover {
   background: #eae2d3;
-}
-
-/* the pop-up's collapsible body: mini shows only "Let's talk.", hovering
-   expands it, and it expands for good once the guide block has passed
-   (collapsing again when the footer is in view, so the newsletter is
-   never covered) */
-.ctapopBody {
-  overflow: hidden;
-  max-height: 400px;
-  opacity: 1;
-  transition: max-height 0.45s ease, opacity 0.35s ease;
-}
-.ctapopMini .ctapopBody {
-  max-height: 0;
-  opacity: 0;
-}
-.ctapopMini:hover .ctapopBody {
-  max-height: 400px;
-  opacity: 1;
 }
 
 /* the neighborhoods-map cell in the homepage photo band */

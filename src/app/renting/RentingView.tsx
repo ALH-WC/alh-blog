@@ -386,10 +386,11 @@ export default function RentingView() {
       {!popDismissed ? (
         <div className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}`} aria-hidden={!popShown}>
           <button className={styles.x} type="button" aria-label="Close" onClick={() => setPopDismissed(true)}>&times;</button>
-          <h4>Let&apos;s find your home.</h4>
-          <p>Tell us what you are looking for,<br />or talk to us directly.</p>
-          <a className={styles.pbtn} href="#contact">Fill in the form<span className={styles.pnote}>We reply within 24 hours</span></a>
-          <a className={`${styles.pbtn} ${styles.pbtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video call</a>
+          <div className={styles.ctapopRow}>
+            <a className={styles.pbtn} href="#contact">Fill in our form</a>
+            <a className={`${styles.pbtn} ${styles.pbtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video intake call</a>
+          </div>
+          <div className={styles.ctapopNote}>We respond within 4 hours.</div>
         </div>
       ) : null}
     </div>
