@@ -138,14 +138,14 @@ export default function HomePage() {
 
       {/* PHOTO BAND: three captioned full-bleed photos (verified captions only) */}
       <div className={styles.qBand} id="pop-anchor" style={{ gridTemplateColumns: '1.2fr 1fr 1.4fr' }}>
-        <Link href="/blog#sec-citymap" className={styles.qMapCell}>
+        <Link href="/blog/top-neighborhoods-in-amsterdam-for-expats-to-live">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/map-london2.png" alt="The illustrated Amsterdam neighborhoods map" />
-          <div className={`${styles.qCap} ${styles.qCapInk}`}>Amsterdam neighborhoods</div>
+          <img src="/renting/hero-canal.jpg" alt="Canal houses in Amsterdam daylight" />
+          <div className={`${styles.qCap} ${styles.qCapSm}`}>Top neighborhoods in Amsterdam for expats to live</div>
         </Link>
         <Link href="/blog/how-to-get-a-social-services-number-(bsn)-and-why-you-need-it">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/renting/tile-letting.jpg" alt="Bicycles on a canal bridge" />
+          <img src="/renting/tile-corporate.jpg" alt="A leafy Amsterdam lane" />
           <div className={`${styles.qCap} ${styles.qCapSm}`}>How to get a social services number (BSN) and why you need it</div>
         </Link>
         <GuideBand tile />

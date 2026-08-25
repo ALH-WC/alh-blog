@@ -2272,32 +2272,14 @@
   background: #ffffff;
 }
 
-/* every white block tints sand on hover, like the service tiles */
-.rev,
-.qGuideCell,
-.qFaqRow,
-.qMapCell {
+/* sand on hover marks CLICKABLE white blocks only (tiles, the guide tile) */
+.qGuideCell {
   transition: background 0.3s ease;
 }
-.rev:hover,
-.qGuideCell:hover,
-.qFaqRow:hover,
-.qMapCell:hover {
+.qGuideCell:hover {
   background: #eae2d3;
 }
 
-/* the neighborhoods-map cell in the homepage photo band */
-.qMapCell {
-  background: #ffffff;
-  border-bottom: 1px solid #eae7e1;
-  padding: 30px 34px 78px;
-}
-.qMapCell img {
-  position: static;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 .qCapInk {
   color: #241d16;
 }

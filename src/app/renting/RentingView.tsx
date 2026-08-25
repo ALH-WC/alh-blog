@@ -383,7 +383,7 @@ export default function RentingView() {
 
       {/* CTA POP-UP (approved, untouched) */}
       <div className={`${styles.ctapop}${popShown ? ` ${styles.ctapopShow}` : ''}`} aria-hidden={!popShown}>
-        <div className={styles.ctapopNote}>Let&apos;s talk! We respond within 4 hours.</div>
+        <div className={styles.ctapopNote}>Let&apos;s talk! We respond within 24 hours.</div>
         <div className={styles.ctapopRow}>
           <a className={styles.pbtn} href="#contact">Fill in our form</a>
           <a className={`${styles.pbtn} ${styles.pbtnAlt}`} href={INTAKE_URL} target="_blank" rel="noreferrer">Schedule a free video intake call</a>
